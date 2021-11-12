@@ -72,38 +72,83 @@
                         <!-- To make this form functional, sign up at-->
                         <!-- https://startbootstrap.com/solution/contact-forms-->
                         <!-- to get an API token!-->
+                        <!-- Flight Number & Flight Date -->
                         <form id="contactForm" data-sb-form-api-token="API_TOKEN">
-                            <!-- flight number input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="number" type="number" placeholder="Enter flight number..." data-sb-validations="required" />
-                                <label for="number">Flight Number</label>
-                                <div class="invalid-feedback" data-sb-feedback="Flight Number:required">A flight number is required.</div>
+                          <div class="row g-2">
+                            <div class="col-md">
+                              <div class="form-floating">
+                                <input type="number" class="form-control" id="number" placeholder="Enter flight number..." value="Ex. 5">
+                                <label for="floatingInputGrid">Flight Number</label>
+                              </div>
                             </div>
-                            <!-- flight Date-->
-                            <div class="form-floating mb-3">
-                              <input class="form-control" id="Date--" type="date" placeholder="Enter flight date..." data-sb-validations="required" />
-                              <label for="number">Flight Date</label>
-                              <div class="invalid-feedback" data-sb-feedback="Flight Number:required">A flight date is required.</div>
+                            <div class="col-md">
+                              <div class="form-floating mb-3">
+                                <input class="form-control" id="Date--" type="date" placeholder="Enter flight date..." data-sb-validations="required" />
+                                <label for="number">Flight Date</label>
+                                <div class="invalid-feedback" data-sb-feedback="Flight Date:required">A flight date is required.</div>
+                              </div>
                             </div>
-                            <!-- Email address input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
-                                <label for="email">Email address</label>
-                                <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
-                                <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
+                          </div>
+                            <!-- Arival & Depature Times-->
+                            <div class="row g-2">
+                              <div class="col-md">
+                                <div class="form-floating mb-3">
+                                  <input class="form-control" id="Depaturetime" type="time" placeholder="Depaturetime" data-sb-validations="required" />
+                                  <label for="number">Depature Time</label>
+                                  <div class="invalid-feedback" data-sb-feedback="Flight Depaturetime:required">A flight Depature time is required.</div>
+                                </div>
+                              </div>
+                              <div class="col-md">
+                                <div class="form-floating mb-3">
+                                  <input class="form-control" id="Arivaltime" type="time" placeholder="Arivaltime" data-sb-validations="required" />
+                                  <label for="number">Arival Time</label>
+                                  <div class="invalid-feedback" data-sb-feedback="Flight Arivaltime:required">A flight arival time is required.</div>
+                                </div>
+                              </div>
                             </div>
-                            <!-- Phone number input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
-                                <label for="phone">Phone number</label>
-                                <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
+                            <!-- Economy & Business Seats -->
+                            <div class="row g-2">
+                              <div class="col-md">
+                                <div class="form-floating mb-3">
+                                  <input class="form-control" id="Economyseats" type="number" placeholder="Economyseats" data-sb-validations="required" />
+                                  <label for="number">Economy Seats</label>
+                                  <div class="invalid-feedback" data-sb-feedback="Flight Depaturetime:required">Economy seats number is required.</div>
+                                </div>
+                              </div>
+                              <div class="col-md">
+                                <div class="form-floating mb-3">
+                                  <input class="form-control" id="Businessseats" type="number" placeholder="Businessseats" data-sb-validations="required" />
+                                  <label for="number">Business Seats</label>
+                                  <div class="invalid-feedback" data-sb-feedback="Flight Depaturetime:required">Business seats number is required.</div>
+                                </div>
+                              </div>
                             </div>
-                            <!-- Message input-->
-                            <div class="form-floating mb-3">
-                                <textarea class="form-control" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
-                                <label for="message">Message</label>
-                                <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
+                            <!-- Arival & Depature Airports -->
+                            <div class="row g-2">
+                              <div class="col-md">
+                                <div class="form-floating">
+                                  <select class="form-select" id="DepatureAirport" aria-label="Floating label select example">
+                                    <option selected>Depature Airport</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                  </select>
+                                  <label for="floatingSelectGrid">Works with selects</label>
+                                </div>
+                              </div>
+                              <div class="col-md">
+                                <div class="form-floating">
+                                  <select class="form-select" id="ArivalAirport" aria-label="Floating label select example">
+                                    <option selected>Arival Airport</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                  </select>
+                                  <label for="floatingSelectGrid">Works with selects</label>
+                                </div>
+                              </div>
                             </div>
+                            <br/>
                             <!-- Submit success message-->
                             <!---->
                             <!-- This is what your users will see when the form-->
