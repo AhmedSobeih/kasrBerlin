@@ -172,6 +172,7 @@ address {
   line-height: inherit;
 }
 
+
 ol,
 ul {
   padding-left: 2rem;
@@ -190,6 +191,12 @@ ol ul,
 ul ol {
   margin-bottom: 0;
 }
+
+.second-li{   
+  direction:rtl;
+  float : right;
+  list-style-type: bullet;
+  }
 
 dt {
   font-weight: 700;
