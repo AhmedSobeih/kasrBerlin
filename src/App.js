@@ -10,7 +10,7 @@ const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
-const User = require('./models/User');
+const Flight = require('./Models/Flight');
 app.use(express.static('public'))
 // #Importing the userController
 
@@ -41,29 +41,25 @@ app.get('/styles.css', function(req, res) {
 });
 
 
-app.get("/jobTA",(req,res)=>{
-  User.find({job:"T3"}).then((result)=>{
-   res.send(result);
-  })});
 
-  app.get("/TAS",(req,res)=>{
-    User.find({Job:'Student'}).exec(function(err,users){
-      res.send(users)
+  app.get("/flight",(req,res)=>{
+    Flight.find({Number : 55}).exec(function(err,Flight){
+      res.send(Flight)
     });
     });
     app.get("/student",async(req,res)=>{
-      const newStudent =new User({
-        Name:"Ziad",
-        Email:'ziad',
-        Age:"21",
-        BornIn:"Egypt",
-        LivesIn:"Berlin",
-        MartialStatus:"Single",
-        PhoneNumber:"012345",
-        Job:"Student"
+      const newFlight =new Flight({
+        Number:55,
+        flightDate : "<2001-05-20>",
+        DepatureTime:"<2001-05-20>",
+        ArrivalTime:"<2001-05-20>",
+        EconomySeats:20,
+        BusinessSeats:20,
+        DepatureAirport:"BER",
+        ArrivalAirport:"BAR"
       });
-        await newStudent.save(newStudent)
-        res.send(newStudent)
+        await newFlight.save(newFlight)
+        res.send(newFlight)
     });
 // #Routing to usercontroller here
 
