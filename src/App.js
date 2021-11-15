@@ -43,6 +43,23 @@ app.get("/newAdmin",async(req,res)=>{
     await admin.save(admin)
     res.send(admin)
 });
+
+app.get("/newFlight",async(req,res)=>{
+  const flight =new Flight({
+        Number:5,
+        flightDate : '2015-05-05',
+        DepatureTime: '2015-05-05',
+        ArrivalTime: '2015-05-05',
+        EconomySeats: 25 ,
+        BusinessSeats: 25 ,
+        DepatureAirport: "BER",
+        ArrivalAirport: "BAR"
+  });
+    await flight.save(flight)
+    res.send(flight)
+});
+
+
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/index.html'));
 });
@@ -57,6 +74,10 @@ app.get("/Home", (req, res) => {
 
 app.get('/styles.css', function(req, res) {
   res.sendFile(__dirname , '/css/styles.css');
+});
+
+app.get('/AdminHomePage', function(req, res) {
+  res.send('adminnnn');
 });
 
 app.get('/login', (req,res)=>{
@@ -88,14 +109,16 @@ app.post('/login',(req,res) =>{
   console.log(req.body);
   Users.find({username:req.body.username, password:req.body.password})
   .then((user)=>{
-      if(user==null)
+      console.log();
+      if(user.length==0)
       {
+          console.log('Not Valid User');
           //if user not found in database render the same login page with usertype null
           res.render('/login', {userType: null})
           return;
       }
       //we need to create a session
-      res.render('AdminHomePage', {userType: 'Admin', name: user.name});
+    res.redirect('/AdminHomePage');
   }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
 })
 
@@ -108,6 +131,7 @@ app.post('/login',(req,res) =>{
     const searchValue = req.body.searchValue;
     if(searchCriteria == null)
     {
+      console.log("allFlights");
       res.redirect('allFlights');
     }  
     Flight.find({searchCriteria : searchValue})
