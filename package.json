@@ -1,6 +1,27 @@
 {
+  "name": "kasrberlin",
+  "version": "1.0.0",
+  "description": "Acl Project",
+  "main": "src/App.js",
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^6.0.12"
-  }
+    "mongodb": "^4.1.4",
+    "mongoose": "^6.0.12",
+    "nodemon": "^2.0.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AhmedSobeih/kasrBerlin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AhmedSobeih/kasrBerlin/issues"
+  },
+  "homepage": "https://github.com/AhmedSobeih/kasrBerlin#readme"
 }
