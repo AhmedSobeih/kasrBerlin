@@ -3,6 +3,7 @@
 const express = require("express");
 const mongoose = require('mongoose');
 const path = require('path');
+var bodyParser = require('body-parser');
 // THIS IS WRONG NEVER DO THAT !! Only for the task we put the DB Link here!! NEVER DO THAAAT AGAIN !!
 const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,cluster0-shard-00-01.izp8e.mongodb.net:27017,cluster0-shard-00-02.izp8e.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-jkas6k-shard-0&authSource=admin&retryWrites=true&w=majority' ;
 
@@ -11,6 +12,7 @@ const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,
 const app = express();
 const port = process.env.PORT || "8000";
 const Flight = require('./Models/Flight');
+const Users = require('./Models/Users');
 app.use(express.static('public'));
 app.use(express.urlencoded({extended:false}));
 // #Importing the userController
@@ -42,7 +44,8 @@ app.get('/styles.css', function(req, res) {
 });
 
 app.get('/login', (req,res)=>{
-    res.render('/login');
+   res.send("login");
+   // res.render('/login');
 })
 
 app.get('/searchFlight', (req,res)=>{
@@ -66,18 +69,19 @@ app.get('/allFlights', (req,res)=>{
 });
 
 
-app.post('login',(req,res) =>{
+app.post('/login',(req,res) =>{
+  console.log(req.body);
   Users.find({username:req.body.username, password:req.body.password})
   .then((user)=>{
       if(user==null)
       {
           //if user not found in database render the same login page with usertype null
-          res.render('/', {userType: null})
+          res.render('/login', {userType: null})
           return;
       }
       //we need to create a session
       res.render('AdminHomePage', {userType: 'Admin', name: user.name});
-  }).catch((err) => res.render('/', {userType: 'error'}));//if an error happened while accessing db, return string error
+  }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
 })
 
 
@@ -120,7 +124,8 @@ app.post('login',(req,res) =>{
     });
 
     app.put('/flight/:number', (req,res)=>{
-      const flightNumber = req.body.params;
+      //can be an error: req.body.params
+      const flightNumber = req.body.params.number;
       const filter = {Number: flightNumber};
       const criteria = req.body.criteria;
       const value = req.body.value; 
@@ -143,6 +148,21 @@ app.post('login',(req,res) =>{
         res.redirect('/AdminHomePage');//if successful, redirect to the home page
     }).catch((err) =>  res.send(err))
         
+    });
+    //intializing the admin
+    app.get("/newAdmin",async(req,res)=>{
+      const admin =new Users({
+        firstName:"admin",
+        lastName: "admin",
+        homeAddress: "20 Staakener Strasse",
+        telephoneNumbers:[01144675267],
+        email: "admin@guc.edu.eg",
+        passportNumber:"A215325",
+        username:"Adminstrator",
+        password:"Adminstrator"
+      });
+        await admin.save(admin)
+        res.send(admin)
     });
 // #Routing to usercontroller here
 
