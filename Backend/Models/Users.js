@@ -23,6 +23,7 @@ const UserSchema = new Schema({
   },
   email: {
     type: String,
+    unique:true,
     required: true
   },
   passportNumber: {
@@ -31,6 +32,7 @@ const UserSchema = new Schema({
   },
   username: {
     type: String,
+    unique:true,
     required: true
   },
   password: {

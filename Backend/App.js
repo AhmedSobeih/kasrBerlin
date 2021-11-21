@@ -74,7 +74,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/createflight', function(req, res) {
-  res.sendFile(path.join(__dirname, '/public/createFlight.html'));
+  res.sendFile(path.join(__dirname, '/src/createFlight.html'));
 });
 
 app.get("/Home", (req, res) => {
@@ -96,21 +96,31 @@ app.get('/login', (req,res)=>{
 app.get('/searchFlight', (req,res)=>{
   res.render('/searchFlight');
 })
-app.get('/flight/:number', (req,res)=>{
-      
-  Flight.find({Number : req.params.number})
-  .then((flights)=>{
-    res.render('result', {searchResult: flights});
-}).catch((err) =>  res.render('result', null))
+
+app.get('/flight', (req,res)=>{
+  res.render(path.join(__dirname + '../'+ '/src/flight.js'));
+})
+
+
+app.get('/flight/:number', async (req,res)=>{
+  
+  const u = await Flight.find({FlightNumber : req.params.number});
+  res.send(u);
     
 });
 
-app.get('/allFlights', (req,res)=>{
-  Flight.find({})
-  .then((flights)=>{
-    res.render('result', {searchResult: flights});
-}).catch((err) =>  res.render('result', null))
-    
+app.get('/allFlights', async(req, res)=> {
+ 
+  const u = await Flight.find();
+  res.send(u);
+ 
+});
+
+app.get('/allFlights', async(req, res)=> {
+ 
+  const u = await Flight.find();
+  res.send(u);
+ 
 });
 
 
@@ -151,10 +161,9 @@ app.post('/login',(req,res) =>{
     //For creating a flight
     app.post("/flight",async(req,res)=>{
       const newFlight =new Flight({
-        Number:req.body.number,
-        flightDate : req.body.date,
-        DepatureTime: req.body.depatureTime,
-        ArrivalTime: req.body.arrivalTime,
+        FlightNumber:req.body.flightNumber,
+        DepatureDate: req.body.depatureDate,
+        ArrivalDate: req.body.arrivalDate,
         EconomySeats: req.body.economySeats,
         BusinessSeats: req.body.businessSeats ,
         DepatureAirport: req.body.depatureAirport,
@@ -162,11 +171,11 @@ app.post('/login',(req,res) =>{
       });
       try{
         await newFlight.save(newFlight);
-        res.redirect(`/flight/${newFlight.Number}`);
+        res.send(true);
       }
       catch(err)
       {
-        console.log(err);//error must be sent to user
+        console.log(err);
       }
     });
 

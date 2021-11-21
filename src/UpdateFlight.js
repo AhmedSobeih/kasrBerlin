@@ -2,18 +2,19 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-export default function CreateFlight(){
+export default function UpdateFlight(){
+
     const [flightCreated, setFlightCreated] = useState("");
-    const [flightNumber, setFlightNumber] = useState("");
-    const [depatureTime, setDepatureTime] = useState("");
-    const [depatureDate, setDepatureDate] = useState("");
-    const [arrivalTime, setArrivalTime] = useState("");
-    const [arrivalDate, setArrivalDate] = useState("");
-    const [economySeats, setEconomySeats] = useState("");
-    const [businessSeats, setBusinessSeats] = useState("");
-    const [depatureAirport, setDepatureAirport] = useState("");
-    const [arrivalAirport, setArrivalAirport] = useState("");
-  
+    const [flightNumber, setFlightNumber] = useState("110");
+    //problem will occur in the conversion between mongoose and html in date conversion
+    // mongoose: ""
+    //html: "2021-11-10T16:32"
+    const [depatureDate, setDepatureDate] = useState("2021-11-10T02:32");
+    const [arrivalDate, setArrivalDate] = useState("2021-11-10T16:32");
+    const [economySeats, setEconomySeats] = useState(10);
+    const [businessSeats, setBusinessSeats] = useState(500);
+    const [depatureAirport, setDepatureAirport] = useState("BER");
+    const [arrivalAirport, setArrivalAirport] = useState("BAR");
 
 
 function Label(props){
@@ -54,14 +55,11 @@ function DoubleLabel(props){
                   </div>
     );
 }
-function createFlight (){
-    console.log(1);
+function updateFlight (){
 
     var bodyFormData = new FormData();
     bodyFormData.append('flightNumber', flightNumber);
-    bodyFormData.append('depatureTime', depatureTime);
     bodyFormData.append('depatureDate', depatureDate);
-    bodyFormData.append('arrivalTime', arrivalTime);
     bodyFormData.append('arrivalDate', arrivalDate);
     bodyFormData.append('economySeats', economySeats);
     bodyFormData.append('businessSeats', businessSeats);
@@ -87,10 +85,6 @@ function createFlight (){
     setFlightNumber(number.target.value);
     console.log(flightNumber);
   }
-  function handleDepatureTime(time){
-    setDepatureTime(time.target.value);
-    console.log(depatureTime);
-  }
   function handleDepatureDate(date){
     setDepatureDate(date.target.value);
     console.log(depatureDate);
@@ -98,10 +92,6 @@ function createFlight (){
   function handleArrivalDate(date){
     setArrivalDate(date.target.value);
     console.log(arrivalDate);
-  }
-  function handleArrivalTime(time){
-    setArrivalTime(time.target.value);
-    console.log(arrivalTime);
   }
   function handleEconomySeats(number){
     setEconomySeats(number.target.value);
@@ -139,7 +129,7 @@ return(
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                  
                 <div className="text-blueGray-5000 text-center mb-3 font-bold">
-                   <h1>Creating Flight</h1>
+                   <h1>Update Flight</h1>
                 </div>
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
                 <form>
@@ -151,7 +141,7 @@ return(
                       Flight Number
                     </label>
                     <input
-                     type="number" onChangeCapture={handleFlightNumber} 
+                     type="number" onChangeCapture={handleFlightNumber}  defaultValue={flightNumber}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -163,7 +153,7 @@ return(
                       Depature Date & Time
                     </label>
                     <input
-                     type="datetime-local" onChangeCapture = {handleDepatureDate} onPointerMove={handleDepatureDate}
+                     type="datetime-local" onChangeCapture = {handleDepatureDate} onPointerMove={handleDepatureDate} defaultValue={depatureDate}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -175,7 +165,7 @@ return(
                       Arrival Date & Time
                     </label>
                     <input
-                     type="datetime-local" onChangeCapture = {handleArrivalDate} onPointerMove= {handleArrivalDate}
+                     type="datetime-local" onChangeCapture = {handleArrivalDate} onPointerMove= {handleArrivalDate} defaultValue={arrivalDate}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -187,7 +177,7 @@ return(
                       Number of Economy Seats
                     </label>
                     <input
-                     type="number" onChangeCapture={handleEconomySeats}
+                     type="number" onChangeCapture={handleEconomySeats} defaultValue={economySeats}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -199,7 +189,7 @@ return(
                       Number of Business Seats
                     </label>
                     <input
-                     type="number" onChangeCapture={handleBusinessSeats}
+                     type="number" onChangeCapture={handleBusinessSeats} defaultValue={businessSeats}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div><div className="relative w-full mb-3">
@@ -210,7 +200,7 @@ return(
                       Depature Airport
                     </label>
                     <input
-                     type="text" onChangeCapture={handleDepatureAirport}
+                     type="text" onChangeCapture={handleDepatureAirport} defaultValue={depatureAirport}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -222,16 +212,16 @@ return(
                       Arrival Airport
                     </label>
                     <input
-                     type="text" onChangeCapture={handleArrivalAirport}
+                     type="text" onChangeCapture={handleArrivalAirport} defaultValue={arrivalAirport}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"  onClickCapture={createFlight}
+                      type="button"  
                     >
-                      Create Flight
+                      Update Flight
                     </button>
                   </div>
                 </form>

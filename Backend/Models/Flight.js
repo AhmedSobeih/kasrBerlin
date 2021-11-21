@@ -2,21 +2,17 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const flightSchema = new Schema({
-  Number: {
+  FlightNumber: {
     type: Number,
+    unique:true,
     required: true,
   },
-  flightDate: {
+  DepatureDate: {
     type: Date,
     required: true
   },
-  // which datatype will represent arrival and depature time???
-  DepatureTime: {
-    type: Date,
-    required: true,
-  },
-  ArrivalTime: {
-    type: Date,
+  ArrivalDate:{
+    type:Date,
     required: true
   },
   EconomySeats: {

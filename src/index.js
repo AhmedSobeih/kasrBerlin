@@ -1,8 +1,10 @@
-import React from 'react';
+import CreateFlight from 'CreateFlight';
+import FlightByNumber from 'FlightbyNumber';
+import React, { createFactory } from 'react';
 import ReactDOM from 'react-dom';
+import ViewFlights from 'ViewFlights';
 import './css/styles.css';
 import Login from './Login';
-import CreateFlight from 'createFlight.js';
 import Register from './Register.js';
 function Home(){
   return (
@@ -351,7 +353,7 @@ function Home(){
 //       this is a message
 //     </div>
 //   }
-ReactDOM.render(<CreateFlight/>,document.getElementById('root'));
+ReactDOM.render(<ViewFlights/>,document.getElementById('root'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
