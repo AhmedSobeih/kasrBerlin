@@ -70,7 +70,7 @@ app.get("/newFlight",async(req,res)=>{
 
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/public/index.js'));
+  res.render(path.join(__dirname, '../src/index.js'));
 });
 
 app.get('/createflight', function(req, res) {

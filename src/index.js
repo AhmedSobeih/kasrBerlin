@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './css/styles.css';
 import Login from './Login';
+import CreateFlight from 'createFlight.js';
 import Register from './Register.js';
 function Home(){
   return (
@@ -350,7 +351,7 @@ function Home(){
 //       this is a message
 //     </div>
 //   }
-ReactDOM.render(<Login/>,document.getElementById('root'));
+ReactDOM.render(<CreateFlight/>,document.getElementById('root'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
