@@ -1,12 +1,51 @@
-import React from "react";
+import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
 
+import axios from 'axios';
+
 
 export default function Login() {
+  const [loginSuccess, setLoginSuccess] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+
+ 
+
+function tryLogin (){
+  // const data = { username, password}
+  var bodyFormData = new FormData();
+  bodyFormData.append('username', username);
+  bodyFormData.append('password', password);
+
+
+ axios({
+  method: "post",
+  url: "/login",
+  data: bodyFormData,
+  headers: { "Content-Type": "multipart/form-data" },
+})
+    .then((response) => { 
+      console.log(response.data)
+      if(response.data==false)
+        setLoginSuccess('Invalid username or password!');
+      else
+      setLoginSuccess('Success');
+  })
+}
+
+function handleEmail(text){
+  setUsername(text.target.value);
+  console.log(username);
+}
+
+function handlePassword(text){
+  setPassword(text.target.value);
+}
   return (
     <>
       <div className="container mx-auto px-4 h-full">
@@ -61,7 +100,7 @@ export default function Login() {
                     <input
                       type="email"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Email"
+                      placeholder="Email" onChange={handleEmail}
                     />
                   </div>
 
@@ -75,7 +114,7 @@ export default function Login() {
                     <input
                       type="password"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Password"
+                      placeholder="Password" onChange={handlePassword}
                     />
                   </div>
                   <div>
@@ -94,7 +133,7 @@ export default function Login() {
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"
+                      type="button" onClick={tryLogin}
                     >
                       Sign In
                     </button>
@@ -113,7 +152,7 @@ export default function Login() {
                 </a>
               </div>
               <div className="w-1/2 text-right">
-                
+                <span>{loginSuccess}</span>
               </div>
             </div>
           </div>

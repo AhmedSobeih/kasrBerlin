@@ -11,11 +11,14 @@ const app = express();
 const port = process.env.PORT || "8000";
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
+var multer = require('multer');
+var upload = multer();
 
 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(upload.array()); 
 
 
 /* Initializing the main project folder */
@@ -112,19 +115,18 @@ app.get('/allFlights', (req,res)=>{
 
 
 app.post('/login',(req,res) =>{
-  console.log(req.body);
+  console.log(req.body.username);
   Users.find({username:req.body.username, password:req.body.password})
   .then((user)=>{
-      console.log();
+      // console.log(user);
       if(user.length==0)
       {
-          console.log('Not Valid User');
-          //if user not found in database render the same login page with usertype null
-          res.render('/login', {userType: null})
-          return;
+          res.send(false);
       }
+      else
+      res.send(true);
+
       //we need to create a session
-    res.redirect('/AdminHomePage');
   }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
 })
 
