@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-
+import {useNavigate} from 'react-router-dom';
 
 export default class ViewFlights extends Component {
 
@@ -18,6 +18,21 @@ export default class ViewFlights extends Component {
                 console.log(error);
             })
     }
+    deleteFlight(deletedFlightNumber) {
+        axios({
+            method: "delete",
+            url: "/flight/" + deletedFlightNumber,
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+              .then((response) => { 
+                console.log(response.data)
+                if(response.data==false){}
+                else
+                {this.componentDidMount() }
+            })
+          }
+
+        
 
    
  
@@ -55,7 +70,7 @@ export default class ViewFlights extends Component {
       <th scope="row">{index+1}</th>
       
       <td>{fl.FlightNumber}</td>
-      <td>{fl.DepartureDate}</td>
+      <td>{fl.DepatureDate}</td>
       <td>{fl.ArrivalDate}</td>
       <td>{fl.EconomySeats}</td>
       <td>{fl.BusinessSeats}</td>
@@ -71,7 +86,11 @@ export default class ViewFlights extends Component {
       <td>
       <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"  
+                      type="button"  onClick={(e) =>{ e.preventDefault();
+                        this.deleteFlight(fl.FlightNumber);
+                        
+                            }
+                    } 
                     >
                       Delete Flight 
      </button>

@@ -6,6 +6,7 @@ import ViewFlights from 'ViewFlights';
 import './css/styles.css';
 import Login from './Login';
 import Register from './Register.js';
+import SearchWithCriteia from './SearchWithCriteria.js'
 function Home(){
   return (
       <div>
@@ -353,7 +354,7 @@ function Home(){
 //       this is a message
 //     </div>
 //   }
-ReactDOM.render(<ViewFlights/>,document.getElementById('root'));
+ReactDOM.render(<SearchWithCriteia/>,document.getElementById('root'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
