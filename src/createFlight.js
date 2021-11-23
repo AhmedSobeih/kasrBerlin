@@ -2,6 +2,8 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom';
+
 export default function CreateFlight(){
     const [flightCreated, setFlightCreated] = useState("");
     const [flightNumber, setFlightNumber] = useState("");
@@ -13,7 +15,7 @@ export default function CreateFlight(){
     const [businessSeats, setBusinessSeats] = useState("");
     const [depatureAirport, setDepatureAirport] = useState("");
     const [arrivalAirport, setArrivalAirport] = useState("");
-  
+    const navigate = useNavigate();
 
 
 function Label(props){
@@ -78,9 +80,9 @@ function createFlight (){
       .then((response) => { 
         console.log(response.data)
         if(response.data==false)
-        setFlightCreated('Flight cannot created!');
+          setFlightCreated('Invalid username or password!');
         else
-        setFlightCreated('Flight created successfully');
+          navigate('/ViewFlights');
     })
   }
   function handleFlightNumber(number){
@@ -248,7 +250,7 @@ return(
                 </a>
               </div>
               <div className="w-1/2 text-right">
-                <span></span>
+              <span>{flightCreated}</span>
               </div>
             </div>
           </div>

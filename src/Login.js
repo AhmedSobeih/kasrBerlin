@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
+import {useNavigate} from 'react-router-dom';
 
 import axios from 'axios';
 
@@ -12,8 +13,17 @@ export default function Login() {
   const [loginSuccess, setLoginSuccess] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-
+  function componentDidMount() {
+    axios.get('/allFlights')
+        .then(res => {
+            this.setState({ flightsCollection: res.data });
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+}
  
 
 function tryLogin (){
@@ -30,17 +40,17 @@ function tryLogin (){
   headers: { "Content-Type": "multipart/form-data" },
 })
     .then((response) => { 
-      console.log(response.data)
       if(response.data==false)
         setLoginSuccess('Invalid username or password!');
       else
-      setLoginSuccess('Success');
+        navigate('/register');
+      console.log(navigate);
   })
 }
 
+
 function handleEmail(text){
   setUsername(text.target.value);
-  console.log(username);
 }
 
 function handlePassword(text){
@@ -98,7 +108,7 @@ function handlePassword(text){
                       Email
                     </label>
                     <input
-                      type="number"
+                      type="email"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Email" onChange={handleEmail}
                     />

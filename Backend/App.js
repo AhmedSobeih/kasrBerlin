@@ -11,19 +11,22 @@ const app = express();
 const port = process.env.PORT || "8000";
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
+const searchedFlights = [];
 var multer = require('multer');
 var upload = multer();
 
 
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(upload.array()); 
 
 
 /* Initializing the main project folder */
 app.use(express.static('public'));
 
+
+var searchResult = [];
 
 // #Importing the userController
 
@@ -93,9 +96,7 @@ app.get('/login', (req,res)=>{
     res.render('/login');
 })
 
-app.get('/searchFlight', (req,res)=>{
-  res.render('/searchFlight');
-})
+
 
 app.get('/flight', (req,res)=>{
   res.render(path.join(__dirname + '../'+ '/src/flight.js'));
@@ -103,9 +104,9 @@ app.get('/flight', (req,res)=>{
 
 
 app.get('/flight/:number', async (req,res)=>{
-  
   const u = await Flight.find({FlightNumber : req.params.number});
-  res.send(u);
+
+  res.send(u[0]);
     
 });
 
@@ -116,10 +117,10 @@ app.get('/allFlights', async(req, res)=> {
  
 });
 
-app.get('/allFlights', async(req, res)=> {
+
+app.get('/searchResults', async(req, res)=> {
  
-  const u = await Flight.find();
-  res.send(u);
+  res.send(searchResult);
  
 });
 
@@ -144,22 +145,42 @@ app.post('/login',(req,res) =>{
 
 
 
-  app.post("/searchFlight",(req,res)=>{
-    const searchCriteria = req.body.searchCriteria;
-    const searchValue = req.body.searchValue;
-    if(searchCriteria == null)
-    {
-      console.log("allFlights");
-      res.redirect('allFlights');
-    }  
-    Flight.find({searchCriteria : searchValue})
-    .then((flights)=>{
-      res.render('result', {searchResult: flights});
-  }).catch((err) =>  res.render('result', null))
-    });
+app.post("/searchFlight",(req,res)=>{
+
+  console.log(req.body);
+    
+  Object.keys(req.body).forEach(key => {
+    if (req.body[key]== '') {
+
+      delete req.body[key];
+    }
+    else{
+      if(key == 'FlightNumber' || key == 'EconomySeats' || key == 'BusinessSeats' )
+        req.body[key]= parseInt(req.body[key]);
+    }
+    
+  });
+  if(req.body == {})
+  {
+    res.send(false);
+  } 
+
+  console.log(req.body);
+
+  
+  const s = { FlightNumber: 10 };
+  
+  // console.log(req.body);  
+  Flight.find(req.body).then((result)=>{
+    searchResult=result;
+    res.send(result);
+}).catch((err) =>  console.log('EEEEEEEEEEEEEEEEEEEE'))
+  });
+
 
     //For creating a flight
     app.post("/flight",async(req,res)=>{
+      console.log(req.body);
       const newFlight =new Flight({
         FlightNumber:req.body.flightNumber,
         DepatureDate: req.body.depatureDate,
@@ -179,28 +200,47 @@ app.post('/login',(req,res) =>{
       }
     });
 
-    app.put('/flight/:number', (req,res)=>{
-      const flightNumber = req.body.params;
-      const filter = {Number: flightNumber};
-      const criteria = req.body.criteria;
-      const value = req.body.value; 
-      const update = {criteria : value};
-      Flight.findOneAndUpdate(filter, update, {
+    app.put('/flight/:FlightNumber', (req,res)=>{
+      const flightNumber = req.params;
+      const filter = req.params;
+      console.log(filter);
+      console.log(req.body);
+      Object.keys(req.body).forEach(key => {
+          if(key == 'FlightNumber' || key == 'EconomySeats' || key == 'BusinessSeats' )
+            req.body[key]= parseInt(req.body[key]);
+          if(key == 'DepatureDate' || key == 'ArrivalDate' )
+            req.body[key] = dateConversionToMongose(req.body[key]);
+        }
+        
+      );
+      console.log(req.body);
+      console.log(filter);
+      Flight.findOneAndUpdate(filter, req.body, {
         new: true,
       })
       .then((flight)=>{
-        res.redirect(`/flight/${flightNumber}`);//if successful, render the flight again with the new values
-    }).catch((err) =>  res.send(err))
+        console.log("updated");
+        res.send(true);//if successful, render the flight again with the new values
+    }).catch((err) =>  res.send(false))
         
     });
 
+    function dateConversionToMongose(date){
+      let newDate = "";
+      newDate = date+":00.000Z"; 
+      // 2001-02-10T22:25
+      //2000-10-10T15:02:00.000Z
+      return newDate;
+    }
+
     app.delete('/flight/:number', (req,res)=>{
-      const flightNumber = req.body.params;
-      const filter = {Number: flightNumber};
-    
+      const flightNumber = req.params;
+      console.log(flightNumber);
+      const filter = {flightNumber: flightNumber};
+      console.log(filter);
       Flight.findOneAndRemove(filter)
       .then((flight)=>{
-        res.redirect('/AdminHomePage');//if successful, redirect to the home page
+        res.send('deleted');//if successful, redirect to the home page
     }).catch((err) =>  res.send(err))
         
     });

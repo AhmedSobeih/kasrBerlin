@@ -1,7 +1,11 @@
-import React , {useState} from "react";
-import ReactDOM from 'react-dom';
+import React, {useState} from "react";
 
-export default function SearchWithCriteia(){
+import ReactDOM from 'react-dom';
+import axios from 'axios';
+import {useNavigate} from 'react-router-dom';
+
+
+export default function SearchWithCriteria(){
     const [flightNumberVisibility, setFlightNumberVisibility] = useState(true);
     const [DepartureDateVisibility, setDepartureDateVisibility] = useState(true);
     const [ArrivalDateVisibility, setArrivalDateVisibility] = useState(true);
@@ -10,6 +14,22 @@ export default function SearchWithCriteia(){
     const [DepartureAirportVisibility, setDepartureAirportVisibility] = useState(true);
     const [ArrivalAirportVisibility, setArrivalAirportVisibility] = useState(true);
 
+    const navigate = useNavigate();
+
+    const [FlightNumber, setFlightNumber] = useState("");
+    const [DepatureTime, setDepatureTime] = useState("");
+    const [DepatureDate, setDepatureDate] = useState("");
+    const [ArrivalTime, setArrivalTime] = useState("");
+    const [ArrivalDate, setArrivalDate] = useState("");
+    const [EconomySeats, setEconomySeats] = useState("");
+    const [BusinessSeats, setBusinessSeats] = useState("");
+    const [DepatureAirport, setDepatureAirport] = useState("");
+    const [ArrivalAirport, setArrivalAirport] = useState("");
+
+    const [ErrorMessage, setErrorMessage] = useState("");
+
+
+    
     const showFlightNumber = (e) => {
     const checked = e.target.checked;
     if (checked) {
@@ -66,6 +86,73 @@ export default function SearchWithCriteia(){
      setArrivalAirportVisibility(true);
     }
   };
+  function searchFlight (){
+    console.log(1);
+
+    var bodyFormData = new FormData();
+    bodyFormData.append('FlightNumber', FlightNumber);
+    bodyFormData.append('DepatureTime', DepatureTime);
+    bodyFormData.append('DepatureDate', DepatureDate);
+    bodyFormData.append('ArrivalTime', ArrivalTime);
+    bodyFormData.append('ArrivalDate', ArrivalDate);
+    bodyFormData.append('EconomySeats', EconomySeats);
+    bodyFormData.append('BusinessSeats', BusinessSeats);
+    bodyFormData.append('DepatureAirport', DepatureAirport);
+    bodyFormData.append('ArrivalAirport', ArrivalAirport);
+  
+  
+  axios({
+    method: "post",
+    url: "/searchFlight",
+    data: bodyFormData,
+    headers: { "Content-Type": "multipart/form-data" },
+  })
+      .then((response) => { 
+        console.log(response.data)
+        if(response.data==false)
+        setErrorMessage('The information you entered does not match with any flights');
+        else{
+          navigate("/searchResults");
+        }
+    })
+  }
+  function handleFlightNumber(number){
+    setFlightNumber(number.target.value);
+    console.log(FlightNumber);
+  }
+  function handleDepatureTime(time){
+    setDepatureTime(time.target.value);
+    console.log(DepatureTime);
+  }
+  function handleDepatureDate(date){
+    setDepatureDate(date.target.value);
+    console.log(DepatureDate);
+  }
+  function handleArrivalDate(date){
+    setArrivalDate(date.target.value);
+    console.log(ArrivalDate);
+  }
+  function handleArrivalTime(time){
+    setArrivalTime(time.target.value);
+    console.log(ArrivalTime);
+  }
+  function handleEconomySeats(number){
+    setEconomySeats(number.target.value);
+    console.log(EconomySeats);
+  }
+  function handleBusinessSeats(text){
+    setBusinessSeats(text.target.value);
+    console.log(BusinessSeats);
+  }
+  function handleDepatureAirport(text){
+    setDepatureAirport(text.target.value);
+    console.log(DepatureAirport);
+  }
+  function handleArrivalAirport(text){
+    setArrivalAirport(text.target.value);
+    console.log(ArrivalAirport);
+  }
+  
  
 
 return(
@@ -102,9 +189,10 @@ return(
                       Flight Number
                     </label>
                     <input
-                     hidden={flightNumberVisibility}
+                     hidden={flightNumberVisibility} 
 
-                     type="number" 
+                     type="number" onChangeCapture={(e) => {
+                      handleFlightNumber(e);}}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -119,7 +207,8 @@ return(
                       Depature Date 
                     </label>
                     <input
-                     hidden={DepartureDateVisibility}
+                     hidden={DepartureDateVisibility} onChangeCapture={(e) => {
+                      handleDepatureDate(e);}}
 
                      type="datetime-local" 
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -136,7 +225,8 @@ return(
                       Arrival Date
                     </label>
                     <input
-                      hidden={ArrivalDateVisibility}
+                      hidden={ArrivalDateVisibility} onChangeCapture={(e) => {
+                        handleArrivalDate(e);}}
 
                      type="datetime-local" 
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -153,7 +243,8 @@ return(
                       Number of Economy Seats
                     </label>
                     <input
-                         hidden={EconomySeatsVisibility}
+                         hidden={EconomySeatsVisibility} onChangeCapture={(e) => {
+                          handleEconomySeats(e);}}
                  type="number" 
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
@@ -169,7 +260,8 @@ return(
                       Number of Business Seats
                     </label>
                     <input
-                            hidden={BusinessSeatsVisibility}
+                            hidden={BusinessSeatsVisibility} onChangeCapture={(e) => {
+                              handleBusinessSeats(e);}}
              
                      type="number" 
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -185,13 +277,14 @@ return(
                       Depature Airport
                     </label>
                     <input
-                              hidden={DepartureAirportVisibility}
+                              hidden={DepartureAirportVisibility} onClick={(e) => {
+                                handleDepatureAirport(e);}}
             type="text" 
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
                   <div className="relative w-full mb-3">
-                       <input type="checkbox"   onClick={(e) => {
+                       <input type="checkbox"   onChangeCapture={(e) => {
                                 showArrivalAirport(e);
                             }}/>
                     <label
@@ -201,7 +294,8 @@ return(
                       Arrival Airport
                     </label>
                     <input
-                    hidden={ArrivalAirportVisibility}
+                    hidden={ArrivalAirportVisibility} onClick={(e) => {
+                      handleArrivalAirport(e);}}
                     type="text" 
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
@@ -209,12 +303,14 @@ return(
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"  
+                      type="button"  onClick={(e) => {
+                        searchFlight(e);}}
                     >
                         Search The Flight
                     </button>
                   </div>
                 </form>
+                <span>{ErrorMessage}</span>
               </div>
             </div>
           </div>

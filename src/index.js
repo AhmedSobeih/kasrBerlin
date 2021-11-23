@@ -1,12 +1,82 @@
-import CreateFlight from 'CreateFlight';
-import FlightByNumber from 'FlightbyNumber';
-import React, { createFactory } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import ViewFlights from 'ViewFlights';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import './css/styles.css';
-import Login from './Login';
-import Register from './Register.js';
-import SearchWithCriteia from './SearchWithCriteria.js'
+
+import AdminHome from 'AdminHome';
+
+const Anchor =({title})=>{
+        return (
+            <li className="nav-item">
+        <a className="nav-link" href="#!">{title}
+        </a>
+        </li>
+        )
+       };
+
+const Subscriptions=({plan,price,perValue,first,second,third,fourth})=>{
+                  return (<div className="col-lg-6 col-xl-4">
+                        <div className="card mb-5 mb-xl-0">
+                            <div className="card-body p-5">
+                                <div className="small text-uppercase fw-bold text-muted">{plan}</div>
+                                <div className="mb-3">
+                                    <span className="display-4 fw-bold">{price}</span>
+                                    <span className="text-muted">{perValue}</span>
+                                </div>
+                                <ul className="list-unstyled mb-4">
+                                    <li className="mb-2">
+                                        <i className="bi bi-check text-primary"></i>
+                                        <strong>{first}</strong>
+                                    </li>
+                                    <li className="mb-2">
+                                        <i className="bi bi-check text-primary"></i>
+                                        {second}
+                                    </li>
+                                    <li className="mb-2">
+                                        <i className="bi bi-check text-primary"></i>
+                                        {third}
+                                           </li>
+                                    <li className="mb-2">
+                                        <i className="bi bi-check text-primary"></i>
+                                        {fourth}
+                                    </li>
+                                   
+                                </ul>
+                                <div className="d-grid"><a className="btn btn-outline-primary" href="#!">Choose plan</a></div>
+                            </div>
+                        </div>
+                    </div>);
+
+}
+
+
+const Division2 =({title,paragraph,action})=>{
+    return(
+        <div className="col-lg-4 mb-5 mb-lg-0">        
+        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3">
+            <i className="bi bi-collection"></i>
+        </div>
+        <h2 className="h4 fw-bolder">{title}</h2>
+                        <p>{paragraph}</p>
+                        <a className="text-decoration-none" href="#!">
+                            {action}
+                            <i className="bi bi-arrow-right"></i>
+                        </a>
+</div>
+    )
+};
+
+
+
+
+
+
+
+
+
+
+   
 function Home(){
   return (
       <div>
@@ -17,24 +87,24 @@ function Home(){
                 <div className="collapse navbar-collapse" id="navلآbbarSupportedContent">
                     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li className="nav-item"><a className="nav-link active" aria-current="page" href="#!">Home</a></li>
-                        <li className="nav-item"><a className="nav-link" href="#!">About</a></li>
-                        <li className="nav-item"><a className="nav-link" href="#!">Contact</a></li>
-                        <li className="nav-item"><a className="nav-link" href="#!">Services</a></li>
+                         <Anchor title="about"/>
+                         <Anchor title="Contact"/>
+                         <Anchor title="Services"/>
                     </ul>
                 </div>
             </div>
-        </nav>
+          </nav>
        
-        <header className="bg-dark py-5">
-            <div className="container px-5">
-                <div className="row gx-5 justify-content-center">
-                    <div className="col-lg-6">
-                        <div classNameName="text-center my-5">
-                            <h1 classNameName="display-5 fw-bolder text-white mb-2">Reserve Your Flight In Few Minutes</h1>
-                            <p classNameName="lead text-white-50 mb-4">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit!</p>
-                            <div className="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                                <a className="btn btn-primary btn-lg px-4 me-sm-3" href="#features">Get Started</a>
-                                <a className="btn btn-outline-light btn-lg px-4" href="#!">Learn More</a>
+       <header class="bg-dark py-5">
+            <div class="container px-5">
+                <div class="row gx-5 justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="text-center my-5">
+                            <h1 class="display-5 fw-bolder text-white mb-2">Present your business in a whole new way</h1>
+                            <p class="lead text-white-50 mb-4">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit!</p>
+                            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                                <a class="btn btn-primary btn-lg px-4 me-sm-3" href="#features">Get Started</a>
+                                <a class="btn btn-outline-light btn-lg px-4" href="#!">Learn More</a>
                             </div>
                         </div>
                     </div>
@@ -43,38 +113,19 @@ function Home(){
         </header>
         {/* <!-- Features section--> */}
         <section className="py-5 border-bottom" id="features">
-            <div className="container px-5 my-5">
+             <div className="container px-5 my-5">
                 <div className="row gx-5">
-                    <div className="col-lg-4 mb-5 mb-lg-0">
-                        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-collection"></i></div>
-                        <h2 className="h4 fw-bolder">Featured title</h2>
-                        <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-                        <a className="text-decoration-none" href="#!">
-                            Call to action
-                            <i className="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div className="col-lg-4 mb-5 mb-lg-0">
-                        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-building"></i></div>
-                        <h2 className="h4 fw-bolder">Featured title</h2>
-                        <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-                        <a className="text-decoration-none" href="#!">
-                            Call to action
-                            <i className="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div className="col-lg-4">
-                        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-toggles2"></i></div>
-                        <h2 className="h4 fw-bolder">Featured title</h2>
-                        <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-                        <a className="text-decoration-none" href="#!">
-                            Call to action
-                            <i className="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    <Division2 title="Featured title" paragraph="aragraph of text beneath the heading to explain the heading. We'll add onto it with another" action="Call to action"/>
+                      
+                    <Division2 title="Featured title" paragraph="aragraph of text beneath the heading to explain the heading. We'll add onto it with another" action="Call to action"/>
+
+                     <Division2 title="Featured title" paragraph="aragraph of text beneath the heading to explain the heading. We'll add onto it with another" action="Call to action"/>
+                   
+                   
                 </div>
             </div>
         </section>
+       
        
         <section className="bg-light py-5 border-bottom">
             <div className="container px-5 my-5">
@@ -84,150 +135,10 @@ function Home(){
                 </div>
                 <div className="row gx-5 justify-content-center">
                    
-                    <div className="col-lg-6 col-xl-4">
-                        <div className="card mb-5 mb-xl-0">
-                            <div className="card-body p-5">
-                                <div className="small text-uppercase fw-bold text-muted">Free</div>
-                                <div className="mb-3">
-                                    <span className="display-4 fw-bold">$0</span>
-                                    <span className="text-muted">/ mo.</span>
-                                </div>
-                                <ul className="list-unstyled mb-4">
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        <strong>1 users</strong>
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        5GB storage
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Unlimited public projects
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Community access
-                                    </li>
-                                    <li className="mb-2 text-muted">
-                                        <i className="bi bi-x"></i>
-                                        Unlimited private projects
-                                    </li>
-                                    <li className="mb-2 text-muted">
-                                        <i className="bi bi-x"></i>
-                                        Dedicated support
-                                    </li>
-                                    <li className="mb-2 text-muted">
-                                        <i className="bi bi-x"></i>
-                                        Free linked domain
-                                    </li>
-                                    <li className="text-muted">
-                                        <i className="bi bi-x"></i>
-                                        Monthly status reports
-                                    </li>
-                                </ul>
-                                <div className="d-grid"><a className="btn btn-outline-primary" href="#!">Choose plan</a></div>
-                            </div>
-                        </div>
-                    </div>
-                   
-                    <div className="col-lg-6 col-xl-4">
-                        <div className="card mb-5 mb-xl-0">
-                            <div className="card-body p-5">
-                                <div className="small text-uppercase fw-bold">
-                                    <i className="bi bi-star-fill text-warning"></i>
-                                    Pro
-                                </div>
-                                <div className="mb-3">
-                                    <span className="display-4 fw-bold">$9</span>
-                                    <span className="text-muted">/ mo.</span>
-                                </div>
-                                <ul className="list-unstyled mb-4">
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        <strong>5 users</strong>
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        5GB storage
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Unlimited public projects
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Community access
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Unlimited private projects
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Dedicated support
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Free linked domain
-                                    </li>
-                                    <li className="text-muted">
-                                        <i className="bi bi-x"></i>
-                                        Monthly status reports
-                                    </li>
-                                </ul>
-                                <div className="d-grid"><a className="btn btn-primary" href="#!">Choose plan</a></div>
-                            </div>
-                        </div>
-                    </div>
-                   
-                    <div className="col-lg-6 col-xl-4">
-                        <div className="card">
-                            <div className="card-body p-5">
-                                <div className="small text-uppercase fw-bold text-muted">Enterprise</div>
-                                <div className="mb-3">
-                                    <span className="display-4 fw-bold">$49</span>
-                                    <span className="text-muted">/ mo.</span>
-                                </div>
-                                <ul className="list-unstyled mb-4">
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        <strong>Unlimited users</strong>
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        5GB storage
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Unlimited public projects
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Community access
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Unlimited private projects
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Dedicated support
-                                    </li>
-                                    <li className="mb-2">
-                                        <i className="bi bi-check text-primary"></i>
-                                        <strong>Unlimited</strong>
-                                        linked domains
-                                    </li>
-                                    <li className="text-muted">
-                                        <i className="bi bi-check text-primary"></i>
-                                        Monthly status reports
-                                    </li>
-                                </ul>
-                                <div className="d-grid"><a className="btn btn-outline-primary" href="#!">Choose plan</a></div>
-                            </div>
-                        </div>
-                    </div>
+                    <Subscriptions plan ="free" perValue="Mo." price="$0" first="5GB storage" second="Unlimited public projects" third="Community access" fourth="Unlimited private projects"/>
+                    <Subscriptions plan ="free" perValue="Mo." price="$0" first="5GB storage" second="Unlimited public projects" third="Community access" fourth="Unlimited private projects"/>
+                    <Subscriptions plan ="free" perValue="Mo." price="$0" first="5GB storage" second="Unlimited public projects" third="Community access" fourth="Unlimited private projects"/>
+
                 </div>
             </div>
         </section>
@@ -354,7 +265,16 @@ function Home(){
 //       this is a message
 //     </div>
 //   }
-ReactDOM.render(<SearchWithCriteia/>,document.getElementById('root'));
+
+
+
+
+
+
+
+ReactDOM.render(<AdminHome/>,document.getElementById('root'));
+
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

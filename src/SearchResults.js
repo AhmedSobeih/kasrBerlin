@@ -5,10 +5,10 @@ import {useNavigate} from 'react-router-dom';
 export default function(props) {
     const navigate = useNavigate();
   
-    return <ViewFlights navigate={navigate}  />;
+    return <SearchResults navigate={navigate}  />;
   }
 
-class ViewFlights extends Component {
+class SearchResults extends Component {
 
     constructor(props) {
         super(props);
@@ -19,8 +19,9 @@ class ViewFlights extends Component {
    
 
     componentDidMount() {
-        axios.get('/allFlights')
+        axios.get('/searchResults')
             .then(res => {
+                console.log('HHHHHHHHHHHHHHHHHHH' + res.data);
                 this.setState({ flightsCollection: res.data });
             })
             .catch(function (error) {

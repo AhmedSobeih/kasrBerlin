@@ -2,20 +2,63 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import {useParams,useNavigate} from 'react-router-dom';
+var flag = true;
 export default function UpdateFlight(){
 
-    const [flightCreated, setFlightCreated] = useState("");
-    const [flightNumber, setFlightNumber] = useState("110");
+    let {flight} = useParams(); 
+    const navigate = useNavigate();
+
+    const [FlightCreated, setFlightCreated] = useState("");
+    const [FlightNumber, setFlightNumber] = useState(flight);
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
-    const [depatureDate, setDepatureDate] = useState("2021-11-10T02:32");
-    const [arrivalDate, setArrivalDate] = useState("2021-11-10T16:32");
-    const [economySeats, setEconomySeats] = useState(10);
-    const [businessSeats, setBusinessSeats] = useState(500);
-    const [depatureAirport, setDepatureAirport] = useState("BER");
-    const [arrivalAirport, setArrivalAirport] = useState("BAR");
+    const [DepatureDate, setDepatureDate] = useState("");
+    const [ArrivalDate, setArrivalDate] = useState("");
+    const [EconomySeats, setEconomySeats] = useState("");
+    const [BusinessSeats, setBusinessSeats] = useState("");
+    const [DepatureAirport, setDepatureAirport] = useState("");
+    const [ArrivalAirport, setArrivalAirport] = useState("");
+    const CancelToken = axios.CancelToken;
+    let cancel;
 
+  if(flag)
+  {
+    flag= false;
+    console.log(1);
+    axios.get('/flight/'+flight)
+    .then(res => {
+      cancelToken: new CancelToken(function executor(c) {
+        // An executor function receives a cancel function as a parameter
+        cancel = c;
+      })
+      
+      setDepatureDate(dateConversion(res.data.DepatureDate));
+      setArrivalDate(dateConversion(res.data.ArrivalDate));
+      setEconomySeats(res.data.EconomySeats);
+      setBusinessSeats(res.data.BusinessSeats);
+      setDepatureAirport(res.data.DepatureAirport);
+      setArrivalAirport(res.data.ArrivalAirport);
+      cancel();
+  
+    })
+    .catch(function (error) {
+        console.log(error);
+    })
+  }   
+  
+
+function dateConversion(date){
+    let newDate = "";
+    for(var i=0;i<16;i++)
+    {
+        newDate = newDate + date[i];
+    }
+    // 2001-02-10T22:25
+    //2000-10-10T15:02:00.000Z
+    return newDate;
+  }
 
 function Label(props){
     const {labelName,labeType,method}=props;
@@ -55,61 +98,64 @@ function DoubleLabel(props){
                   </div>
     );
 }
-function updateFlight (){
+  
+    function updateFlight (){
 
-    var bodyFormData = new FormData();
-    bodyFormData.append('flightNumber', flightNumber);
-    bodyFormData.append('depatureDate', depatureDate);
-    bodyFormData.append('arrivalDate', arrivalDate);
-    bodyFormData.append('economySeats', economySeats);
-    bodyFormData.append('businessSeats', businessSeats);
-    bodyFormData.append('depatureAirport', depatureAirport);
-    bodyFormData.append('arrivalAirport', arrivalAirport);
-  
-  
-  axios({
-    method: "post",
-    url: "/flight",
-    data: bodyFormData,
-    headers: { "Content-Type": "multipart/form-data" },
-  })
-      .then((response) => { 
-        console.log(response.data)
-        if(response.data==false)
-        setFlightCreated('Flight cannot created!');
-        else
-        setFlightCreated('Flight created successfully');
+      var bodyFormData = new FormData();
+      bodyFormData.append('FlightNumber', FlightNumber);
+      bodyFormData.append('DepatureDate', DepatureDate);
+      bodyFormData.append('ArrivalDate', ArrivalDate);
+      bodyFormData.append('EconomySeats', EconomySeats);
+      bodyFormData.append('BusinessSeats', BusinessSeats);
+      bodyFormData.append('DepatureAirport', DepatureAirport);
+      bodyFormData.append('ArrivalAirport', ArrivalAirport);
+      console.log(FlightNumber);
+    
+    axios({
+      method: "put",
+      url: "/flight/" + FlightNumber,
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" },
     })
+        .then((response) => { 
+        
+          if(response.data==false)
+            console.log("flight cannot be updated")
+          else
+          {
+            console.log('Flight updated successfully');
+            navigate('/viewFlights');
+          }
+      })
   }
   function handleFlightNumber(number){
     setFlightNumber(number.target.value);
-    console.log(flightNumber);
+  //  console.log(flightNumber);
   }
   function handleDepatureDate(date){
     setDepatureDate(date.target.value);
-    console.log(depatureDate);
+//    console.log(depatureDate);
   }
   function handleArrivalDate(date){
     setArrivalDate(date.target.value);
-    console.log(arrivalDate);
+ //   console.log(arrivalDate);
   }
   function handleEconomySeats(number){
     setEconomySeats(number.target.value);
-    console.log(economySeats);
+ //   console.log(economySeats);
   }
   function handleBusinessSeats(text){
     setBusinessSeats(text.target.value);
-    console.log(businessSeats);
+ //   console.log(businessSeats);
   }
   function handleDepatureAirport(text){
     setDepatureAirport(text.target.value);
-    console.log(depatureAirport);
+ //   console.log(depatureAirport);
   }
   function handleArrivalAirport(text){
     setArrivalAirport(text.target.value);
-    console.log(arrivalAirport);
+ //   console.log(arrivalAirport);
   }
-  
 
   
 return(
@@ -141,7 +187,7 @@ return(
                       Flight Number
                     </label>
                     <input
-                     type="number" onChangeCapture={handleFlightNumber}  defaultValue={flightNumber}
+                     type="number" onChangeCapture={handleFlightNumber}  defaultValue={FlightNumber}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -153,7 +199,7 @@ return(
                       Depature Date & Time
                     </label>
                     <input
-                     type="datetime-local" onChangeCapture = {handleDepatureDate} onPointerMove={handleDepatureDate} defaultValue={depatureDate}
+                     type="datetime-local" onChangeCapture = {handleDepatureDate} onPointerMove={handleDepatureDate} defaultValue={DepatureDate}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -165,7 +211,7 @@ return(
                       Arrival Date & Time
                     </label>
                     <input
-                     type="datetime-local" onChangeCapture = {handleArrivalDate} onPointerMove= {handleArrivalDate} defaultValue={arrivalDate}
+                     type="datetime-local" onChangeCapture = {handleArrivalDate} onPointerMove= {handleArrivalDate} defaultValue={ArrivalDate}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -177,7 +223,7 @@ return(
                       Number of Economy Seats
                     </label>
                     <input
-                     type="number" onChangeCapture={handleEconomySeats} defaultValue={economySeats}
+                     type="number" onChangeCapture={handleEconomySeats} defaultValue={EconomySeats}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -189,7 +235,7 @@ return(
                       Number of Business Seats
                     </label>
                     <input
-                     type="number" onChangeCapture={handleBusinessSeats} defaultValue={businessSeats}
+                     type="number" onChangeCapture={handleBusinessSeats} defaultValue={BusinessSeats}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div><div className="relative w-full mb-3">
@@ -200,7 +246,7 @@ return(
                       Depature Airport
                     </label>
                     <input
-                     type="text" onChangeCapture={handleDepatureAirport} defaultValue={depatureAirport}
+                     type="text" onChangeCapture={handleDepatureAirport} defaultValue={DepatureAirport}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -212,14 +258,14 @@ return(
                       Arrival Airport
                     </label>
                     <input
-                     type="text" onChangeCapture={handleArrivalAirport} defaultValue={arrivalAirport}
+                     type="text" onChangeCapture={handleArrivalAirport} defaultValue={ArrivalAirport}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"  
+                      type="button"  onClick = {updateFlight} onClickCapture = {updateFlight}
                     >
                       Update Flight
                     </button>

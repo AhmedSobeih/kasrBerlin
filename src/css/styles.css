@@ -11668,3 +11668,17 @@ fieldset:disabled .btn {
   width: 4rem;
   font-size: 2rem;
 }
+
+.adminButtons {
+  background-color: #0000ff;
+  border: solid;
+  color: white;
+  padding: 5px 20px;
+  margin: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  width: 50%;
+  height: 50px;
+}
