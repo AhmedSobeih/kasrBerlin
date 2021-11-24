@@ -5,7 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/styles.css';
 
 import AdminHome from 'AdminHome';
-
+import ViewFlights from 'ViewFlights';
+import App from './App.js';
 const Anchor =({title})=>{
         return (
             <li className="nav-item">
@@ -272,7 +273,7 @@ function Home(){
 
 
 
-ReactDOM.render(<AdminHome/>,document.getElementById('root'));
+ReactDOM.render(<App/>,document.getElementById('root'));
 
 
 

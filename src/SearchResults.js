@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
+import Navbar from 'Navbar';
 
+const Anchor =({title})=>{
+        return (
+            <li className="nav-item">
+        <a className="nav-link" href="#!">{title}
+        </a>
+        </li>
+        )
+       };
 export default function(props) {
     const navigate = useNavigate();
   
@@ -65,7 +74,7 @@ class SearchResults extends Component {
 
             
             <div className="wrapper-users">
-
+{Navbar()};
 <table class="table">
   <thead>
     <tr>

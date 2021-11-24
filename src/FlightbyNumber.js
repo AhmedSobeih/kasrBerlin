@@ -4,10 +4,20 @@ import ReactDOM from 'react-dom';
 import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
+import Navbar from 'Navbar';
 
 import axios from 'axios';
 
 // components
+
+const Anchor =({title})=>{
+        return (
+            <li className="nav-item">
+        <a className="nav-link" href="#!">{title}
+        </a>
+        </li>
+        )
+       };
 
 export default function FlightbyNumber() {
 
@@ -76,6 +86,7 @@ function handleArrivalAirport(text){
 
   return (
     <>
+  {Navbar()};
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">

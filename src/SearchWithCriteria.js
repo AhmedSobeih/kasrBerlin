@@ -3,7 +3,16 @@ import React, {useState} from "react";
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
+import Navbar from 'Navbar';
 
+const Anchor =({title})=>{
+        return (
+            <li className="nav-item">
+        <a className="nav-link" href="#!">{title}
+        </a>
+        </li>
+        )
+       };
 
 export default function SearchWithCriteria(){
     const [flightNumberVisibility, setFlightNumberVisibility] = useState(true);
@@ -159,6 +168,7 @@ return(
 
 
 <>
+{Navbar()};
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">

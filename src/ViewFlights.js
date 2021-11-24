@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
+import Navbar from 'Navbar';
 
 export default function(props) {
     const navigate = useNavigate();
   
     return <ViewFlights navigate={navigate}  />;
   }
+
+const Anchor =({title})=>{
+        return (
+            <li className="nav-item">
+        <a className="nav-link" href="#!">{title}
+        </a>
+        </li>
+        )
+       };
 
 class ViewFlights extends Component {
 
@@ -64,7 +74,7 @@ class ViewFlights extends Component {
 
             
             <div className="wrapper-users">
-
+ {Navbar()};
 <table class="table">
   <thead>
     <tr>
