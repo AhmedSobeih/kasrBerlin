@@ -25,7 +25,11 @@ export default function Login() {
         })
 }
  
+function tryRegister(){
 
+          navigate('/register');
+
+}
 function tryLogin (){
   // const data = { username, password}
   var bodyFormData = new FormData();
@@ -65,33 +69,18 @@ function handlePassword(text){
               <div className="rounded-t mb-0 px-6 py-6">
                 <div className="text-center mb-3">
                   <h6 className="text-blueGray-500 text-sm font-bold">
-                    Sign in with
+                    Sign Up With
                   </h6>
                 </div>
                 <div className="btn-wrapper text-center">
-                  <button
-                    className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    <img
-                      alt="..."
-                      className="w-5 mr-1"
-                      src={require("assets/img/github.svg").default}
-                    />
-                    Github
-                  </button>
-                  <button
-                    className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    <img
-                      alt="..."
-                      className="w-5 mr-1"
-                  src={require("assets/img/google.svg").default}
-
-                    />
-                    Google
-                  </button>
+                 <div className="text-center mt-6">
+                    <button
+                      className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" onClick={tryRegister}
+                    >
+                      Sign up
+                    </button>
+                  </div>
                 </div>
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
               </div>
