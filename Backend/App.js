@@ -155,11 +155,13 @@ app.post("/searchFlight",(req,res)=>{
       delete req.body[key];
     }
     else{
-      if(key == 'FlightNumber' || key == 'EconomySeats' || key == 'BusinessSeats' )
-        req.body[key]= parseInt(req.body[key]);
-    }
+        if(key == 'FlightNumber' || key == 'EconomySeats' || key == 'BusinessSeats' )
+          req.body[key]= parseInt(req.body[key]);
+        if(key == 'DepatureDate' || key == 'ArrivalDate' )
+          req.body[key] = dateConversionToMongose(req.body[key]);
+      }
+    })
     
-  });
   if(req.body == {})
   {
     res.send(false);

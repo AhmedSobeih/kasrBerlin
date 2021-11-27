@@ -45,9 +45,12 @@ function tryLogin (){
 })
     .then((response) => { 
       if(response.data==false)
+       {
         setLoginSuccess('Invalid username or password!');
+        document.getElementById('loginFail').setAttribute("class","alert alert-danger text-center") ;
+       } 
       else
-        navigate('/register');
+        navigate('/AdminHome');
       console.log(navigate);
   })
 }
@@ -139,7 +142,9 @@ function handlePassword(text){
                   </div>
                 </form>
               </div>
-            </div>
+            </div> 
+            <div class="" id='loginFail' display='none'  role="alert">{loginSuccess}</div>
+
             <div className="flex flex-wrap mt-6 relative">
               <div className="w-1/2">
                 <a
@@ -149,14 +154,20 @@ function handlePassword(text){
                 >
                   <small>Forgot password?</small>
                 </a>
+
               </div>
+
               <div className="w-1/2 text-right">
-                <span>{loginSuccess}</span>
+
               </div>
+              
             </div>
           </div>
+          
         </div>
+
       </div>
+
     </>
   );
 }

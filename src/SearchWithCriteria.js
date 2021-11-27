@@ -119,7 +119,11 @@ export default function SearchWithCriteria(){
       .then((response) => { 
         console.log(response.data)
         if(response.data==false)
+       {
         setErrorMessage('The information you entered does not match with any flights');
+        document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
+
+       } 
         else{
           navigate("/searchResults");
         }
@@ -320,7 +324,7 @@ return(
                     </button>
                   </div>
                 </form>
-                <span>{ErrorMessage}</span>
+                <div id='searchFail'>{ErrorMessage}</div>
               </div>
             </div>
           </div>
