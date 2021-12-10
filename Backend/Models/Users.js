@@ -38,7 +38,12 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true
+  },
+  type: { //null: guest, 0: admin, 1 : user
+    type: Number,
+    required: true
   }
+
 }, { timestamps: true });
 
 const User = mongoose.model('User', UserSchema);

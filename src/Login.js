@@ -44,13 +44,20 @@ function tryLogin (){
   headers: { "Content-Type": "multipart/form-data" },
 })
     .then((response) => { 
-      if(response.data==false)
+      console.log(response.data);
+      if(response.data.status == false)
        {
         setLoginSuccess('Invalid username or password!');
         document.getElementById('loginFail').setAttribute("class","alert alert-danger text-center") ;
        } 
       else
-        navigate('/AdminHome');
+      {
+        if(response.data.type == 0)
+          navigate('/AdminHome');
+        else
+          navigate('/UserHome');
+      }
+        
       console.log(navigate);
   })
 }

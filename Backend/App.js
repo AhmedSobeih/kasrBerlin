@@ -28,6 +28,10 @@ app.use(express.static('public'));
 
 var searchResult = [];
 
+//MS2
+var departureFlight = null;
+var returnFlight = null;
+
 // #Importing the userController
 
 
@@ -55,6 +59,26 @@ app.get("/newAdmin",async(req,res)=>{
     await admin.save(admin)
     res.send(admin)
 });
+
+//MS2
+app.get("/departureFlight", async(req,res)=>{
+  res.send(departureFlight);
+});
+
+app.post("/departureFlight",async(req,res)=>{
+  departureFlight=req.body;
+  console.log(departureFlight);
+  res.send(null);
+});
+
+app.get("/returnFlight", async(req,res)=>{
+  res.send(returnFlight);
+});
+
+app.post("/returnFlight",async(req,res)=>{
+  returnFlight=req.body;
+});
+
 
 app.get("/newFlight",async(req,res)=>{
   const flight =new Flight({
@@ -110,9 +134,25 @@ app.get('/flight/:number', async (req,res)=>{
     
 });
 
+//to get the username
+app.get('/user/:username', async (req,res)=>{
+  const u = await Users.find({username : req.params.username});
+
+  res.send(u[0]);
+    
+});
+
 app.get('/allFlights', async(req, res)=> {
  
   const u = await Flight.find();
+  res.send(u);
+ 
+});
+
+
+app.get('/allUsers', async(req, res)=> {
+ 
+  const u = await Users.find();
   res.send(u);
  
 });
@@ -127,19 +167,50 @@ app.get('/searchResults', async(req, res)=> {
 
 app.post('/login',(req,res) =>{
   console.log(req.body.username);
+  var result = { state: false, type : 1 };
   Users.find({username:req.body.username, password:req.body.password})
   .then((user)=>{
       // console.log(user);
       if(user.length==0)
       {
-          res.send(false);
+          res.send(result);
       }
       else
-      res.send(true);
-
+      {
+        loggedIn = user[0].type;
+        result.status = true;
+        result.type = loggedIn;
+        
+        res.send(result);
+        console.log(result);
+      }
       //we need to create a session
   }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
 })
+
+// for creating a new user (not completed yet)
+app.post('/register',async(req,res) =>{
+  console.log(req.body);
+      const newUser =new Users({
+        firstName:req.body.firstName,
+        lastName: req.body.lastName,
+        homeAddress: req.body.homeAddress,
+        telephoneNumbers: req.body.telephoneNumbers,
+        email: req.body.email ,
+        passportNumber: req.body.passportNumber,
+        username: req.body.username,
+        password: req.body.password,
+        type : 1
+      })
+      try{
+        await newUser.save(newUser);
+        res.send(true);
+      }
+      catch(err)
+      {
+        console.log(err);
+      }
+    });
 
 
 
@@ -174,6 +245,7 @@ app.post("/searchFlight",(req,res)=>{
   
   // console.log(req.body);  
   Flight.find(req.body).then((result)=>{
+    console.log(result);
     searchResult=result;
     res.send(result);
 }).catch((err) =>  console.log('EEEEEEEEEEEEEEEEEEEE'))
@@ -221,6 +293,22 @@ app.post("/searchFlight",(req,res)=>{
         new: true,
       })
       .then((flight)=>{
+        console.log("updated");
+        res.send(true);//if successful, render the flight again with the new values
+    }).catch((err) =>  res.send(false))
+        
+    });
+
+    app.put('/user/:username', (req,res)=>{
+      
+      const username = req.params;
+      const filter = req.params;
+      console.log(filter);
+      console.log(req.body);
+      Users.findOneAndUpdate(filter, req.body, {
+        new: true,
+      })
+      .then((user)=>{
         console.log("updated");
         res.send(true);//if successful, render the flight again with the new values
     }).catch((err) =>  res.send(false))
