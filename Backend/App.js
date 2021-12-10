@@ -28,6 +28,10 @@ app.use(express.static('public'));
 
 var searchResult = [];
 
+//MS2
+var departureFlight = null;
+var returnFlight = null;
+
 // #Importing the userController
 
 
@@ -55,6 +59,26 @@ app.get("/newAdmin",async(req,res)=>{
     await admin.save(admin)
     res.send(admin)
 });
+
+//MS2
+app.get("/departureFlight", async(req,res)=>{
+  res.send(departureFlight);
+});
+
+app.post("/departureFlight",async(req,res)=>{
+  departureFlight=req.body;
+  console.log(departureFlight);
+  res.send(null);
+});
+
+app.get("/returnFlight", async(req,res)=>{
+  res.send(returnFlight);
+});
+
+app.post("/returnFlight",async(req,res)=>{
+  returnFlight=req.body;
+});
+
 
 app.get("/newFlight",async(req,res)=>{
   const flight =new Flight({
@@ -118,6 +142,14 @@ app.get('/allFlights', async(req, res)=> {
 });
 
 
+app.get('/allUsers', async(req, res)=> {
+ 
+  const u = await Users.find();
+  res.send(u);
+ 
+});
+
+
 app.get('/searchResults', async(req, res)=> {
  
   res.send(searchResult);
@@ -135,8 +167,10 @@ app.post('/login',(req,res) =>{
           res.send(false);
       }
       else
-      res.send(true);
-
+      {
+        loggedIn = user[0].type;
+        res.send(true);
+      }
       //we need to create a session
   }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
 })
@@ -174,6 +208,7 @@ app.post("/searchFlight",(req,res)=>{
   
   // console.log(req.body);  
   Flight.find(req.body).then((result)=>{
+    console.log(result);
     searchResult=result;
     res.send(result);
 }).catch((err) =>  console.log('EEEEEEEEEEEEEEEEEEEE'))
