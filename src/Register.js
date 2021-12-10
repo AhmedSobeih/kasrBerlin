@@ -1,6 +1,78 @@
-import React from "react";
+import React, {useState} from "react";
 
+import ReactDOM from 'react-dom';
+import axios from 'axios';
+import {useNavigate} from 'react-router-dom';
+import Navbar from 'Navbar';
 export default function Register() {
+  const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [homeAddress, setHomeAddress] = useState("");
+    const [telephoneNumbers, setTelephoneNumbers] = useState("");
+    const [email, setEmail] = useState("");
+    const [passportNumber, setPassportNumber] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [userCreated, setUserCreated] = useState("");
+    const navigate = useNavigate();
+    var disabled
+
+    function handleFirstName(number){
+      setFirstName(number.target.value);
+      console.log(firstName);
+    }
+    function handleLastName(number){
+        setLastName(number.target.value);
+        console.log(lastName);
+    }
+    function handleHomeAddress(number){
+      setHomeAddress(number.target.value);
+  }
+  function handleTelephoneNumbers(number){
+    setTelephoneNumbers(number.target.value);
+}
+    function handleEmail(number){
+      setEmail(number.target.value);
+}
+function handlePassportNumber(number){
+  setPassportNumber(number.target.value);
+}
+function handleUsername(number){
+  setUsername(number.target.value);
+}
+
+function handlePassword(number){
+  setPassword(number.target.value);
+}
+
+    function createUser (){
+      console.log(1);
+  
+      var bodyFormData = new FormData();
+      bodyFormData.append('firstName', firstName);
+      bodyFormData.append('lastName', lastName);
+      bodyFormData.append('homeAddress', homeAddress);
+      bodyFormData.append('telephoneNumbers', telephoneNumbers);
+      bodyFormData.append('email', email);
+      bodyFormData.append('passportNumber', passportNumber);
+      bodyFormData.append('username', username);
+      bodyFormData.append('password', password);
+    
+    
+    axios({
+      method: "post",
+      url: "/register",
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+        .then((response) => { 
+          console.log(response.data)
+          if(response.data==false)
+            setUserCreated('Can not create user');
+          else
+            navigate('/login');
+      })
+    }
   return (
     <>
       <div className="container mx-auto px-4 h-full">
@@ -49,12 +121,68 @@ export default function Register() {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Name
+                      First Name
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Name"
+                      placeholder="FirstName" onChangeCapture={handleFirstName}
+                    />
+                  </div>
+
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      placeholder="LastName" onChangeCapture={handleLastName}
+                    />
+                  </div>
+
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Home Address
+                    </label>
+                    <input
+                      type="text"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      placeholder="address" onChangeCapture={handleHomeAddress}
+                    />
+                  </div>
+
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Telephone Number
+                    </label>
+                    <input
+                      type="text"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      placeholder="telephone number" onChangeCapture={handleTelephoneNumbers}
+                    />
+                  </div>
+
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Passport Number
+                    </label>
+                    <input
+                      type="text"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      placeholder="passportNumber" onChangeCapture={handlePassportNumber}
                     />
                   </div>
 
@@ -68,7 +196,21 @@ export default function Register() {
                     <input
                       type="email"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Email"
+                      placeholder="Email" onChangeCapture={handleEmail}
+                    />
+                  </div>
+
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      placeholder="username" onChangeCapture={handleUsername}
                     />
                   </div>
 
@@ -82,7 +224,7 @@ export default function Register() {
                     <input
                       type="password"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Password"
+                      placeholder="Password" onChangeCapture={handlePassword}
                     />
                   </div>
 
@@ -109,7 +251,8 @@ export default function Register() {
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"
+                      type="button" onClickCapture={createUser} disabled={false } //you have to make a function to make the button clickable only if he reads terms and conditions
+                      
                     >
                       Create Account
                     </button>
