@@ -39,7 +39,7 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  type: { //null: guest, 0: admin, 1 : user
+  type: {
     type: Number,
     required: true
   }

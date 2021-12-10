@@ -25,7 +25,6 @@ import ReturnFlightDetails from './summary';
 
 
 
-
 function App(){
     return(
         
