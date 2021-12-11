@@ -42,6 +42,10 @@ const UserSchema = new Schema({
   type: {
     type: Number,
     required: true
+  },
+  flightsReserved: {
+    type:[Number],
+    required:true 
   }
 
 }, { timestamps: true });

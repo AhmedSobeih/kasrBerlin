@@ -11,6 +11,8 @@ const app = express();
 const port = process.env.PORT || "8000";
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
+var session = require('express-session');
+
 const searchedFlights = [];
 var multer = require('multer');
 var upload = multer();
@@ -24,7 +26,10 @@ app.use(upload.array());
 
 /* Initializing the main project folder */
 app.use(express.static('public'));
-
+app.use(session({
+    secret:'sobeih$$zakaria$$engy$$',
+    resave:false,
+    saveUninitialized:false}));
 
 var searchResult = [];
 
@@ -67,9 +72,47 @@ app.get("/departureFlight", async(req,res)=>{
 
 app.post("/departureFlight",async(req,res)=>{
   departureFlight=req.body;
+  const user = await Users.find({username : session.username});
+  console.log("hii");
   console.log(departureFlight);
-  res.send(null);
-});
+  console.log(user[0]);
+  console.log("finish");
+  var flightsAlreadyReserved=[];
+  flightsAlreadyReserved=user[0].flightsReserved;
+  flightsAlreadyReserved.push(departureFlight.FlightNumber);
+  Users.findOneAndUpdate({username:session.username},{flightsReserved:flightsAlreadyReserved},{}).then((user)=>{
+    console.log("hii");
+  console.log(user[0]);
+  res.send(true);}
+  ).catch((err) =>  res.send(false))
+
+
+/*Flight.findOneAndUpdate(filter, req.body, {
+        new: true,
+      })
+      .then((flight)=>{
+        console.log("updated");
+        res.send(true);//if successful, render the flight again with the new values
+    }).catch((err) =>  res.send(false)) */
+
+  });
+ 
+
+  
+  /*
+      if(user.length==0)
+      {
+          res.send(result);
+      }
+      else
+      {
+        user[0].flightsReserved=departureFlight.FlightNumber;
+        console.log("ohhh");
+        console.log(user[0]);
+      }
+      */
+      //we need to create a session
+
 
 app.get("/returnFlight", async(req,res)=>{
   res.send(returnFlight);
@@ -170,6 +213,8 @@ app.post('/login',(req,res) =>{
   var result = { state: false, type : 1 };
   Users.find({username:req.body.username, password:req.body.password})
   .then((user)=>{
+
+
       // console.log(user);
       if(user.length==0)
       {
@@ -177,6 +222,7 @@ app.post('/login',(req,res) =>{
       }
       else
       {
+        session.username=req.body.username;
         loggedIn = user[0].type;
         result.status = true;
         result.type = loggedIn;
@@ -200,7 +246,8 @@ app.post('/register',async(req,res) =>{
         passportNumber: req.body.passportNumber,
         username: req.body.username,
         password: req.body.password,
-        type : 1
+        type : 1,
+        flightsReserved : []
       })
       try{
         await newUser.save(newUser);
