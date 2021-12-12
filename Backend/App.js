@@ -266,7 +266,8 @@ app.post('/register',async(req,res) =>{
         username: req.body.username,
         password: req.body.password,
         type : 1,
-        flightsReserved : []
+        flightsReserved : [],
+        flightsReservedDetails : []
       })
       try{
         await newUser.save(newUser);
@@ -410,19 +411,35 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.delete('/reservation/:username', (req,res)=>{
+    app.delete('/reservation/:username',async (req,res)=>{
       const username = req.params.username;
-
+      const flightNumber = parseInt(req.body.flightNumber);
+      console.log(flightNumber);
       const u = await Users.find({username : req.params.username});
       const flights = u[0].flightsReserved;
+      console.log(u[0]);
+      const flightsReservedDetails = u[0].flightsReservedDetails;
+      console.log("flightsReserved before: " + flights);
+    console.log("flightsReservedDetails before: " + flightsReservedDetails);
+      for (var i = 0; i < flights.length; i++) {
+        if(flights[i]== flightNumber)
+        {
+          flights.splice(i,1)
+          flightsReservedDetails.splice(i,1);
+        }
+    }
+    console.log("flightsReserved: " + flights);
+    console.log("flightsReservedDetails" + flightsReservedDetails);
       
-      const filter = {flightsReserved : []};
+      
+      const filter = {flightsReserved : flights,flightsReservedDetails : flightsReservedDetails };
+      console.log(filter);
       console.log(username);
-      Users.findOneAndUpdate(username, filter, {
+      Users.findOneAndUpdate({username:username}, filter, {
         new: true,
       })
       .then((flight)=>{
-        console.log("deleted");
+        console.log("updated");
         res.send(true);
     }).catch((err) =>  res.send(false))
         

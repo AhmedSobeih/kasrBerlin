@@ -64,10 +64,13 @@ class ViewReservations extends Component {
             })
     }
     gotoCancelReservation(deletedFlightNumber) {
+        var bodyFormData = new FormData();
+        bodyFormData.append('flightNumber', deletedFlightNumber);
         axios({
             method: "delete",
             url: "/reservation/" + username,
             headers: { "Content-Type": "multipart/form-data" },
+            data: bodyFormData,
           })
               .then((response) => { 
                 console.log(response.data)

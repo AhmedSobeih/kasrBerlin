@@ -52,7 +52,7 @@ const UserSchema = new Schema({
   // Economy   seats   price
   //Or business
   flightsReservedDetails:{
-    type:[[String]],
+    type:[[]],
     required: true
   }
 
