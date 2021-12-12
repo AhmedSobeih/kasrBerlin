@@ -126,7 +126,7 @@ return (
                       First Name
                     </label>
                     <input
-                     type="text" onChangeCapture={handleFirstName}  defaultValue={firstName}
+                     type="text" onChangeCapture={handleFirstName}  defaultValue={firstName} readonly = {true}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -139,7 +139,7 @@ return (
                       Last Name
                     </label>
                     <input
-                     type="text" onChangeCapture={handleLastName} defaultValue={lastName}
+                     type="text" onChangeCapture={handleLastName} defaultValue={lastName} readonly = {true}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -151,7 +151,7 @@ return (
                       Email
                     </label>
                     <input
-                     type="email" onChangeCapture={handleEmail} defaultValue={email}
+                     type="email" onChangeCapture={handleEmail} defaultValue={email} readonly = {true}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
@@ -163,7 +163,7 @@ return (
                       Passport Number
                     </label>
                     <input
-                     type="text" onChangeCapture={handlePassportNumber} defaultValue={passportNumber}
+                     type="text" onChangeCapture={handlePassportNumber} defaultValue={passportNumber} readonly = {true}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>

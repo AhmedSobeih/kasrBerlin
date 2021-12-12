@@ -1,27 +1,55 @@
-import react from 'react'
+import React, {useState} from "react";
 import './css/styles.css';
 import './assets/styles/index.css';
 import Navbar from 'Navbar';
 import {useNavigate} from 'react-router-dom';
+import axios from 'axios';
 
 export default function UserHome() {
     const navigate = useNavigate();
+    var username;
     function viewReservedFlights(){
-       //  navigate('/createFlight');
+      console.log(username + " :new username");
+       navigate('/ViewReservations/'+ username);
     }
 
     function goUserAccount(){
-       // navigate('/viewFlights');
+        navigate('/UserAccountDetails/'+ username);        
     }
 
     function goSearchFlights(){
-      //  navigate('/searchWithCriteria');
+      navigate('/searchWithCriteria');
     }
+    function handleUserName(text){
+        console.log("text: "+ text);
+        username = text;
+        console.log("username: "+ username);
+      }
+    function getUserName (){
+        // const data = { username, password}
+        var bodyFormData = new FormData();
+        bodyFormData.append('username', username);
+      
+      
+       axios({
+        method: "get",
+        url: "/session",
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+          .then((response) => { 
+            console.log(response.data);
+            handleUserName(response.data);
+            
+        })
+        return username;
+      }
 return (
 <div>
     
     
     {Navbar()};
+    <script>{getUserName()}</script>
 
   
 
@@ -31,7 +59,7 @@ return (
         <button className="bg-dark adminButtons" onClick={viewReservedFlights}>Reserved Flights</button>
     </div>
     <div>
-        <button className="bg-dark adminButtons" onClick={goUserAccount}>User Account</button>
+        <button className="bg-dark adminButtons"  onClick={goUserAccount}>User Account</button>
     </div>
 
 

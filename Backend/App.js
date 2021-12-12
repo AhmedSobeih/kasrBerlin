@@ -65,6 +65,11 @@ app.get("/newAdmin",async(req,res)=>{
     res.send(admin)
 });
 
+//returns the username of the session
+app.get("/session",async(req,res)=>{
+  res.send(session.username);
+});
+
 //MS2
 app.get("/departureFlight", async(req,res)=>{
   res.send(departureFlight);
@@ -174,6 +179,21 @@ app.get('/flight/:number', async (req,res)=>{
   const u = await Flight.find({FlightNumber : req.params.number});
 
   res.send(u[0]);
+    
+});
+
+app.get('/reservation/:username', async (req,res)=>{
+  console.log(req.params);
+  const u = await Users.find({username : req.params.username});
+  const flights = u[0].flightsReserved;
+  const result = [];
+  for (var i = 0; i < flights.length; i++) {
+    var flight = await Flight.find({FlightNumber : flights[i]});
+    result.push(flight);
+}
+  console.log(result)
+
+  res.send(result);
     
 });
 
@@ -390,7 +410,8 @@ app.post("/searchFlight",(req,res)=>{
     }).catch((err) =>  res.send(err))
         
     });
-// #Routing to usercontroller here
+
+
 
 
 /*

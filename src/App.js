@@ -5,6 +5,7 @@ import CreateFlight from "./createFlight";
 import FlightByNumber from "./FlightbyNumber";
 import UpdateFlight from "./UpdateFlight";
 import ViewFlights from "./ViewFlights";
+import ViewReservations from "./ViewReservations";
 import SearchWithCriteria from "./SearchWithCriteria";
 import SearchResults from "./SearchResults";
 import AdminHome from './AdminHome';
@@ -36,6 +37,7 @@ function App(){
                 <Route path="/flightByNumber" element={<FlightByNumber/>} />
                 <Route path="/updateFlight/:flight" element={<UpdateFlight/>} />
                 <Route path="/viewFlights" element={<ViewFlights/>} />
+                <Route path="/ViewReservations/:username" element={<ViewReservations/>} />
                 <Route path="/searchWithCriteria" element={<SearchWithCriteria/>} />
                 <Route path="/searchResults" element={<SearchResults/>} />
                <Route path="/AdminHome" element={<AdminHome/>} />

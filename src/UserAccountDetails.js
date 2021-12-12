@@ -7,9 +7,11 @@ import Navbar from 'Navbar';
 
 var flag = true;
 
-export default function UserAccountDetails() {
+export default function UserUpdateDetails() {
+    console.log(useParams());
+    const user = useParams().username; 
+    console.log(user);
 
-    let {user} = useParams(); 
     const navigate = useNavigate();
 
     const [firstName, setFirstName] = useState("");
@@ -25,15 +27,15 @@ export default function UserAccountDetails() {
 
   if(flag)
   {
+    console.log(user);
     flag= false;
-    console.log(1);
     axios.get('/user/'+username)
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter
         cancel = c;
       })
-      
+      console.log(res.data);
       setFirstName(res.data.firstName);
       setLastName(res.data.lastName);
       setEmail(res.data.email);
@@ -70,29 +72,7 @@ export default function UserAccountDetails() {
        // navigate('/viewFlights');
     }
     function updateUser (){
-
-        var bodyFormData = new FormData();
-        bodyFormData.append('firstName', firstName);
-        bodyFormData.append('lastName', lastName);
-        bodyFormData.append('email', email);
-        bodyFormData.append('passportNumber', passportNumber);
-      
-      axios({
-        method: "put",
-        url: "/user/" + username,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-          .then((response) => { 
-          
-            if(response.data==false)
-              console.log("User cannot be updated")
-            else
-            {
-              console.log('User updated successfully');
-              navigate('/UserHome');
-            }
-        })
+        navigate('/UserUpdateDetails/'+ username); 
     }
 
 return (
@@ -123,11 +103,7 @@ return (
                     >
                       First Name
                     </label>
-                    <input
-                     type="text" onChangeCapture={handleFirstName}  defaultValue={firstName}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
+                    <div/>{firstName}</div>
             
                   <div className="relative w-full mb-3">
                     <label
@@ -136,11 +112,7 @@ return (
                     >
                       Last Name
                     </label>
-                    <input
-                     type="text" onChangeCapture={handleLastName} defaultValue={lastName}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
+                    <div/>{lastName}</div>
                   <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -148,11 +120,7 @@ return (
                     >
                       Email
                     </label>
-                    <input
-                     type="email" onChangeCapture={handleEmail} defaultValue={email}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
+                    <div/>{email}</div>
                   <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -160,17 +128,13 @@ return (
                     >
                       Passport Number
                     </label>
-                    <input
-                     type="text" onChangeCapture={handlePassportNumber} defaultValue={passportNumber}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
+                    <div/>{passportNumber}</div>
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"  onClick = {updateUser} onClickCapture = {updateUser}
                     >
-                      Update User
+                      Change Account Details
                     </button>
                   </div>
                 </form>
