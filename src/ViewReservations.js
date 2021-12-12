@@ -111,10 +111,12 @@ class ViewReservations extends Component {
       <th scope="col">Flight Number</th>
       <th scope="col">Departure Date</th>
       <th scope="col">Arrival Date</th>
-      <th scope="col">Econpmy Seats</th>
-      <th scope="col">Business seats</th>
       <th scope="col">Departure Airport</th>
       <th scope="col">Arrival Airport</th>
+      <th scope="col">Class</th>
+      <th scope="col">Number of Seats</th>
+      <th scope="col">Seats</th>
+      <th scope="col">Price</th>
     </tr>
   </thead>
   <tbody>
@@ -126,10 +128,12 @@ class ViewReservations extends Component {
       <td>{fl.FlightNumber}</td>
       <td>{fl.DepatureDate}</td>
       <td>{fl.ArrivalDate}</td>
-      <td>{fl.EconomySeats}</td>
-      <td>{fl.BusinessSeats}</td>
       <td>{fl.DepatureAirport}</td>
       <td>{fl.ArrivalAirport}</td>
+      <td>{fl.Class}</td>
+      <td>{fl.Seats.length}</td>
+      <td>{fl.Seats.join(",")}</td>
+      <td>{fl.Price}</td>
       <td><button 
                       className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"  onClick={(e) =>{ e.preventDefault();

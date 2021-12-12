@@ -185,17 +185,19 @@ app.get('/flight/:number', async (req,res)=>{
 app.get('/reservation/:username', async (req,res)=>{
   const u = await Users.find({username : req.params.username});
   const flights = u[0].flightsReserved;
-  const result = [];
+  const result = [[]];
   for (var i = 0; i < flights.length; i++) {
     var flight = await Flight.find({FlightNumber : flights[i]});
-    result[i].push({flightNumber: flight[0].flightNumber});
-    result[i].push({depatureDate: flight[0].depatureDate});
-    result[i].push({arrivalDate: flight[0].arrivalDate});
-    result[i].push({depatureAirport: flight[0].depatureAirport});
-    result[i].push({arrivalAirport: flight[0].arrivalAirport});
-    result[i].push({})
+    result[i]= {FlightNumber: flight[0].FlightNumber,
+                DepatureDate: flight[0].DepatureDate,
+                ArrivalDate: flight[0].ArrivalDate,
+                DepatureAirport: flight[0].DepatureAirport,
+                ArrivalAirport: flight[0].ArrivalAirport,
+                Class: u[0].flightsReservedDetails[i][0],
+                Seats: u[0].flightsReservedDetails[i][1],
+                Price: u[0].flightsReservedDetails[i][2]}
 }
-
+  console.log(result);
 
   res.send(result);
     
