@@ -188,8 +188,14 @@ app.get('/reservation/:username', async (req,res)=>{
   const result = [];
   for (var i = 0; i < flights.length; i++) {
     var flight = await Flight.find({FlightNumber : flights[i]});
-    result[i]= flight[0];
+    result[i].push({flightNumber: flight[0].flightNumber});
+    result[i].push({depatureDate: flight[0].depatureDate});
+    result[i].push({arrivalDate: flight[0].arrivalDate});
+    result[i].push({depatureAirport: flight[0].depatureAirport});
+    result[i].push({arrivalAirport: flight[0].arrivalAirport});
+    result[i].push({})
 }
+
 
   res.send(result);
     
