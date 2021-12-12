@@ -25,6 +25,10 @@ export default function CreateFlight(){
     const [businessSeats, setBusinessSeats] = useState("");
     const [depatureAirport, setDepatureAirport] = useState("");
     const [arrivalAirport, setArrivalAirport] = useState("");
+    const [economySeatPrice, setEconomySeatPrice] = useState("");
+    const [businessSeatPrice, setBusinessSeatPrice] = useState("");
+
+
     const navigate = useNavigate();
 
 
@@ -79,6 +83,8 @@ function createFlight (){
     bodyFormData.append('businessSeats', businessSeats);
     bodyFormData.append('depatureAirport', depatureAirport);
     bodyFormData.append('arrivalAirport', arrivalAirport);
+    bodyFormData.append('economySeatPrice', economySeatPrice);
+    bodyFormData.append('businessSeatPrice', businessSeatPrice);
   
   
   axios({
@@ -130,6 +136,14 @@ function createFlight (){
   function handleArrivalAirport(text){
     setArrivalAirport(text.target.value);
     console.log(arrivalAirport);
+  }
+  function handleEconomySeatPrice(text){
+    setEconomySeatPrice(text.target.value);
+    console.log(economySeatPrice);
+  }
+  function handleBusinessSeatPrice(text){
+    setBusinessSeatPrice(text.target.value);
+    console.log(businessSeatPrice);
   }
   
 
@@ -236,6 +250,30 @@ return(
                     </label>
                     <input
                      type="text" onChangeCapture={handleArrivalAirport}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Business Seat Price
+                    </label>
+                    <input
+                     type="text" onChangeCapture={handleBusinessSeatPrice}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Economy Seat Price
+                    </label>
+                    <input
+                     type="text" onChangeCapture={handleEconomySeatPrice}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
