@@ -301,7 +301,7 @@ app.post("/searchFlight",(req,res)=>{
 
     //For creating a flight
     app.post("/flight",async(req,res)=>{
-      console.log(req.body);
+     
       const newFlight =new Flight({
         FlightNumber:req.body.flightNumber,
         DepatureDate: req.body.depatureDate,
@@ -309,10 +309,19 @@ app.post("/searchFlight",(req,res)=>{
         EconomySeats: req.body.economySeats,
         BusinessSeats: req.body.businessSeats ,
         DepatureAirport: req.body.depatureAirport,
-        ArrivalAirport: req.body.arrivalAirport
+        ArrivalAirport: req.body.arrivalAirport,
+        FreeEconomySeatsNum: req.body.economySeats,
+        FreeBusinessSeatsNum: req.body.businessSeats,
+        EconomySeatPrice: req.body.economySeatPrice,
+        BusinessSeatPrice: req.body.businessSeatPrice,
+        IsEconomySeatBusy: Array.from({ length:req.body.economySeats/4 }, () => (
+          Array.from({ length:4 }, ()=> false))),
+        IsBusinessSeatBusy: Array.from({ length:req.body.businessSeats/4 }, () => (
+          Array.from({ length:4 }, ()=> false)))
       });
       try{
         await newFlight.save(newFlight);
+        console.log(newFlight);
         res.send(true);
       }
       catch(err)
