@@ -63,15 +63,10 @@ class ViewReservations extends Component {
                 console.log(error);
             })
     }
-    gotoUpdateFlight(deletedFlightNumber) {
-        this.props.navigate('/updateFlight/'+deletedFlightNumber)
-    }
-    deleteFlight(deletedFlightNumber) {
-    
-
+    gotoCancelReservation(deletedFlightNumber) {
         axios({
             method: "delete",
-            url: "/flight/" + deletedFlightNumber,
+            url: "/reservation/" + username,
             headers: { "Content-Type": "multipart/form-data" },
           })
               .then((response) => { 
@@ -80,7 +75,9 @@ class ViewReservations extends Component {
                 else
                 {this.componentDidMount() }
             })
-          }
+        }
+    // deleteFlight(deletedFlightNumber) {
+    
           
 
         
@@ -131,32 +128,17 @@ class ViewReservations extends Component {
       <td>{fl.DepatureAirport}</td>
       <td>{fl.ArrivalAirport}</td>
       <td><button 
-                      className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"  onClick={(e) =>{ e.preventDefault();
-                        this.gotoUpdateFlight(fl.FlightNumber);
+                        this.gotoCancelReservation(fl.FlightNumber);
                         
                             }
                         }
                       
                     >
-                      Update Flight 
+                      Cancel Reservation 
      </button> </td>
       <td>
-      <button
-                      className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"  onClick={(e) =>{ e.preventDefault();
-                        if (window.confirm("Press a button!")) {
-                         this.deleteFlight(fl.FlightNumber);
-
-                      } else {
-                        
-                        }
-                        
-                            }
-                    } 
-                    >
-                      Delete Flight 
-     </button>
      </td>
     </tr>
         )

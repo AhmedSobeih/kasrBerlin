@@ -43,9 +43,17 @@ const UserSchema = new Schema({
     type: Number,
     required: true
   },
+  //should include : the chosen cabin (Economy/ Business Class), the chosen seat and the total price paid for the entire ticket along with a confirmation/ booking number).
   flightsReserved: {
     type:[Number],
     required:true 
+  },
+  //["E",[110,112,113], price]
+  // Economy   seats   price
+  //Or business
+  flightsReservedDetails:{
+    type:[[String]],
+    required: true
   }
 
 }, { timestamps: true });

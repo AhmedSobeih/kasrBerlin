@@ -183,15 +183,13 @@ app.get('/flight/:number', async (req,res)=>{
 });
 
 app.get('/reservation/:username', async (req,res)=>{
-  console.log(req.params);
   const u = await Users.find({username : req.params.username});
   const flights = u[0].flightsReserved;
   const result = [];
   for (var i = 0; i < flights.length; i++) {
     var flight = await Flight.find({FlightNumber : flights[i]});
-    result.push(flight);
+    result[i]= flight[0];
 }
-  console.log(result)
 
   res.send(result);
     
@@ -208,6 +206,7 @@ app.get('/user/:username', async (req,res)=>{
 app.get('/allFlights', async(req, res)=> {
  
   const u = await Flight.find();
+  console.log(u);
   res.send(u);
  
 });
@@ -398,6 +397,37 @@ app.post("/searchFlight",(req,res)=>{
       //2000-10-10T15:02:00.000Z
       return newDate;
     }
+
+    app.delete('/flight/:number', (req,res)=>{
+      const flightNumber = req.params;
+      console.log(flightNumber);
+      const filter = {flightNumber: flightNumber};
+      console.log(filter);
+      Flight.findOneAndRemove(filter)
+      .then((flight)=>{
+        res.send('deleted');//if successful, redirect to the home page
+    }).catch((err) =>  res.send(err))
+        
+    });
+
+    app.delete('/reservation/:username', (req,res)=>{
+      const username = req.params.username;
+
+      const u = await Users.find({username : req.params.username});
+      const flights = u[0].flightsReserved;
+      
+      const filter = {flightsReserved : []};
+      console.log(username);
+      Users.findOneAndUpdate(username, filter, {
+        new: true,
+      })
+      .then((flight)=>{
+        console.log("deleted");
+        res.send(true);
+    }).catch((err) =>  res.send(false))
+        
+    });
+
 
     app.delete('/flight/:number', (req,res)=>{
       const flightNumber = req.params;
