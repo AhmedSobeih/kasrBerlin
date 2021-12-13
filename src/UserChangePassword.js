@@ -58,7 +58,6 @@ export default function UserChangePassword() {
             else
             {
               setLoginSuccess("Password Updated");
-              navigate('/UserHome');
             }
         })
     }

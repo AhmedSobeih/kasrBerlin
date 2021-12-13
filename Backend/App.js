@@ -238,14 +238,12 @@ app.get('/searchResults', async(req, res)=> {
 
 
 app.post('/login',(req,res) =>{
-  console.log(req.body.username);
   var result = { state: false, type : 1 };
   Users.find({username:req.body.username, password:req.body.password})
   .then((user)=>{
 
-
       // console.log(user);
-      if(user.length==0)
+      if(user.length == 0)
       {
           res.send(result);
       }
@@ -389,17 +387,16 @@ app.post("/searchFlight",(req,res)=>{
       
       const username = req.params;
       const filter = req.params;
-      console.log(filter);
-      console.log(req.body);
       var result = {status : false, response: ""};
       const u = await Users.find({username : session.username, password: req.body.oldPassword});
-      if(u != null)
+      console.log(u[0]== null);
+      if(u[0] != null)
       {
         Users.findOneAndUpdate({username : session.username}, {password: req.body.newPassword}, {
           new: true,
         })
         .then((user)=>{
-          result.status = ture;
+          result.status = true;
           console.log(result);
           res.send(result);
       }).catch((err) =>  res.send(result))
