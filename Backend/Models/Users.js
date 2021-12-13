@@ -48,7 +48,8 @@ const UserSchema = new Schema({
     type:[Number],
     required:true 
   },
-  //["Economy",[110,112,113], price]
+ // [8,20]
+  //["Economy",[110,112,113], price],[]
   // Economy   seats   price
   //Or business
   flightsReservedDetails:{

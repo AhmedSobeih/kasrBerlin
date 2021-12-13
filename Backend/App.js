@@ -185,17 +185,18 @@ app.get('/flight/:number', async (req,res)=>{
 app.get('/reservation/:username', async (req,res)=>{
   const u = await Users.find({username : req.params.username});
   const flights = u[0].flightsReserved;
-  const result = [[]];
-  for (var i = 0; i < flights.length; i++) {
+  const result = [];
+  for (let i = 0; i < flights.length; i++) {
     var flight = await Flight.find({FlightNumber : flights[i]});
-    result[i]= {FlightNumber: flight[0].FlightNumber,
+    console.log(flight[0].ArrivalDate);
+    result[i]= {FlightNumber: flights[i],
                 DepatureDate: flight[0].DepatureDate,
                 ArrivalDate: flight[0].ArrivalDate,
                 DepatureAirport: flight[0].DepatureAirport,
                 ArrivalAirport: flight[0].ArrivalAirport,
                 Class: u[0].flightsReservedDetails[i][0],
                 Seats: u[0].flightsReservedDetails[i][1],
-                Price: u[0].flightsReservedDetails[i][2]}
+                Price: u[0].flightsReservedDetails[i][2]};
 }
   console.log(result);
 
@@ -380,6 +381,33 @@ app.post("/searchFlight",(req,res)=>{
         console.log("updated");
         res.send(true);//if successful, render the flight again with the new values
     }).catch((err) =>  res.send(false))
+        
+    });
+
+    app.put('/password/:username', async (req,res)=>{
+      
+      const username = req.params;
+      const filter = req.params;
+      console.log(filter);
+      console.log(req.body);
+      var result = {status : false, response: ""};
+      const u = await Users.find({username : session.username, password: req.body.oldPassword});
+      if(u != null)
+      {
+        Users.findOneAndUpdate({username : session.username}, {password: req.body.newPassword}, {
+          new: true,
+        })
+        .then((user)=>{
+          result.status = ture;
+          console.log(result);
+          res.send(result);
+      }).catch((err) =>  res.send(result))
+      }
+      else
+      {
+        result.response = "Old Password is wrong";
+        res.send(result);
+      }
         
     });
 
