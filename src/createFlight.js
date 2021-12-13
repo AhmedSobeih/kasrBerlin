@@ -27,6 +27,8 @@ export default function CreateFlight(){
     const [arrivalAirport, setArrivalAirport] = useState("");
     const [economySeatPrice, setEconomySeatPrice] = useState("");
     const [businessSeatPrice, setBusinessSeatPrice] = useState("");
+    const [baggageAllowance, setBaggageAllowance] = useState("");
+
 
 
     const navigate = useNavigate();
@@ -81,10 +83,15 @@ function createFlight (){
     bodyFormData.append('arrivalDate', arrivalDate);
     bodyFormData.append('economySeats', economySeats);
     bodyFormData.append('businessSeats', businessSeats);
+    bodyFormData.append('firstSeats', businessSeats);
+
     bodyFormData.append('depatureAirport', depatureAirport);
     bodyFormData.append('arrivalAirport', arrivalAirport);
     bodyFormData.append('economySeatPrice', economySeatPrice);
     bodyFormData.append('businessSeatPrice', businessSeatPrice);
+    bodyFormData.append('firstSeatPrice', businessSeatPrice);
+    bodyFormData.append('baggageAllowance', baggageAllowance);
+
   
   
   axios({
@@ -129,6 +136,10 @@ function createFlight (){
     setBusinessSeats(text.target.value);
     console.log(businessSeats);
   }
+  function handleFirstSeats(text){
+    setBusinessSeats(text.target.value);
+    console.log(businessSeats);
+  }
   function handleDepatureAirport(text){
     setDepatureAirport(text.target.value);
     console.log(depatureAirport);
@@ -144,6 +155,14 @@ function createFlight (){
   function handleBusinessSeatPrice(text){
     setBusinessSeatPrice(text.target.value);
     console.log(businessSeatPrice);
+  }
+  function handleFirstSeatPrice(text){
+    setBusinessSeatPrice(text.target.value);
+    console.log(businessSeatPrice);
+  }
+  function handleBaggageAllowance(number){
+    setBaggageAllowance(number.target.value);
+    console.log(baggageAllowance);
   }
   
 
@@ -229,7 +248,20 @@ return(
                      type="number" onChangeCapture={handleBusinessSeats}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
-                  </div><div className="relative w-full mb-3">
+                  </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Number of First Class Seats
+                    </label>
+                    <input
+                     type="number" onChangeCapture={handleFirstSeats}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+                  <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
@@ -277,6 +309,32 @@ return(
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      First Class Seat Price
+                    </label>
+                    <input
+                     type="text" onChangeCapture={handleFirstSeatPrice}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Baggage Allowance
+                    </label>
+                    <input
+                     type="number" onChangeCapture={handleBaggageAllowance}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+                  
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
