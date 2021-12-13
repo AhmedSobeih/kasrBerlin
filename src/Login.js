@@ -44,8 +44,7 @@ function tryLogin (){
   headers: { "Content-Type": "multipart/form-data" },
 })
     .then((response) => { 
-      console.log(response.data);
-      if(response.data.status == false)
+      if(response.data.state == false)
        {
         setLoginSuccess('Invalid username or password!');
         document.getElementById('loginFail').setAttribute("class","alert alert-danger text-center") ;
@@ -58,7 +57,6 @@ function tryLogin (){
           navigate('/UserHome');
       }
         
-      console.log(navigate);
   })
 }
 
