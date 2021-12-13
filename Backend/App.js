@@ -36,6 +36,7 @@ var searchResult = [];
 //MS2
 var departureFlight = null;
 var returnFlight = null;
+var userPreferredCriteria=null;
 
 // #Importing the userController
 
@@ -472,7 +473,73 @@ app.post("/searchFlight",(req,res)=>{
 /*
                                                     End of your code
 */
+///////////////////////////////////////////////////////////////////////////////////////////
 
+app.get("/userCriteria", async(req,res)=>{
+  res.send(userPreferredCriteria);
+});
+
+app.post("/userCriteria", async(req,res)=>{
+  userPreferredCriteria=req.body;
+});
+app.post("/searchDepartureFlight",(req,res)=>{
+
+  var numberOfAdults=0;
+    var numberOfChildren=0;
+    var cabinClass = 'Economy Class';  
+  Object.keys(req.body).forEach(key => {
+    
+    if(key == "NumberOfAdults" && (req.body[key]!==''))
+    {
+      numberOfAdults = parseInt(req.body[key]);
+      delete req.body[key];
+    }     
+    if(key == "NumberOfChildren")
+     {
+       numberOfChildren = parseInt(req.body[key]);
+       delete req.body[key];
+     }    
+     if(key == "CabinClass")
+     {
+       cabinClass = req.body[key];
+       delete req.body[key];
+     }    
+    if (req.body[key]== '' && key != "NumberOfAdults" && key != "NumberOfChildren") {
+
+      delete req.body[key];
+    }
+    else{
+        if(key == 'DepatureDate' || key == 'ArrivalDate' )
+          req.body[key] = dateConversionToMongose(req.body[key]);
+      }
+    })
+    
+
+
+  console.log(req.body);  
+  Flight.find(req.body).then((result)=>{
+    for(var i=0; i<result.length; i++)
+    {
+      if(cabinClass=="Economy Class")
+      {
+        if(result[i].FreeEconomySeatsNum<(numberOfAdults+numberOfChildren))
+         {
+          result.splice(i,1);
+          i--;
+         } 
+      }
+      else if(cabinClass=="Business Class"){
+        if(result[i].FreeBusinessSeatsNum<(numberOfAdults+numberOfChildren))
+        {
+          result.splice(i,1);
+          i--;
+        }
+      }
+    }
+    searchResult=result;
+    res.send(result);
+}).catch((err) =>  console.log(err))
+  });
 // Starting server
 app.listen(port, () => {
     console.log(`Listening to requests on http://localhost:${port}`);
