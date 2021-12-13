@@ -25,15 +25,15 @@ export default function SearchFlightGuest(){
 
     const navigate = useNavigate();
 
-    const [NumberOfAdults, setNumberOfAdults] = useState("");
-    const [NumberOfChildren, setNumberOfChildren] = useState("");
+    const [NumberOfAdults, setNumberOfAdults] = useState(0);
+    const [NumberOfChildren, setNumberOfChildren] = useState(0);
     const [DepatureTime, setDepatureTime] = useState("");
     const [DepatureDate, setDepatureDate] = useState("");
     const [ArrivalTime, setArrivalTime] = useState("");
     const [ArrivalDate, setArrivalDate] = useState("");
     const [DepatureAirport, setDepatureAirport] = useState("");
     const [ArrivalAirport, setArrivalAirport] = useState("");
-    const [CabinClass, setCabinClass] = useState("");
+    const [CabinClass, setCabinClass] = useState("Economy Class");
    
     const [ErrorMessage, setErrorMessage] = useState("");
 
@@ -91,52 +91,71 @@ export default function SearchFlightGuest(){
   const showCabinClass = (e) => {
     const checked = e.target.checked;
     if (checked) {
-     setCabinClassVisibility(false);
+    {
+      setCabinClassVisibility(false);
+      setCabinClass('Economy Class');
+    } 
     } else {
      setCabinClassVisibility(true);
+     setCabinClass('');
+
     }
   };
-  // function searchFlight (){
-  //   console.log(1);
+  function searchFlight (){
+    if(NumberOfAdults<=0 && NumberOfChildren<=0)
+    {
+      setErrorMessage('Please enter a valid number of passenger');
+      return;
+    }
 
-  //   var bodyFormData = new FormData();
-  //   bodyFormData.append('FlightNumber', FlightNumber);
-  //   bodyFormData.append('DepatureTime', DepatureTime);
-  //   bodyFormData.append('DepatureDate', DepatureDate);
-  //   bodyFormData.append('ArrivalTime', ArrivalTime);
-  //   bodyFormData.append('ArrivalDate', ArrivalDate);
-  //   bodyFormData.append('EconomySeats', EconomySeats);
-  //   bodyFormData.append('BusinessSeats', BusinessSeats);
-  //   bodyFormData.append('DepatureAirport', DepatureAirport);
-  //   bodyFormData.append('ArrivalAirport', ArrivalAirport);
+    var bodyFormData = new FormData();
+    bodyFormData.append('NumberOfAdults', NumberOfAdults);
+    bodyFormData.append('NumberOfChildren', NumberOfChildren);
+    bodyFormData.append('DepatureTime', DepatureTime);
+    bodyFormData.append('DepatureDate', DepatureDate);
+    bodyFormData.append('ArrivalTime', ArrivalTime);
+    bodyFormData.append('ArrivalDate', ArrivalDate);
+    bodyFormData.append('DepatureAirport', DepatureAirport);
+    bodyFormData.append('ArrivalAirport', ArrivalAirport);
+    bodyFormData.append('CabinClass', CabinClass);
+
+    axios({
+      method: "post",
+      url: "/userCriteria",
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+        .then((response) => { 
+          
+         console.log(response.data);
+      })
   
-  
-  // axios({
-  //   method: "post",
-  //   url: "/searchFlight",
-  //   data: bodyFormData,
-  //   headers: { "Content-Type": "multipart/form-data" },
-  // })
-  //     .then((response) => { 
+  axios({
+    method: "post",
+    url: "/searchDepartureFlight",
+    data: bodyFormData,
+    headers: { "Content-Type": "multipart/form-data" },
+  })
+      .then((response) => { 
         
-  //       if(response.data==false)
-  //      {
-  //       setErrorMessage('The information you entered does not match with any flights');
-  //       document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
+        if(response.data==false)
+       {
+        setErrorMessage('The information you entered does not match with any flights');
+        document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
 
-  //      } 
-  //       else{
-  //         console.log(response.data);
-  //         navigate("/searchResultsGuest");
-  //       }
-  //   })
-  // }
+       } 
+        else{
+          console.log(response.data);
+          navigate("/searchResultsGuest");
+        }
+    })
+  }
   function handleNumberOfAdults(number){
     setNumberOfAdults(number.target.value);
     console.log(NumberOfAdults);
   }
   function handleNumberOfChildren(number){
-    setNumberOfAdults(number.target.value);
+    setNumberOfChildren(number.target.value);
     console.log(NumberOfChildren);
   }
   function handleDepatureTime(time){
@@ -165,7 +184,7 @@ export default function SearchFlightGuest(){
   }
 
   function handleCabinClass(text){
-    setCabinClass(text.target.value);
+    setCabinClass(document.getElementById("CabinClass").value);
     console.log(CabinClass);
   }
   
@@ -196,9 +215,7 @@ return(
                 <form>
                    
                 <div className="relative w-full mb-3" >
-                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
-                                showNumberOfAdults(e);
-                            }}/>
+                    
                     <label
                     style={{margin:'5px'}}
                       className="uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -207,7 +224,6 @@ return(
                       Number of Adults
                     </label>
                     <input
-                     hidden={NumberOfAdultsVisibility} 
 
                      type="number" onChangeCapture={(e) => {
                       handleNumberOfAdults(e);}}
@@ -215,9 +231,7 @@ return(
                     />
                   </div>
                   <div className="relative w-full mb-3" >
-                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
-                                showNumberOfChildren(e);
-                            }}/>
+                   
                     <label
                     style={{margin:'5px'}}
                       className="uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -226,112 +240,119 @@ return(
                       Number of Children
                     </label>
                     <input
-                     hidden={NumberOfChildrenVisibility} 
 
                      type="number" onChangeCapture={(e) => {
                       handleNumberOfChildren(e);}}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
+                  
                   <div className="relative w-full mb-3">
-                       <input type="checkbox" name="number" value="number"  onClick={(e) => {
-                                showDepartureDate(e);
-                            }}/>
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Departure Date 
-                    </label>
-                    <input
-                     hidden={DepartureDateVisibility} onChangeCapture={(e) => {
-                      handleDepatureDate(e);}}
-
-                     type="datetime-local" 
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
-                  <div className="relative w-full mb-3">
-                       <input type="checkbox" name="number" value="number"  onClick={(e) => {
-                                showArrivalDate(e);
-                            }}/>
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Arrival Date
-                    </label>
-                    <input
-                      hidden={ArrivalDateVisibility} onChangeCapture={(e) => {
-                        handleArrivalDate(e);}}
-
-                     type="datetime-local" 
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
-                <div className="relative w-full mb-3">
-                       <input type="checkbox"  onClick={(e) => {
-                                showDepartureAirport(e);
-                            }}/>
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Depature Airport
-                    </label>
-                    <input
-                              hidden={DepartureAirportVisibility} onChangeCapture={(e) => {
-                                handleDepatureAirport(e);}}
-            type="text" 
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
-                  <div className="relative w-full mb-3">
-                       <input type="checkbox"   onChangeCapture={(e) => {
-                                showArrivalAirport(e);
-                            }}/>
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Arrival Airport
-                    </label>
-                    <input
-                    hidden={ArrivalAirportVisibility} onChangeCapture={(e) => {
-                      handleArrivalAirport(e);}}
-                    type="text" 
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
-                  <div className="relative w-full mb-3">
-                       <input type="checkbox"   onChangeCapture={(e) => {
-                                showCabinClass(e);
-                            }}/>
+                      
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
                       Cabin Class
                     </label>
-                    
+                    <select name = "dropdown" id="CabinClass" onChange={handleCabinClass}>
+            <option value = "Economy Class">Economy Class</option>
+            <option value = "Business Class" >Business Class</option>
+            <option value = "First Class" >First Class</option>
+
+         </select>
+                  </div>
+                  <div className="relative w-full mb-3" >
+                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
+                                showDepartureDate(e);
+                            }}/>
+                    <label
+                    style={{margin:'5px'}}
+                      className="uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Departure Date
+                    </label>
                     <input
-                    hidden={CabinClassVisibility} onChangeCapture={(e) => {
-                      handleCabinClass(e);}}
-                    type="text" 
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                     hidden={DepartureDateVisibility} 
+
+                     type="number" onChangeCapture={(e) => {
+                      handleDepatureDate(e);}}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
                   </div>
+                  <div className="relative w-full mb-3" >
+                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
+                                showArrivalDate(e);
+                            }}/>
+                    <label
+                    style={{margin:'5px'}}
+                      className="uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Arrival Date
+                    </label>
+                    <input
+                     hidden={ArrivalDateVisibility} 
+
+                     type="number" onChangeCapture={(e) => {
+                      handleArrivalDate(e);}}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+                  
+                  <div className="relative w-full mb-3" >
+                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
+                                showDepartureAirport(e);
+                            }}/>
+                    <label
+                    style={{margin:'5px'}}
+                      className="uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Departure Airport
+                    </label>
+                    <input
+                     hidden={DepartureAirportVisibility} 
+
+                     type="number" onChangeCapture={(e) => {
+                      handleDepatureAirport(e);}}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+                  
+                 
+                  <div className="relative w-full mb-3" >
+                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
+                                showArrivalAirport(e);
+                            }}/>
+                    <label
+                    style={{margin:'5px'}}
+                      className="uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Arrival Airport
+                    </label>
+                    <input
+                     hidden={ArrivalAirportVisibility} 
+
+                     type="number" onChangeCapture={(e) => {
+                      handleArrivalAirport(e);}}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    />
+                  </div>
+               
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button" /* onClick={(e) => {
-                        searchFlight(e);}}*/
+                      type="button"  onClick={(e) => {
+                        searchFlight(e);}}
                     >
                         Search The Flight
                     </button>
                   </div>
                 </form>
-                <div id='searchFail'>{ErrorMessage}</div>
+                <div id='searchFail' className="alert-warning">{ErrorMessage}</div>
               </div>
             </div>
           </div>

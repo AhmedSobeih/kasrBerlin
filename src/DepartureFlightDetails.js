@@ -21,7 +21,6 @@ export default function UpdateFlight(){
     let {flight} = useParams(); 
     const navigate = useNavigate();
 
-    const [FlightCreated, setFlightCreated] = useState("");
     const [FlightNumber, setFlightNumber] = useState(flight);
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
@@ -32,6 +31,11 @@ export default function UpdateFlight(){
     const [BusinessSeats, setBusinessSeats] = useState("");
     const [DepatureAirport, setDepatureAirport] = useState("");
     const [ArrivalAirport, setArrivalAirport] = useState("");
+    const [TripDuration, setTripDuration] = useState("");//Method to be done by ziad
+    const [CabinClass, setCabinClass] = useState("");
+    const [BaggageAllowance, setBaggageAllowance] = useState("");
+
+    
     const CancelToken = axios.CancelToken;
     let cancel;
 
@@ -51,11 +55,19 @@ export default function UpdateFlight(){
       setBusinessSeats(res.data.BusinessSeats);
       setDepatureAirport(res.data.DepatureAirport);
       setArrivalAirport(res.data.ArrivalAirport);
+     
+    //setCabinClass(res.data.CabinClass);
+      setBaggageAllowance(res.data.BaggageAllowance);
+     
       cancel();
   
     })
     .catch(function (error) {
         console.log(error);
+    })
+    axios.get('/userCriteria')
+    .then(res => {
+      setCabinClass(res.data.CabinClass);
     })
     
   
@@ -120,6 +132,11 @@ function DoubleLabel(props){
       bodyFormData.append('BusinessSeats', BusinessSeats);
       bodyFormData.append('DepatureAirport', DepatureAirport);
       bodyFormData.append('ArrivalAirport', ArrivalAirport);
+      bodyFormData.append('TripDuration', TripDuration);
+      bodyFormData.append('CabinClass', CabinClass);
+      bodyFormData.append('BaggageAllowance', BaggageAllowance);
+
+
       console.log(FlightNumber);
     
       axios({
@@ -128,13 +145,11 @@ function DoubleLabel(props){
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       })
-          .then((response) => { 
-            console.log(response.data);
+          .then((response) => {
             var bodyFormData2 = new FormData();
             bodyFormData2.append('DepatureAirport', ArrivalAirport);
             bodyFormData2.append('ArrivalAirport', DepatureAirport);
           
-
           axios({
             method: "post",
             url: "/searchFlight",
@@ -142,7 +157,6 @@ function DoubleLabel(props){
             headers: { "Content-Type": "multipart/form-data" },
           })
               .then((response) => { 
-                console.log(response.data)
                 if(response.data==false)
                {
                 console.log('This departure flight has no available return flights');
@@ -151,8 +165,8 @@ function DoubleLabel(props){
                } 
                 else{
                     navigate('/searchReturnFlight');
-                }
-            })
+              }
+            }) 
           }
         )
       }
@@ -246,6 +260,36 @@ return(
                       Arrival Airport
                     </label>
                     <div>{ArrivalAirport}</div>
+
+                  </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Trip Duration
+                    </label>
+                    <div>{TripDuration}</div>
+
+                  </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Cabin Class
+                    </label>
+                    <div>{CabinClass}</div>
+
+                  </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Baggage Allowance
+                    </label>
+                    <div>{BaggageAllowance}</div>
 
                   </div>
                   <div className="text-center mt-6">
