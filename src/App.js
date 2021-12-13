@@ -12,6 +12,7 @@ import AdminHome from './AdminHome';
 import UserHome from './UserHome';
 import UserAccountDetails from './UserAccountDetails';
 import UserUpdateDetails from './UserUpdateDetails';
+import UserChangePassword from './UserChangePassword';
 import Index from './index';
 import SearchFlightUser from './searchFlightUser';
 import SearchResultsUser from './SearchResultsUser';
@@ -46,6 +47,7 @@ function App(){
                <Route path="/UserHome" element={<UserHome/>} />
                <Route path="/UserAccountDetails/:username" element={<UserAccountDetails/>} />
                <Route path="/UserUpdateDetails/:username" element={<UserUpdateDetails/>} />
+               <Route path="/UserChangePassword/:username" element={<UserChangePassword/>} />
                <Route path="/" element={<Index/>} />
                <Route path="/searchFlightUser" element={<SearchFlightUser/>} />
                <Route path="/searchResultsUser" element={<SearchResultsUser/>} />
