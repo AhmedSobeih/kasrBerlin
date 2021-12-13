@@ -77,20 +77,22 @@ app.get("/departureFlight", async(req,res)=>{
 });
 
 app.post("/departureFlight",async(req,res)=>{
+
   departureFlight=req.body;
-  const user = await Users.find({username : session.username});
-  console.log("hii");
-  console.log(departureFlight);
-  console.log(user[0]);
-  console.log("finish");
-  var flightsAlreadyReserved=[];
-  flightsAlreadyReserved=user[0].flightsReserved;
-  flightsAlreadyReserved.push(departureFlight.FlightNumber);
-  Users.findOneAndUpdate({username:session.username},{flightsReserved:flightsAlreadyReserved},{}).then((user)=>{
-    console.log("hii");
-  console.log(user[0]);
-  res.send(true);}
-  ).catch((err) =>  res.send(false))
+  res.send(true);
+  // const user = await Users.find({username : session.username});
+  // console.log("hii");
+  // console.log(departureFlight);
+  // console.log(user[0]);
+  // console.log("finish");
+  // var flightsAlreadyReserved=[];
+  // flightsAlreadyReserved=user[0].flightsReserved;
+  // flightsAlreadyReserved.push(departureFlight.FlightNumber);
+  // Users.findOneAndUpdate({username:session.username},{flightsReserved:flightsAlreadyReserved},{}).then((user)=>{
+  //   console.log("hii");
+  // console.log(user[0]);
+  // res.send(true);}
+  // ).catch((err) =>  res.send(false))
 
 
 /*Flight.findOneAndUpdate(filter, req.body, {
@@ -126,6 +128,7 @@ app.get("/returnFlight", async(req,res)=>{
 
 app.post("/returnFlight",async(req,res)=>{
   returnFlight=req.body;
+  res.send(true);
 });
 
 
@@ -337,16 +340,27 @@ app.post("/searchFlight",(req,res)=>{
         ArrivalDate: req.body.arrivalDate,
         EconomySeats: req.body.economySeats,
         BusinessSeats: req.body.businessSeats ,
+        FirstSeats: req.body.firstSeats ,
+
         DepatureAirport: req.body.depatureAirport,
         ArrivalAirport: req.body.arrivalAirport,
         FreeEconomySeatsNum: req.body.economySeats,
         FreeBusinessSeatsNum: req.body.businessSeats,
+        FreeFirstSeatsNum: req.body.firstSeats,
+
         EconomySeatPrice: req.body.economySeatPrice,
         BusinessSeatPrice: req.body.businessSeatPrice,
-        IsEconomySeatBusy: Array.from({ length:req.body.economySeats/4 }, () => (
-          Array.from({ length:4 }, ()=> false))),
+        FirstSeatPrice: req.body.firstSeatPrice,
+        BaggageAllowance: req.body.baggageAllowance,
+
+        
         IsBusinessSeatBusy: Array.from({ length:req.body.businessSeats/4 }, () => (
-          Array.from({ length:4 }, ()=> false)))
+          Array.from({ length:4 }, ()=> false))),
+        IsEconomySeatBusy: Array.from({ length:req.body.economySeats/4 }, () => (
+          Array.from({ length:4 }, ()=> false))),  
+        IsFirstSeatBusy: Array.from({ length:req.body.firstSeats/4 }, () => (
+          Array.from({ length:4 }, ()=> false))) ,
+        BaggageAllowance: req.body.baggageAllowance 
       });
       try{
         await newFlight.save(newFlight);
@@ -482,9 +496,10 @@ app.get("/userCriteria", async(req,res)=>{
 app.post("/userCriteria", async(req,res)=>{
   userPreferredCriteria=req.body;
 });
-app.post("/searchDepartureFlight",(req,res)=>{
+app.post("/searchFlightUser",(req,res)=>{
 
-  var numberOfAdults=0;
+    var isReturnFlight = req.body.isReturnFlight;
+    var numberOfAdults=0;
     var numberOfChildren=0;
     var cabinClass = 'Economy Class';  
   Object.keys(req.body).forEach(key => {
@@ -504,6 +519,10 @@ app.post("/searchDepartureFlight",(req,res)=>{
        cabinClass = req.body[key];
        delete req.body[key];
      }    
+     if(key == "isReturnFlight")
+     {
+       delete req.body[key];
+     }    
     if (req.body[key]== '' && key != "NumberOfAdults" && key != "NumberOfChildren") {
 
       delete req.body[key];
@@ -516,10 +535,18 @@ app.post("/searchDepartureFlight",(req,res)=>{
     
 
 
-  console.log(req.body);  
   Flight.find(req.body).then((result)=>{
     for(var i=0; i<result.length; i++)
     {
+      if(isReturnFlight==true)
+      {
+        if(!isDateTrue(result[i].departureDate,departureFlight.ArrivalDate))
+        {
+          result.splice(i,1);
+          i--;
+          continue;
+        }
+      }
       if(cabinClass=="Economy Class")
       {
         if(result[i].FreeEconomySeatsNum<(numberOfAdults+numberOfChildren))
@@ -535,12 +562,88 @@ app.post("/searchDepartureFlight",(req,res)=>{
           i--;
         }
       }
+      
+     
     }
     searchResult=result;
     res.send(result);
 }).catch((err) =>  console.log(err))
   });
-// Starting server
+
+  app.get("/flight",async(req,res)=>{
+    if(session.username=="")
+      res.send(false);
+    else
+    res.send(true);
+  });
+
+  isDateTrue("2002-10-10T16:00:00.000Z","2002-10-10T15:15:00.000Z");
+function isDateTrue(departureDate, arrivalDate){
+    var departureYear = "";
+    var arrivalYear ="";
+    for(let i=0;i<4; i++)
+    {
+        departureYear += departureDate.charAt(i);
+        arrivalYear += arrivalDate.charAt(i);
+    }
+    departureYear = parseInt(departureYear);
+    arrivalYear = parseInt(arrivalYear);
+
+    var departureMonth = "";
+    var arrivalMonth ="";
+    for(let i=5;i<7; i++)
+    {
+        departureMonth += departureDate.charAt(i);
+        arrivalMonth += arrivalDate.charAt(i);
+    }
+    departureMonth = parseInt(departureMonth);
+    arrivalMonth = parseInt(arrivalMonth);
+
+    var departureDay = "";
+    var arrivalDay ="";
+
+    for(let i=8;i<10; i++)
+    {
+        departureDay += departureDate.charAt(i);
+        arrivalDay += arrivalDate.charAt(i);
+    }
+    departureDay = parseInt(departureDay);
+    arrivalDay = parseInt(arrivalDay);
+
+    var departureHour = "";
+    var arrivalHour ="";
+
+    for(let i=11;i<13; i++)
+    {
+        departureHour += departureDate.charAt(i);
+        arrivalHour += arrivalDate.charAt(i);
+    }
+    departureHour = parseInt(departureHour);
+    arrivalHour = parseInt(arrivalHour);
+
+
+    var departureMin = "";
+    var arrivalMin ="";
+
+    for(let i=14;i<16; i++)
+    {
+        departureMin += departureDate.charAt(i);
+        arrivalMin += arrivalDate.charAt(i);
+    }
+    departureMin = parseInt(departureMin);
+    arrivalMin = parseInt(arrivalMin);
+
+
+    const date2 = new Date(arrivalYear, arrivalMonth, arrivalDay, arrivalHour, arrivalMin);
+    const date1 = new Date(departureYear,departureMonth,departureDay,departureHour,departureMin);
+    var diff = date2.valueOf() - date1.valueOf();
+    if(diff>=0)
+        return true;
+    else
+        return false;
+  }
+
+    // Starting server
 app.listen(port, () => {
     console.log(`Listening to requests on http://localhost:${port}`);
   });

@@ -34,6 +34,81 @@ export default function UpdateFlight(){
     const [TripDuration, setTripDuration] = useState("");//Method to be done by ziad
     const [CabinClass, setCabinClass] = useState("");
     const [BaggageAllowance, setBaggageAllowance] = useState("");
+    const [FlightPrice, setFlightPrice] = useState(0);
+
+
+    const [SearchCriteria, setSearchCriteria] = useState({});
+
+    const [ErrorMessage, setErrorMessage] = useState("");
+
+    function durationCalculation(departureDate, arrivalDate){
+      var departureYear = "";
+      var arrivalYear ="";
+      for(let i=0;i<4; i++)
+      {
+          departureYear += departureDate.charAt(i);
+          arrivalYear += arrivalDate.charAt(i);
+      }
+      departureYear = parseInt(departureYear);
+      arrivalYear = parseInt(arrivalYear);
+  
+      var departureMonth = "";
+      var arrivalMonth ="";
+      for(let i=5;i<7; i++)
+      {
+          departureMonth += departureDate.charAt(i);
+          arrivalMonth += arrivalDate.charAt(i);
+      }
+      departureMonth = parseInt(departureMonth);
+      arrivalMonth = parseInt(arrivalMonth);
+  
+      var departureDay = "";
+      var arrivalDay ="";
+  
+      for(let i=8;i<10; i++)
+      {
+          departureDay += departureDate.charAt(i);
+          arrivalDay += arrivalDate.charAt(i);
+      }
+      departureDay = parseInt(departureDay);
+      arrivalDay = parseInt(arrivalDay);
+  
+      var departureHour = "";
+      var arrivalHour ="";
+  
+      for(let i=11;i<13; i++)
+      {
+          departureHour += departureDate.charAt(i);
+          arrivalHour += arrivalDate.charAt(i);
+      }
+      departureHour = parseInt(departureHour);
+      arrivalHour = parseInt(arrivalHour);
+  
+  
+      var departureMin = "";
+      var arrivalMin ="";
+  
+      for(let i=14;i<16; i++)
+      {
+          departureMin += departureDate.charAt(i);
+          arrivalMin += arrivalDate.charAt(i);
+      }
+      departureMin = parseInt(departureMin);
+      arrivalMin = parseInt(arrivalMin);
+  
+  
+      const date2 = new Date(arrivalYear, arrivalMonth, arrivalDay, arrivalHour, arrivalMin);
+      const date1 = new Date(departureYear,departureMonth,departureDay,departureHour,departureMin);
+      var diff = date2.valueOf() - date1.valueOf();
+      var diffInHours = diff/1000/60/60;
+      var min = diffInHours - Math.trunc(diffInHours);
+      min = Math.ceil((min *60));
+      const result = {
+          hour: Math.trunc(diffInHours),
+          min : min
+      }
+      return result;
+    }
 
     
     const CancelToken = axios.CancelToken;
@@ -58,8 +133,15 @@ export default function UpdateFlight(){
      
     //setCabinClass(res.data.CabinClass);
       setBaggageAllowance(res.data.BaggageAllowance);
-     
-      cancel();
+      if(SearchCriteria.CabinClass=="Economy Class")
+      setFlightPrice( parseInt(res.data.EconomySeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
+    if(SearchCriteria.CabinClass=="Business Class")
+    setFlightPrice(parseInt(res.data.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
+    if(SearchCriteria.CabinClass=="First Class")
+    setFlightPrice(parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
+    var s = durationCalculation(DepatureDate,ArrivalDate).hour + " hours, " +durationCalculation(DepatureDate,ArrivalDate).min + " minutes" ;
+    setTripDuration(s);  
+    cancel();
   
     })
     .catch(function (error) {
@@ -67,6 +149,7 @@ export default function UpdateFlight(){
     })
     axios.get('/userCriteria')
     .then(res => {
+      setSearchCriteria(res.data);
       setCabinClass(res.data.CabinClass);
     })
     
@@ -82,6 +165,7 @@ function dateConversion(date){
     //2000-10-10T15:02:00.000Z
     return newDate;
   }
+
 
 function Label(props){
     const {labelName,labeType,method}=props;
@@ -135,6 +219,10 @@ function DoubleLabel(props){
       bodyFormData.append('TripDuration', TripDuration);
       bodyFormData.append('CabinClass', CabinClass);
       bodyFormData.append('BaggageAllowance', BaggageAllowance);
+      bodyFormData.append('FlightPrice', FlightPrice);
+      bodyFormData.append('isReturnFlight', true);
+
+      
 
 
       console.log(FlightNumber);
@@ -146,20 +234,20 @@ function DoubleLabel(props){
         headers: { "Content-Type": "multipart/form-data" },
       })
           .then((response) => {
-            var bodyFormData2 = new FormData();
-            bodyFormData2.append('DepatureAirport', ArrivalAirport);
-            bodyFormData2.append('ArrivalAirport', DepatureAirport);
+            var userCriteria = SearchCriteria;
+            userCriteria.ArrivalAirport = DepatureAirport;
+            userCriteria.DepatureAirport = ArrivalAirport;
           
           axios({
             method: "post",
-            url: "/searchFlight",
-            data: bodyFormData2,
-            headers: { "Content-Type": "multipart/form-data" },
+            url: "/searchFlightUser",
+            data: userCriteria,
+            headers: {},
           })
               .then((response) => { 
                 if(response.data==false)
                {
-                console.log('This departure flight has no available return flights');
+               setErrorMessage('This departure flight has no available return flights');
                 // document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
         
                } 
@@ -269,7 +357,7 @@ return(
                     >
                       Trip Duration
                     </label>
-                    <div>{TripDuration}</div>
+                    <div>{durationCalculation(DepatureDate,ArrivalDate).hour} Hours, {durationCalculation(DepatureDate,ArrivalDate).min} Minutes</div>
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -292,6 +380,17 @@ return(
                     <div>{BaggageAllowance}</div>
 
                   </div>
+
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Total Flight Price
+                    </label>
+                    <div>{FlightPrice}</div>
+
+                  </div>
                   <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
@@ -299,10 +398,13 @@ return(
                     >
                       Confirm as departure flight
                     </button>
+                    <div id='searchFail' className="alert-warning">{ErrorMessage}</div>
+
                   </div>
                 </form>
               </div>
             </div>
+
             <div className="flex flex-wrap mt-6 relative">
               <div className="w-1/2">
                 <a
@@ -314,7 +416,6 @@ return(
                 </a>
               </div>
               <div className="w-1/2 text-right">
-                <span></span>
               </div>
             </div>
           </div>

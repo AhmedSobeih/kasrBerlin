@@ -21,44 +21,55 @@ export default function UpdateFlight(){
     let {flight} = useParams(); 
     const navigate = useNavigate();
 
-    const [FlightCreated, setFlightCreated] = useState("");
-    const [FlightNumber, setFlightNumber] = useState(flight);
+   
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
-    const [DepatureDate, setDepatureDate] = useState("");
-    const [ArrivalDate, setArrivalDate] = useState("");
-    const [EconomySeats, setEconomySeats] = useState("");
-    const [BusinessSeats, setBusinessSeats] = useState("");
-    const [DepatureAirport, setDepatureAirport] = useState("");
-    const [ArrivalAirport, setArrivalAirport] = useState("");
+    const [DepartureFlight, setDepartureFlight] = useState("");
 
-    const [departureFlight, setDepartureFlight] = useState({});
+    const [ReturnFlight, setReturnFlight] = useState("");
+    
+
+
+
+
+
 
     const CancelToken = axios.CancelToken;
     let cancel;
+   
 
-  
-    console.log(1);
-    axios.get('/flight/'+flight)
-    .then(res => {
-      cancelToken: new CancelToken(function executor(c) {
-        // An executor function receives a cancel function as a parameter
-        cancel = c;
+      axios.get('/departureFlight')
+      .then(res => {
+        cancelToken: new CancelToken(function executor(c) {
+          // An executor function receives a cancel function as a parameter
+          cancel = c;
+        })
+        
+        setDepartureFlight(res.data);
+     
+
+
       })
-      
-      setDepatureDate(dateConversion(res.data.DepatureDate));
-      setArrivalDate(dateConversion(res.data.ArrivalDate));
-      setEconomySeats(res.data.EconomySeats);
-      setBusinessSeats(res.data.BusinessSeats);
-      setDepatureAirport(res.data.DepatureAirport);
-      setArrivalAirport(res.data.ArrivalAirport);
-      cancel();
-  
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+      .catch(function (error) {
+          console.log(error);
+      })
+      axios.get('/returnFlight')
+      .then(res => {
+        cancelToken: new CancelToken(function executor(c) {
+          // An executor function receives a cancel function as a parameter
+          cancel = c;
+        })
+        
+        setReturnFlight(res.data);
+     
+
+
+      })
+      .catch(function (error) {
+          console.log(error);
+      })
+ 
      
   
 
@@ -71,6 +82,23 @@ function dateConversion(date){
     // 2001-02-10T22:25
     //2000-10-10T15:02:00.000Z
     return newDate;
+  }
+  function reserveFlight(){
+    axios.get('/returnFlight')
+    .then(res => {
+      if(res.data==false)
+      {
+        if (window.confirm("You must be logged in to confirm the trip")) {
+            navigate('/login');
+
+          } else {
+            
+            }
+      }
+      else
+        navigate('/viewFlights');
+      })
+      
   }
 
 function Label(props){
@@ -111,47 +139,7 @@ function DoubleLabel(props){
                   </div>
     );
 }
-  
-    function changeReturnFlight (){
 
-      var bodyFormData = new FormData();
-      bodyFormData.append('FlightNumber', FlightNumber);
-      bodyFormData.append('DepatureDate', DepatureDate);
-      bodyFormData.append('ArrivalDate', ArrivalDate);
-      bodyFormData.append('EconomySeats', EconomySeats);
-      bodyFormData.append('BusinessSeats', BusinessSeats);
-      bodyFormData.append('DepatureAirport', DepatureAirport);
-      bodyFormData.append('ArrivalAirport', ArrivalAirport);
-      console.log(FlightNumber);
-    
-      axios({
-        method: "post",
-        url: "/returnFlight",
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-          .then((response) => { 
-            console.log(response.data);
-            var bodyFormData2 = new FormData();
-            bodyFormData2.append('DepatureAirport', ArrivalAirport);
-            bodyFormData2.append('ArrivalAirport', DepatureAirport);
-          
-
-          axios({
-            method: "post",
-            url: "/searchFlight",
-            data: bodyFormData2,
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-             
-            })
-          }
-          axios.get('/departureFlight')
-         .then(res => {
-    
-            setDepartureFlight(res.data);
-  
-    })
   
   
 return(
@@ -159,6 +147,7 @@ return(
 
 <>
 {Navbar()};
+      
       <div className="container mx-auto px-4">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">
@@ -170,221 +159,96 @@ return(
                 
               </div>
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-                 
-                <div className="text-blueGray-5000 text-center mb-3 font-bold">
-                   <h1>Departure Flight Details</h1>
+              <div className="text-blueGray-8000 text-center mb-8 font-bold">
+                   <h1>Summary of round trip</h1>
                 </div>
-                <hr className="mt-6 border-b-1 border-blueGray-300" />
-                <form>
-                <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Flight Number
-                    </label>
-                    <div>{departureFlight.FlightNumber}</div>
+              <table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th width="25%" scope="col">Property</th>
+      <th width="25%" scope="col">Departure Flight</th>
+      <th width="25%" scope="col">Return Flight</th>
 
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Depature Date & Time
-                    </label>
-                    <div>{departureFlight.DepatureDate}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Arrival Date & Time
-                    </label>
-                    <div>{departureFlight.ArrivalDate}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Economy Seats
-                    </label>
-                    <div>{departureFlight.EconomySeats}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Business Seats
-                    </label>
-                  <div>{departureFlight.BusinessSeats}</div>
-                  </div><div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Depature Airport
-                    </label>
-                    <div>{departureFlight.DepatureAirport}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Arrival Airport
-                    </label>
-                    <div>{departureFlight.ArrivalAirport}</div>
-
-                  </div>
-                  <div className="text-center mt-6">
-                   
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div className="flex flex-wrap mt-6 relative">
-              <div className="w-1/2">
-                <a
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                  className="text-blueGray-200"
-                >
-                  <small>Forgot password?</small>
-                </a>
-              </div>
-              <div className="w-1/2 text-right">
-                <span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="container mx-auto px-4">
-        <div className="flex content-center items-center justify-center h-full">
-          <div className="w-full lg:w-8/12 px-4">
-            <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
-              <div className="rounded-t mb-0 px-6 py-6">
-                
-                <div className="btn-wrapper text-center">
-                 </div>
-                
-              </div>
-              <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-                 
-                <div className="text-blueGray-5000 text-center mb-3 font-bold">
-                   <h1>Return Flight Details</h1>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+      <th scope="row">Flight Number</th>
+      <td>{DepartureFlight.FlightNumber}</td>
+      <td>{ReturnFlight.FlightNumber}</td>
+    </tr>
+    
+    <tr>
+      <th scope="row">Departure Time</th>
+      <td>{DepartureFlight.DepatureDate}</td>
+      <td>{ReturnFlight.DepatureDate}</td>
+    </tr>
+    <tr>
+      <th scope="row">Arrival Time</th>
+      <td>{DepartureFlight.ArrivalDate}</td>
+      <td>{ReturnFlight.ArrivalDate}</td>
+    </tr>
+    <tr>
+      <th scope="row">Departure Airport</th>
+      <td>{DepartureFlight.DepatureAirport}</td>
+      <td>{ReturnFlight.DepatureAirport}</td>
+    </tr>
+    <tr>
+      <th scope="row">Arrival Airport</th>
+      <td>{DepartureFlight.ArrivalAirport}</td>
+      <td>{ReturnFlight.ArrivalAirport}</td>
+    </tr>
+    <tr>
+      <th scope="row">Price</th>
+      <td>{DepartureFlight.FlightPrice}</td>
+      <td>{ReturnFlight.FlightPrice}</td>
+    </tr>
+    <tr>
+      <th scope="row">Chosen Cabin</th>
+      <td>{DepartureFlight.CabinClass}</td>
+      <td>{ReturnFlight.CabinClass}</td>
+    </tr>
+    <tr>
+      <th scope="row">Trip Duration</th>
+      <td>{DepartureFlight.TripDuration}</td>
+      <td>{ReturnFlight.TripDuration}</td>
+    </tr>
+    <tr>
+      <th scope="row">Baggage Allowance per Passenger</th>
+      <td>{DepartureFlight.BaggageAllowance}</td>
+      <td>{ReturnFlight.BaggageAllowance}</td>
+    </tr>
+    <tr>
+      <th scope="row">Seats Reserved</th>
+      <td>xx </td>
+      <td>xx</td>
+    </tr>
+  </tbody>
+</table>
+<div className="text-blueGray-8000 text-center mb-8 font-bold">
+                   <h1>Total Price = {parseInt(DepartureFlight.FlightPrice)+parseInt(ReturnFlight.FlightPrice)}</h1>
                 </div>
-                <hr className="mt-6 border-b-1 border-blueGray-300" />
-                <form>
-                <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Flight Number
-                    </label>
-                    <div>{FlightNumber}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Depature Date & Time
-                    </label>
-                    <div>{DepatureDate}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Arrival Date & Time
-                    </label>
-                    <div>{ArrivalDate}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Economy Seats
-                    </label>
-                    <div>{EconomySeats}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Business Seats
-                    </label>
-                  <div>{BusinessSeats}</div>
-                  </div><div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Depature Airport
-                    </label>
-                    <div>{DepatureAirport}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Arrival Airport
-                    </label>
-                    <div>{ArrivalAirport}</div>
-
-                  </div>
-                  <div className="text-center mt-6">
+                <div className="text-center mt-6">
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"  onClick = {(e) =>{ e.preventDefault();
-                        if (window.confirm("You must be logged in to confirm the trip")) {
+                      type="button"  onClick = {reserveFlight}
+                       /* if (window.confirm("You must be logged in to confirm the trip")) {
                         navigate('/login');
 
                       } else {
                         
                         }
+                      
                         
-                            }}
+                            }}*/
                     >
-                      Confirm trip
+                      Reserve Trip
                     </button>
                   </div>
-                </form>
-              </div>
+
+               </div>
             </div>
-            <div className="flex flex-wrap mt-6 relative">
-              <div className="w-1/2">
-                <a
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                  className="text-blueGray-200"
-                >
-                  <small>Forgot password?</small>
-                </a>
-              </div>
-              <div className="w-1/2 text-right">
-                <span></span>
-              </div>
-            </div>
+           
           </div>
         </div>
       </div>

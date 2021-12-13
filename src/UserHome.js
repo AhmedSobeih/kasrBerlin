@@ -17,6 +17,9 @@ export default function UserHome() {
         navigate('/UserAccountDetails/'+ username);        
     }
 
+    function goReserveFlight(){
+      navigate('/searchFlightUser');        
+  }
     function goSearchFlights(){
       navigate('/searchWithCriteria');
     }
@@ -60,6 +63,9 @@ return (
     </div>
     <div>
         <button className="bg-dark adminButtons"  onClick={goUserAccount}>User Account</button>
+    </div>
+    <div>
+        <button className="bg-dark adminButtons"  onClick={goReserveFlight}>Reserve a trip</button>
     </div>
 
 

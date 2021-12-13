@@ -13,11 +13,13 @@ import UserHome from './UserHome';
 import UserAccountDetails from './UserAccountDetails';
 import UserUpdateDetails from './UserUpdateDetails';
 import Index from './index';
-import SearchFlightGuest from './searchFlightGuest';
-import SearchResultsGuest from './SearchResultsGuest';
+import SearchFlightUser from './searchFlightUser';
+import SearchResultsUser from './SearchResultsUser';
 import DepartureFlight from './DepartureFlightDetails';
 import SearchReturnFlight from './SearchReturnFlight';
-import ReturnFlightDetails from './summary';
+import ReturnFlightDetails from './ReturnFlightDetails';
+import Summary from './summary';
+
 
 
 
@@ -45,11 +47,13 @@ function App(){
                <Route path="/UserAccountDetails/:username" element={<UserAccountDetails/>} />
                <Route path="/UserUpdateDetails/:username" element={<UserUpdateDetails/>} />
                <Route path="/" element={<Index/>} />
-               <Route path="/searchFlightGuest" element={<SearchFlightGuest/>} />
-               <Route path="/searchResultsGuest" element={<SearchResultsGuest/>} />
+               <Route path="/searchFlightUser" element={<SearchFlightUser/>} />
+               <Route path="/searchResultsUser" element={<SearchResultsUser/>} />
                <Route path="/departureFlight/:flight" element={<DepartureFlight/>} />
                <Route path="/searchReturnFlight" element={<SearchReturnFlight/>} />
-               <Route path="/summary/:flight" element={<ReturnFlightDetails/>} />
+               <Route path="/returnFlight/:flight" element={<ReturnFlightDetails/>} />
+               <Route path="/summary" element={<Summary/>} />
+
              
 
 

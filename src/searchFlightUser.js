@@ -118,6 +118,9 @@ export default function SearchFlightGuest(){
     bodyFormData.append('DepatureAirport', DepatureAirport);
     bodyFormData.append('ArrivalAirport', ArrivalAirport);
     bodyFormData.append('CabinClass', CabinClass);
+    bodyFormData.append('isReturnFlight', false);
+
+    
 
     axios({
       method: "post",
@@ -132,7 +135,7 @@ export default function SearchFlightGuest(){
   
   axios({
     method: "post",
-    url: "/searchDepartureFlight",
+    url: "/searchFlightUser",
     data: bodyFormData,
     headers: { "Content-Type": "multipart/form-data" },
   })
@@ -146,7 +149,7 @@ export default function SearchFlightGuest(){
        } 
         else{
           console.log(response.data);
-          navigate("/searchResultsGuest");
+          navigate("/searchResultsUser");
         }
     })
   }
@@ -315,7 +318,7 @@ return(
                     <input
                      hidden={DepartureAirportVisibility} 
 
-                     type="number" onChangeCapture={(e) => {
+                     type="text" onChangeCapture={(e) => {
                       handleDepatureAirport(e);}}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
@@ -336,7 +339,7 @@ return(
                     <input
                      hidden={ArrivalAirportVisibility} 
 
-                     type="number" onChangeCapture={(e) => {
+                     type="text" onChangeCapture={(e) => {
                       handleArrivalAirport(e);}}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />

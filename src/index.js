@@ -105,7 +105,7 @@ export default function Home(){
                                 <a class="btn btn-primary btn-lg px-4 me-sm-3" href="/login">Login</a>
                                 <a class="btn btn-outline-light btn-lg px-4" href="/register">Register Now!</a>
                             </div>
-                            <div class="mt-4"> <a class="btn btn-outline-light btn-lg px-8" href="/searchFlightGuest">Search your Flight</a> </div>
+                            <div class="mt-4"> <a class="btn btn-outline-light btn-lg px-8" href="/searchFlightUser">Search your Flight</a> </div>
                         </div>
                     </div>
                 </div>
