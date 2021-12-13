@@ -251,7 +251,7 @@ app.post('/login',(req,res) =>{
       {
         session.username=req.body.username;
         loggedIn = user[0].type;
-        result.status = true;
+        result.state = true;
         result.type = loggedIn;
         
         res.send(result);
