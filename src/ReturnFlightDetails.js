@@ -28,8 +28,9 @@ export default function UpdateFlight(){
     //html: "2021-11-10T16:32"
     const [DepatureDate, setDepatureDate] = useState("");
     const [ArrivalDate, setArrivalDate] = useState("");
-    const [EconomySeats, setEconomySeats] = useState("");
-    const [BusinessSeats, setBusinessSeats] = useState("");
+    const [FreeEconomySeatsNum, setFreeEconomySeatsNum] = useState("");
+    const [FreeBusinessSeatsNum, setFreeBusinessSeatsNum] = useState("");
+    const [FreeFirstSeatsNum, setFreeFirstSeatsNum] = useState("");
     const [DepatureAirport, setDepatureAirport] = useState("");
     const [ArrivalAirport, setArrivalAirport] = useState("");
     const [TripDuration, setTripDuration] = useState("");
@@ -62,8 +63,10 @@ export default function UpdateFlight(){
       
       setDepatureDate(dateConversion(res.data.DepatureDate));
       setArrivalDate(dateConversion(res.data.ArrivalDate));
-      setEconomySeats(res.data.EconomySeats);
-      setBusinessSeats(res.data.BusinessSeats);
+      setFreeEconomySeatsNum(res.data.FreeEconomySeatsNum);
+      setFreeBusinessSeatsNum(res.data.FreeBusinessSeatsNum);
+      setFreeFirstSeatsNum(res.data.FreeFirstSeatsNum);
+
       setDepatureAirport(res.data.DepatureAirport);
       setArrivalAirport(res.data.ArrivalAirport);
       setCabinClass(departureFlight.CabinClass);
@@ -150,8 +153,9 @@ function showDepartureFlight(e)  {
       bodyFormData.append('FlightNumber', FlightNumber);
       bodyFormData.append('DepatureDate', DepatureDate);
       bodyFormData.append('ArrivalDate', ArrivalDate);
-      bodyFormData.append('EconomySeats', EconomySeats);
-      bodyFormData.append('BusinessSeats', BusinessSeats);
+      bodyFormData.append('FreeEconomySeatsNum', FreeEconomySeatsNum);
+      bodyFormData.append('FreeBusinessSeatsNum', FreeBusinessSeatsNum);
+      bodyFormData.append('FreeFirstSeatsNum', FreeFirstSeatsNum);
       bodyFormData.append('DepatureAirport', DepatureAirport);
       bodyFormData.append('ArrivalAirport', ArrivalAirport);
       bodyFormData.append('TripDuration', TripDuration);

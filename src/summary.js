@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
 import Navbar from 'Navbar';
+import session from "express-session";
 
 var flag = true;
 
@@ -28,47 +29,27 @@ export default function UpdateFlight(){
     const [DepartureFlight, setDepartureFlight] = useState("");
 
     const [ReturnFlight, setReturnFlight] = useState("");
-    
-
-
-
-
-
-
-    const CancelToken = axios.CancelToken;
-    let cancel;
-   
-
-      axios.get('/departureFlight')
-      .then(res => {
-        cancelToken: new CancelToken(function executor(c) {
-          // An executor function receives a cancel function as a parameter
-          cancel = c;
-        })
-        
-        setDepartureFlight(res.data);
-     
-
-
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
+    // const SampleComponent = () => {
+    //   useEffect(() => {
+    //     // code to run on component mount
+    //   }, [])     
       axios.get('/returnFlight')
       .then(res => {
-        cancelToken: new CancelToken(function executor(c) {
-          // An executor function receives a cancel function as a parameter
-          cancel = c;
-        })
-        
         setReturnFlight(res.data);
-     
 
-
-      })
+        })
       .catch(function (error) {
           console.log(error);
       })
+      axios.get('/departureFlight')
+      .then(res => {
+        setDepartureFlight(res.data);
+
+        })
+      .catch(function (error) {
+          console.log(error);
+      })
+ 
  
      
   
@@ -83,10 +64,29 @@ function dateConversion(date){
     //2000-10-10T15:02:00.000Z
     return newDate;
   }
-  async function reserveFlight(){
-            await axios.get('/reserveFlight')
+   function reserveFlight(){
+    axios.get('/session')
+    .then(res => {
+      if(res.data==false)
+      {
+        if (window.confirm("You must be logged in to reserve a flight. Do you want to login?")) {
+          navigate('/login');
 
-             navigate('/Itinerary');
+       } else {
+         
+         }
+      }
+      else{
+        axios.get('/reserveFlight')
+    .then(res => {
+            navigate('/Itinerary');
+    })
+
+      }
+    })
+    
+            
+
 
   }
 

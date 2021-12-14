@@ -216,25 +216,7 @@ class SearchResults extends Component {
                     <div>{this.state.departureFlight.ArrivalDate}</div>
 
                   </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Economy Seats
-                    </label>
-                    <div>{this.state.departureFlight.EconomySeats}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Business Seats
-                    </label>
-                  <div>{this.state.departureFlight.BusinessSeats}</div>
-                  </div><div className="relative w-full mb-3">
+                 <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
@@ -343,7 +325,7 @@ class SearchResults extends Component {
       <td>{fl.DepatureDate}</td>
       <td>{fl.ArrivalDate}</td>
       <td>{this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour} hours, {this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min} minutes </td>
-      <td>{parseInt(this.getPrice(fl))}</td>
+      <td>{(this.getPrice(fl))}</td>
       <td>{fl.BaggageAllowance}</td>
 
       <td><button 
