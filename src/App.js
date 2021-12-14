@@ -20,7 +20,7 @@ import DepartureFlight from './DepartureFlightDetails';
 import SearchReturnFlight from './SearchReturnFlight';
 import ReturnFlightDetails from './ReturnFlightDetails';
 import Summary from './summary';
-
+import Itinerary from './Itinerary';
 
 
 
@@ -55,6 +55,7 @@ function App(){
                <Route path="/searchReturnFlight" element={<SearchReturnFlight/>} />
                <Route path="/returnFlight/:flight" element={<ReturnFlightDetails/>} />
                <Route path="/summary" element={<Summary/>} />
+               <Route path="/Itinerary" element={<Itinerary/>} />
 
              
 

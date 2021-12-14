@@ -151,6 +151,7 @@ export default function UpdateFlight(){
     .then(res => {
       setSearchCriteria(res.data);
       setCabinClass(res.data.CabinClass);
+      
     })
     
   

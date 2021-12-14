@@ -176,17 +176,21 @@ function showDepartureFlight(e)  {
             bodyFormData2.append('DepatureAirport', ArrivalAirport);
             bodyFormData2.append('ArrivalAirport', DepatureAirport);
           
-
        
              
             })
-          }
-          axios.get('/departureFlight')
+
+         
+
+      }
+      axios.get('/departureFlight')
          .then(res => {
     
             setDepartureFlight(res.data);
   
     })
+
+
 
     function durationCalculation(departureDate, arrivalDate){
       var departureYear = "";

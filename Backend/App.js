@@ -11,6 +11,8 @@ const app = express();
 const port = process.env.PORT || "8000";
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
+const Reservation = require('./Models/Reservation');
+
 var session = require('express-session');
 
 const searchedFlights = [];
@@ -37,7 +39,7 @@ var searchResult = [];
 var departureFlight = null;
 var returnFlight = null;
 var userPreferredCriteria=null;
-
+var reservationNumber=1;
 // #Importing the userController
 
 
@@ -120,6 +122,34 @@ app.post("/departureFlight",async(req,res)=>{
       }
       */
       //we need to create a session
+
+app.get("/reserveFlight", async(req,res)=>{
+      console.log("hii");
+      reservationNumber++;
+      const newReservation =new Reservation({
+        ReservationNumber:reservationNumber,
+        DepartureFlightNumber:parseInt(departureFlight.FlightNumber),
+        ArrivalFlightNumber: parseInt(returnFlight.FlightNumber),
+        CabinClass: userPreferredCriteria.CabinClass,
+        Price: parseInt(departureFlight.FlightPrice)+parseInt(returnFlight.FlightPrice),
+        User: session.username ,
+        Seats:[1]
+      })
+      try{
+        await newReservation.save(newReservation);
+        res.send(true);
+      }
+      catch(err)
+      {
+        console.log(err);
+      }
+});
+
+
+app.get("/reservedFlight", async(req,res)=>{
+  const reservedFlight= await Reservation.find({username : session.username , DepartureFlightNumber:departureFlight.FlightNumber});
+  res.send(reservedFlight);
+});
 
 
 app.get("/returnFlight", async(req,res)=>{

@@ -16,7 +16,7 @@ const Anchor =({title})=>{
         )
        };
 
-export default function UpdateFlight(){
+export default function Itinerary(){
 
     let {flight} = useParams(); 
     const navigate = useNavigate();
@@ -54,6 +54,7 @@ export default function UpdateFlight(){
       .catch(function (error) {
           console.log(error);
       })
+
       axios.get('/returnFlight')
       .then(res => {
         cancelToken: new CancelToken(function executor(c) {
@@ -83,51 +84,27 @@ function dateConversion(date){
     //2000-10-10T15:02:00.000Z
     return newDate;
   }
-  async function reserveFlight(){
-            await axios.get('/reserveFlight')
 
-             navigate('/Itinerary');
+  /*
+  function reserveFlight(){
+    axios.get('/returnFlight')
+    .then(res => {
+      if(res.data==false)
+      {
+        if (window.confirm("You must be logged in to confirm the trip")) {
+            navigate('/login');
 
-  }
+          } else {
+            
+            }
+      }
+      else
+        navigate('/viewFlights');
+      })
+      
+  }*/
 
-function Label(props){
-    const {labelName,labeType,method}=props;
-    return(
-         <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      {labelName}
-                    </label>
-                    <input
-                     type={labeType} onChange={method} placeholder={labeType} autoFocus="autoFocus" key={labelName}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
-    );
-}
-function DoubleLabel(props){
-    const {labelName,labeFirstType,method1,labeSecondType,method2}=props;
-    return(
-         <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      {labelName}
-                    </label>
-                    <input
-                     type={labeFirstType} onchange = {method1}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                    <input
-                     type={labeSecondType} onchange = {method2}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
-    );
-}
+
 
   
   
@@ -149,7 +126,7 @@ return(
               </div>
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
               <div className="text-blueGray-8000 text-center mb-8 font-bold">
-                   <h1>Summary of round trip</h1>
+                   <h1>Your Flight Itinerary</h1>
                 </div>
               <table class="table">
   <thead class="thead-dark">
@@ -218,21 +195,7 @@ return(
                    <h1>Total Price = {parseInt(DepartureFlight.FlightPrice)+parseInt(ReturnFlight.FlightPrice)}</h1>
                 </div>
                 <div className="text-center mt-6">
-                    <button
-                      className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"  onClick = {reserveFlight}
-                       /* if (window.confirm("You must be logged in to confirm the trip")) {
-                        navigate('/login');
-
-                      } else {
-                        
-                        }
-                      
-                        
-                            }}*/
-                    >
-                      Reserve Trip
-                    </button>
+                    
                   </div>
 
                </div>
