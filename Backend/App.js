@@ -70,7 +70,10 @@ app.get("/newAdmin",async(req,res)=>{
 
 //returns the username of the session
 app.get("/session",async(req,res)=>{
-  res.send(session.username);
+  if(session.username==undefined)
+    res.send(false);
+  else
+    res.send(session.username);
 });
 
 //MS2
@@ -125,6 +128,11 @@ app.post("/departureFlight",async(req,res)=>{
 
 app.get("/reserveFlight", async(req,res)=>{
       console.log("hii");
+      if(session.username==undefined)
+      {
+        res.send(false);
+        return;
+      }
       reservationNumber++;
       const newReservation =new Reservation({
         ReservationNumber:reservationNumber,
@@ -143,6 +151,90 @@ app.get("/reserveFlight", async(req,res)=>{
       {
         console.log(err);
       }
+    
+    //UPDATE DEPARTURE FLIGHT SEATS NUMBER
+    var depFlightNewFreeSeats = 0;
+    var filter = {};
+    var toBeUpdated = {};
+    if(departureFlight.CabinClass=="Economy Class")
+    {
+      depFlightNewFreeSeats=parseInt(departureFlight.FreeEconomySeatsNum)-(parseInt(userPreferredCriteria.NumberOfAdults) + parseInt(userPreferredCriteria.NumberOfChildren));
+      filter = {FlightNumber: departureFlight.FlightNumber};
+      toBeUpdated = {FreeEconomySeatsNum: depFlightNewFreeSeats};
+      Flight.findOneAndUpdate(filter, toBeUpdated, {
+        new: true,
+      })
+      .then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+    }  
+    else if(departureFlight.CabinClass=="Business Class")
+    { 
+       depFlightNewFreeSeats=parseInt(departureFlight.FreeBusinessSeatsNum)-(parseInt(userPreferredCriteria.NumberOfAdults) + parseInt(userPreferredCriteria.NumberOfChildren));
+       filter = {FlightNumber: departureFlight.FlightNumber};
+       toBeUpdated = {FreeBusinessSeatsNum: depFlightNewFreeSeats};
+       Flight.findOneAndUpdate(filter, toBeUpdated, {
+         new: true,
+       })
+       .then((flight)=>{
+         console.log("updated");
+     }).catch((err) =>  console.log(err)  ) 
+    }
+      else 
+    {
+       depFlightNewFreeSeats=parseInt(departureFlight.FreeFirstSeatsNum)-(parseInt(userPreferredCriteria.NumberOfAdults) + parseInt(userPreferredCriteria.NumberOfChildren));
+       filter = {FlightNumber: departureFlight.FlightNumber};
+       toBeUpdated = {FreeFirstSeatsNum: depFlightNewFreeSeats};
+       Flight.findOneAndUpdate(filter, toBeUpdated, {
+         new: true,
+       })
+       .then((flight)=>{
+         console.log("updated");
+     }).catch((err) =>  console.log(err) )
+    }
+
+    //UPDATE RETURN FLIGHT SEATS NUMBER
+    var returnFlightNewFreeSeats = 0;
+    var filter = {};
+    var toBeUpdated = {};
+    if(returnFlight.CabinClass=="Economy Class")
+    {
+      returnFlightNewFreeSeats=parseInt(returnFlight.FreeEconomySeatsNum)-(parseInt(userPreferredCriteria.NumberOfAdults) + parseInt(userPreferredCriteria.NumberOfChildren));
+      filter = {FlightNumber: returnFlight.FlightNumber};
+      toBeUpdated = {FreeEconomySeatsNum: returnFlightNewFreeSeats};
+      Flight.findOneAndUpdate(filter, toBeUpdated, {
+        new: true,
+      })
+      .then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+    }  
+    else if(returnFlight.CabinClass=="Business Class")
+    { 
+       returnFlightNewFreeSeats=parseInt(returnFlight.FreeBusinessSeatsNum)-(parseInt(userPreferredCriteria.NumberOfAdults) + parseInt(userPreferredCriteria.NumberOfChildren));
+       filter = {FlightNumber: returnFlight.FlightNumber};
+       toBeUpdated = {FreeBusinessSeatsNum: returnFlightNewFreeSeats};
+       Flight.findOneAndUpdate(filter, toBeUpdated, {
+         new: true,
+       })
+       .then((flight)=>{
+         console.log("updated");
+     }).catch((err) =>  console.log(err)  ) 
+    }
+      else 
+    {
+       returnFlightNewFreeSeats=parseInt(returnFlight.FreeFirstSeatsNum)-(parseInt(userPreferredCriteria.NumberOfAdults) + parseInt(userPreferredCriteria.NumberOfChildren));
+       filter = {FlightNumber: returnFlight.FlightNumber};
+       toBeUpdated = {FreeFirstSeatsNum: returnFlightNewFreeSeats};
+       Flight.findOneAndUpdate(filter, toBeUpdated, {
+         new: true,
+       })
+       .then((flight)=>{
+         console.log("updated");
+     }).catch((err) =>  console.log(err) )
+    }
+
+
 });
 
 
@@ -417,13 +509,10 @@ app.post("/searchFlight",(req,res)=>{
       );
       console.log(req.body);
       console.log(filter);
-      Flight.findOneAndUpdate(filter, req.body, {
-        new: true,
-      })
-      .then((flight)=>{
-        console.log("updated");
-        res.send(true);//if successful, render the flight again with the new values
-    }).catch((err) =>  res.send(false))
+   
+   
+
+
         
     });
 
