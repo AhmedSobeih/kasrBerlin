@@ -11682,3 +11682,143 @@ fieldset:disabled .btn {
   width: 50%;
   height: 50px;
 }
+
+/*Start here*/
+
+.plane {
+  margin: 20px auto;
+  max-width: 300px;
+}
+.cockpit {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  border-bottom: 5px solid #eeeeee;
+}
+.cockpit:before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 500px;
+  width: 300px;
+  border-radius: 150px;
+  border-right: 5px solid #eeeeee;
+  border-left: 5px solid #eeeeee;
+}
+.cockpit h1 {
+  width: 200px;
+  margin: 100px auto 35px auto;
+}
+.exit {
+  position: relative;
+  height: 50px;
+}
+.exit:before {
+  content: "EXIT";
+  font-size: 14px;
+  padding: 0px 4px;
+  font-family: "Times New Roman", Times, serif;
+  display: block;
+  position: absolute;
+  background: #ff0033;
+  color: #ffffff;
+  left: 0;
+}
+.exit:after {
+  content: "EXIT";
+  font-size: 14px;
+  padding: 0px 4px;
+  font-family: "Times New Roman", Times, serif;
+  display: block;
+  position: absolute;
+  background: #ff0033;
+  color: #ffffff;
+  right: 0;
+}
+
+.fuselage {
+  border-right: 5px solid #eeeeee;
+  border-left: 5px solid #eeeeee;
+}
+
+.seats {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+.seat {
+  display: flex;
+  flex: 0 0 14%;
+  padding: 5px;
+  position: relative;
+}
+.seat:nth-child(3) {
+  margin-right: 15px;
+}
+.seat input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+}
+.seat input[type="checkbox"]:checked + label {
+  background: #66ff66;
+  -webkit-animation-name: rubberBand;
+  animation-name: rubberBand;
+  animation-duration: 300ms;
+  animation-fill-mode: both;
+}
+.seat input[type="checkbox"]:disabled + label {
+  background: #ddd;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+.seat input[type="checkbox"]:disabled + label:after {
+  content: "X";
+  text-indent: 0;
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
+.seat input[type="checkbox"]:disabled + label:hover {
+  box-shadow: none;
+}
+.seat label {
+  display: block;
+  position: relative;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 24px;
+  padding: 4px 0;
+  background: #3399ff;
+  border-radius: 5px;
+  animation-duration: 300ms;
+  animation-fill-mode: both;
+}
+
+.seat label:hover {
+  cursor: pointer;
+  box-shadow: 0 0 0px 2px #5c6aff;
+}
+
+.xcontainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+img {
+  max-width: 60%;
+  max-height: 40%;
+}
+.image {
+  flex-basis: 40%;
+}
+.xtext {
+  font-size: 20px;
+  padding-left: 20px;
+}
