@@ -21,7 +21,7 @@ class SearchResults extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { flightsCollection: [] };
+        this.state = { flightsCollection: [], isUser: {} };
         const navigate = this.props.navigate;
 
     }
@@ -36,6 +36,8 @@ class SearchResults extends Component {
             .catch(function (error) {
                 console.log(error);
             })
+            
+          
     }
     gotoUpdateFlight(deletedFlightNumber) {
         this.props.navigate('/updateFlight/'+deletedFlightNumber)

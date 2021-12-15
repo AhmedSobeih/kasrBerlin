@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import './css/styles.css';
 import './assets/styles/index.css';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 
@@ -47,6 +47,7 @@ export default function UserHome() {
         })
         return username;
       }
+     
 return (
 <div>
     

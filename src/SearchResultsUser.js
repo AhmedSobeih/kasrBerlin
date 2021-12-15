@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
+import NavbarGuest from 'NavbarGuest';
+
 
 const Anchor =({title})=>{
         return (
@@ -21,7 +23,7 @@ class SearchResults extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { flightsCollection: [], userCriteria: {} };
+        this.state = { flightsCollection: [], userCriteria: {}, isUser: false };
         const navigate = this.props.navigate;
 
     }
@@ -41,6 +43,13 @@ class SearchResults extends Component {
                this.setState({userCriteria: res.data});
   
            })
+           axios.get('/session')
+            .then(res => {
+              if(res.data==false)
+                this.setState({isUser:false});
+              else
+              this.setState({isUser:true});
+            })
     .catch(function (error) {
         console.log(error);
     })
@@ -150,7 +159,11 @@ class SearchResults extends Component {
 
             
             <div className="wrapper-users">
-{Navbar()};
+{this.state.isUser&&Navbar()};
+{
+  !this.state.isUser&&
+   NavbarGuest()
+}
 <table class="table">
   <thead>
     <tr>

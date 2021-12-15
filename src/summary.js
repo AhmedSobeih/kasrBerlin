@@ -1,9 +1,11 @@
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
+import NavbarGuest from 'NavbarGuest';
+
 import session from "express-session";
 
 var flag = true;
@@ -26,14 +28,13 @@ export default function UpdateFlight(){
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
-    const [DepartureFlight, setDepartureFlight] = useState("");
+    const [DepartureFlight, setDepartureFlight] = useState({});
 
-    const [ReturnFlight, setReturnFlight] = useState("");
-    // const SampleComponent = () => {
-    //   useEffect(() => {
-    //     // code to run on component mount
-    //   }, [])     
-      axios.get('/returnFlight')
+    const [ReturnFlight, setReturnFlight] = useState({});
+    const [isUser, setIsUser] = useState(false);
+
+      useEffect(() => {
+        axios.get('/returnFlight')
       .then(res => {
         setReturnFlight(res.data);
 
@@ -49,6 +50,16 @@ export default function UpdateFlight(){
       .catch(function (error) {
           console.log(error);
       })
+      axios.get('/session')
+      .then(res => {
+        if(res.data==false)
+          setIsUser(false);
+        else
+          setIsUser(true);
+      })
+        // code to run on component mount
+      }, [])    
+      
  
  
      
@@ -98,7 +109,7 @@ function Label(props){
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      {labelName}
+                      {labelName }
                     </label>
                     <input
                      type={labeType} onChange={method} placeholder={labeType} autoFocus="autoFocus" key={labelName}
@@ -135,7 +146,9 @@ return(
 
 
 <>
-{Navbar()};
+{isUser&&Navbar()};
+{!isUser&&NavbarGuest()};
+
       
       <div className="container mx-auto px-4">
         <div className="flex content-center items-center justify-center h-full">

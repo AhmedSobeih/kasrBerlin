@@ -3,7 +3,9 @@ import React, {useState} from "react";
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
+import NavbarGuest from 'NavbarGuest';
+
 
 var flag = true;
 
@@ -39,6 +41,8 @@ export default function UpdateFlight(){
     const [FlightPrice, setFlightPrice] = useState("");
     const [SearchCriteria, setSearchCriteria] = useState("");
     const [DepartureFlightVisibility, setDepartureFlightVisibility] = useState("true");
+    const [isUser, setIsUser] = useState(false);
+
 
 
 
@@ -48,6 +52,13 @@ export default function UpdateFlight(){
 
     const CancelToken = axios.CancelToken;
     let cancel;
+    axios.get('/session')
+    .then(res => {
+      if(res.data==false)
+        setIsUser(false);
+      else
+        setIsUser(true);
+    })
     axios.get('/userCriteria')
     .then(res => {
         setSearchCriteria(res.data);
@@ -270,7 +281,9 @@ return(
 
 
 <>
-{Navbar()};
+{isUser&&Navbar()};
+{!isUser&&NavbarGuest()};
+
       <div className="container mx-auto px-4">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">

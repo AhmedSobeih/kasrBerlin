@@ -3,7 +3,9 @@ import React, {useState} from "react";
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
+import NavbarGuest from 'NavbarGuest.js';
+
 
 const Anchor =({title})=>{
         return (
@@ -34,6 +36,9 @@ export default function SearchFlightGuest(){
     const [DepatureAirport, setDepatureAirport] = useState("");
     const [ArrivalAirport, setArrivalAirport] = useState("");
     const [CabinClass, setCabinClass] = useState("Economy Class");
+    const [isUser, setIsUser] = useState(false);
+
+
    
     const [ErrorMessage, setErrorMessage] = useState("");
 
@@ -190,6 +195,17 @@ export default function SearchFlightGuest(){
     setCabinClass(document.getElementById("CabinClass").value);
     console.log(CabinClass);
   }
+    axios.get('/session')
+    .then(res => {
+      if(res.data==false)
+        setIsUser(false);
+      else
+        setIsUser(true);
+    })
+  
+
+
+ 
   
   
  
@@ -198,7 +214,15 @@ return(
 
 
 <>
-{Navbar()};
+{
+  isUser&&
+   Navbar()
+}
+{
+  !isUser&&
+   NavbarGuest()
+}
+
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">
@@ -212,7 +236,7 @@ return(
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                  
                 <div className="text-blueGray-5000 text-center mb-3 font-bold">
-                   <h1>search with Criteria</h1>
+                   <h1>Search with Criteria</h1>
                 </div>
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
                 <form>

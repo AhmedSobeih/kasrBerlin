@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
 
 var flag = true;
 
@@ -28,6 +28,8 @@ export default function Itinerary(){
     const [DepartureFlight, setDepartureFlight] = useState("");
 
     const [ReturnFlight, setReturnFlight] = useState("");
+    const [isUser, setIsUser] = useState({});
+
     
 
 
@@ -69,6 +71,13 @@ export default function Itinerary(){
       })
       .catch(function (error) {
           console.log(error);
+      })
+      axios.get('/session')
+      .then(res => {
+        if(res.data==false)
+          setIsUser(false);
+        else
+          setIsUser(true);
       })
  
      
@@ -113,6 +122,7 @@ return(
 
 <>
 {Navbar()};
+
       
       <div className="container mx-auto px-4">
         <div className="flex content-center items-center justify-center h-full">
