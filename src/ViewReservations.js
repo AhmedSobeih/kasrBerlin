@@ -125,11 +125,11 @@ class ViewReservations extends Component {
                                   <tr>
       <th scope="row">{index+1}</th>
       
-      <td>{fl.FlightNumber}</td>
-      <td>{fl.DepatureDate}</td>
-      <td>{fl.ArrivalDate}</td>
-      <td>{fl.DepatureAirport}</td>
-      <td>{fl.ArrivalAirport}</td>
+      <td>{fl.DepatureFlightFlightNumber}</td>
+      <td>{fl.DepatureFlightDepatureDate}</td>
+      <td>{fl.DepatureFlightArrivalDate}</td>
+      <td>{fl.DepatureFlightDepatureAirport}</td>
+      <td>{fl.DepatureFlightArrivalAirport}</td>
       <td>{fl.Class}</td>
       <td>{fl.Seats.length}</td>
       <td>{fl.Seats.join(",")}</td>
