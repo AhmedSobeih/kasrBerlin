@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
+import NavbarGuest from 'NavbarGuest';
+
 var flag= false;
 
 const Anchor =({title})=>{
@@ -22,7 +24,7 @@ class SearchResults extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { flightsCollection: [] , departureFlight: {}, userCriteria: {}, DepartureFlightVisibility:"true"};
+        this.state = { flightsCollection: [] , departureFlight: {}, userCriteria: {}, DepartureFlightVisibility:"true",  isUser: false };
         const navigate = this.props.navigate;
 
     }
@@ -54,6 +56,13 @@ class SearchResults extends Component {
     .catch(function (error) {
         console.log(error);
     })
+    axios.get('/session')
+            .then(res => {
+              if(res.data==false)
+                this.setState({isUser:false});
+              else
+              this.setState({isUser:true});
+            })
     }
     gotoSummary(deletedFlightNumber) {
         this.props.navigate('/returnFlight/'+deletedFlightNumber)
@@ -163,7 +172,9 @@ class SearchResults extends Component {
 
             
             <div className="wrapper-users">
-{Navbar()};
+{this.state.isUser && Navbar()};
+{!this.state.isUser && NavbarGuest()};
+
 <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">
@@ -216,25 +227,7 @@ class SearchResults extends Component {
                     <div>{this.state.departureFlight.ArrivalDate}</div>
 
                   </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Economy Seats
-                    </label>
-                    <div>{this.state.departureFlight.EconomySeats}</div>
-
-                  </div>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Business Seats
-                    </label>
-                  <div>{this.state.departureFlight.BusinessSeats}</div>
-                  </div><div className="relative w-full mb-3">
+                 <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
@@ -343,7 +336,7 @@ class SearchResults extends Component {
       <td>{fl.DepatureDate}</td>
       <td>{fl.ArrivalDate}</td>
       <td>{this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour} hours, {this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min} minutes </td>
-      <td>{parseInt(this.getPrice(fl))}</td>
+      <td>{(this.getPrice(fl))}</td>
       <td>{fl.BaggageAllowance}</td>
 
       <td><button 

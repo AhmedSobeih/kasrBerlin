@@ -1,9 +1,12 @@
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
+import NavbarGuest from 'NavbarGuest';
+
+import session from "express-session";
 
 var flag = true;
 
@@ -25,50 +28,39 @@ export default function UpdateFlight(){
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
-    const [DepartureFlight, setDepartureFlight] = useState("");
+    const [DepartureFlight, setDepartureFlight] = useState({});
 
-    const [ReturnFlight, setReturnFlight] = useState("");
-    
+    const [ReturnFlight, setReturnFlight] = useState({});
+    const [isUser, setIsUser] = useState(false);
 
+      useEffect(() => {
+        axios.get('/returnFlight')
+      .then(res => {
+        setReturnFlight(res.data);
 
-
-
-
-
-    const CancelToken = axios.CancelToken;
-    let cancel;
-   
-
+        })
+      .catch(function (error) {
+          console.log(error);
+      })
       axios.get('/departureFlight')
       .then(res => {
-        cancelToken: new CancelToken(function executor(c) {
-          // An executor function receives a cancel function as a parameter
-          cancel = c;
-        })
-        
         setDepartureFlight(res.data);
-     
 
-
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
-      axios.get('/returnFlight')
-      .then(res => {
-        cancelToken: new CancelToken(function executor(c) {
-          // An executor function receives a cancel function as a parameter
-          cancel = c;
         })
-        
-        setReturnFlight(res.data);
-     
-
-
-      })
       .catch(function (error) {
           console.log(error);
       })
+      axios.get('/session')
+      .then(res => {
+        if(res.data==false)
+          setIsUser(false);
+        else
+          setIsUser(true);
+      })
+        // code to run on component mount
+      }, [])    
+      
+ 
  
      
   
@@ -83,10 +75,29 @@ function dateConversion(date){
     //2000-10-10T15:02:00.000Z
     return newDate;
   }
-  async function reserveFlight(){
-            await axios.get('/reserveFlight')
+   function reserveFlight(){
+    axios.get('/session')
+    .then(res => {
+      if(res.data==false)
+      {
+        if (window.confirm("You must be logged in to reserve a flight. Do you want to login?")) {
+          navigate('/login');
 
-             navigate('/Itinerary');
+       } else {
+         
+         }
+      }
+      else{
+        axios.get('/reserveFlight')
+    .then(res => {
+            navigate('/Itinerary');
+    })
+
+      }
+    })
+    
+            
+
 
   }
 
@@ -98,7 +109,7 @@ function Label(props){
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      {labelName}
+                      {labelName }
                     </label>
                     <input
                      type={labeType} onChange={method} placeholder={labeType} autoFocus="autoFocus" key={labelName}
@@ -135,7 +146,9 @@ return(
 
 
 <>
-{Navbar()};
+{isUser&&Navbar()};
+{!isUser&&NavbarGuest()};
+
       
       <div className="container mx-auto px-4">
         <div className="flex content-center items-center justify-center h-full">
