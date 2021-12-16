@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
 
 var flag = true;
 
@@ -46,7 +46,7 @@ export default function UserChangePassword() {
       
       axios({
         method: "put",
-        url: "/password/" + username,
+        url: "/password",
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       })

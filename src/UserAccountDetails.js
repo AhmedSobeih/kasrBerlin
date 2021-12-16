@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
 
 var flag = true;
 
@@ -29,7 +29,7 @@ export default function UserUpdateDetails() {
   {
     console.log(user);
     flag= false;
-    axios.get('/user/'+username)
+    axios.get('/user')
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter
@@ -72,10 +72,10 @@ export default function UserUpdateDetails() {
        // navigate('/viewFlights');
     }
     function updateUser (){
-        navigate('/UserUpdateDetails/'+ username); 
+        navigate('/UserUpdateDetails'); 
     }
     function changePassword (){
-      navigate('/UserChangePassword/'+ username); 
+      navigate('/UserChangePassword'); 
   }
 
 return (

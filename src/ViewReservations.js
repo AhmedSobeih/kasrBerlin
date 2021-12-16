@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
 import UserHome from 'UserHome';
 var username;
 
@@ -55,7 +55,7 @@ class ViewReservations extends Component {
   
     componentDidMount() {
         console.log(username + ": username in viewReservation");
-        axios.get('/reservation/' + username)
+        axios.get('/reservation')
             .then(res => {
                 this.setState({ flightsCollection: res.data });
             })
@@ -63,12 +63,12 @@ class ViewReservations extends Component {
                 console.log(error);
             })
     }
-    gotoCancelReservation(deletedFlightNumber) {
+    gotoCancelReservation(deletedReservationNumber) {
         var bodyFormData = new FormData();
-        bodyFormData.append('flightNumber', deletedFlightNumber);
+        bodyFormData.append('ReservationNumber', deletedReservationNumber);
         axios({
             method: "delete",
-            url: "/reservation/" + username,
+            url: "/reservation",
             headers: { "Content-Type": "multipart/form-data" },
             data: bodyFormData,
           })
@@ -141,8 +141,8 @@ class ViewReservations extends Component {
                       className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button" 
                       onClick={(e) =>{ e.preventDefault();
-                        if (window.confirm("Are you sure you want to cancel the reservation?")) {
-                            this.gotoCancelReservation(fl.FlightNumber);
+                        if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
+                            this.gotoCancelReservation(fl.ReservationNumber);
 
                       } else {
                         
@@ -179,8 +179,8 @@ class ViewReservations extends Component {
                       className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button" 
                       onClick={(e) =>{ e.preventDefault();
-                        if (window.confirm("Are you sure you want to cancel the reservation?")) {
-                            this.gotoCancelReservation(fl.FlightNumber);
+                        if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
+                            this.gotoCancelReservation(fl.ReservationNumber);
 
                       } else {
                         
