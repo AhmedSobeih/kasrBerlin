@@ -309,25 +309,26 @@ app.get('/flight/:number', async (req,res)=>{
 });
 
 app.get('/reservation/:username', async (req,res)=>{
-  const u = await Reservation.find({User : seesion.username});
+  const u = await Reservation.find({User : session.username});
+  const result = [];
   for(let i=0 ; i<u.length;i++)
   {
     const flights = u[i];
-    const result = [];
     var departureFlight = await Flight.find({FlightNumber : flights.DepartureFlightNumber});
-    var ArrivalFlight = await Flight.find({FlightNumber : flights.ArrivalFlightNumber});
-    result[j]= {DepatureFlightFlightNumber: flights.DepartureFlightNumber,
-                DepatureFlightDepatureDate: departureFlight.DepatureDate,
-                DepatureFlightArrivalDate: departureFlight.ArrivalDate,
-                DepatureFlightDepatureAirport: departureFlight.DepatureAirport,
-                DepatureFlightArrivalAirport: departureFlight.ArrivalAirport,
+    var arrivalFlight = await Flight.find({FlightNumber : flights.ArrivalFlightNumber});
+    result[i]= {DepatureFlightFlightNumber: flights.DepartureFlightNumber,
+                DepatureFlightDepatureDate: departureFlight[0].DepatureDate,
+                DepatureFlightArrivalDate: departureFlight[0].ArrivalDate,
+                DepatureFlightDepatureAirport: departureFlight[0].DepatureAirport,
+                DepatureFlightArrivalAirport: departureFlight[0].ArrivalAirport,
                 ArrivalFlightFlightNumber: flights.ArrivalFlightNumber,
-                ArrivalFlightDepatureDate: arrivalFlight.DepatureDate,
-                ArrivalFlightArrivalDate: arrivalFlight.ArrivalDate,
-                ArrivalFlightDepatureAirport: arrivalFlight.DepatureAirport,
-                ArrivalFlightArrivalAirport: arrivalFlight.ArrivalAirport,
+                ArrivalFlightDepatureDate: arrivalFlight[0].DepatureDate,
+                ArrivalFlightArrivalDate: arrivalFlight[0].ArrivalDate,
+                ArrivalFlightDepatureAirport: arrivalFlight[0].DepatureAirport,
+                ArrivalFlightArrivalAirport: arrivalFlight[0].ArrivalAirport,
                 CabinClass: flights.CabinClass,
-                Seats: flights.Seats,
+                DepatureFlightSeats: flights.Seats,
+                ArrivalFlightSeats: flights.Seats,
                 Price: flights.Price,
                 ReservationNumber: flights.ReservationNumber};
       
