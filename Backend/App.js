@@ -217,22 +217,29 @@ app.get('/flight/:number', async (req,res)=>{
 });
 
 app.get('/reservation/:username', async (req,res)=>{
-  const u = await Users.find({username : req.params.username});
-  const flights = u[0].flightsReserved;
-  const result = [];
-  for (let i = 0; i < flights.length; i++) {
-    var flight = await Flight.find({FlightNumber : flights[i]});
-    console.log(flight[0].ArrivalDate);
-    result[i]= {FlightNumber: flights[i],
-                DepatureDate: flight[0].DepatureDate,
-                ArrivalDate: flight[0].ArrivalDate,
-                DepatureAirport: flight[0].DepatureAirport,
-                ArrivalAirport: flight[0].ArrivalAirport,
-                Class: u[0].flightsReservedDetails[i][0],
-                Seats: u[0].flightsReservedDetails[i][1],
-                Price: u[0].flightsReservedDetails[i][2]};
-}
-  console.log(result);
+  const u = await Reservation.find({User : seesion.username});
+  for(let i=0 ; i<u.length;i++)
+  {
+    const flights = u[i];
+    const result = [];
+    var departureFlight = await Flight.find({FlightNumber : flights.DepartureFlightNumber});
+    var ArrivalFlight = await Flight.find({FlightNumber : flights.ArrivalFlightNumber});
+    result[j]= {DepatureFlightFlightNumber: flights.DepartureFlightNumber,
+                DepatureFlightDepatureDate: departureFlight.DepatureDate,
+                DepatureFlightArrivalDate: departureFlight.ArrivalDate,
+                DepatureFlightDepatureAirport: departureFlight.DepatureAirport,
+                DepatureFlightArrivalAirport: departureFlight.ArrivalAirport,
+                ArrivalFlightFlightNumber: flights.ArrivalFlightNumber,
+                ArrivalFlightDepatureDate: arrivalFlight.DepatureDate,
+                ArrivalFlightArrivalDate: arrivalFlight.ArrivalDate,
+                ArrivalFlightDepatureAirport: arrivalFlight.DepatureAirport,
+                ArrivalFlightArrivalAirport: arrivalFlight.ArrivalAirport,
+                CabinClass: flights.CabinClass,
+                Seats: flights.Seats,
+                Price: flights.Price,
+                ReservationNumber: flights.ReservationNumber};
+      
+  }
 
   res.send(result);
     
@@ -490,7 +497,7 @@ app.post("/searchFlight",(req,res)=>{
     });
 
     app.delete('/reservation/:username',async (req,res)=>{
-      const username = req.params.username;
+      const username = seesion.username;
       const flightNumber = parseInt(req.body.flightNumber);
       console.log(flightNumber);
       const u = await Users.find({username : req.params.username});
