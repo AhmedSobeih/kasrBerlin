@@ -6,8 +6,9 @@ import {useParams,useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 
 var flag = true;
+var firstFlag = true;
 
-export default function UserUpdateDetails() {
+export default function UserAccountDetails() {
     console.log(useParams());
     const user = useParams().username; 
     console.log(user);
@@ -25,10 +26,8 @@ export default function UserUpdateDetails() {
     const CancelToken = axios.CancelToken;
     let cancel;
 
-  if(flag)
-  {
+
     console.log(user);
-    flag= false;
     axios.get('/user')
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
@@ -46,7 +45,7 @@ export default function UserUpdateDetails() {
     .catch(function (error) {
         console.log(error);
     })
-  }   
+   
   function handleFirstName(number){
     setFirstName(number.target.value);
  //   console.log(economySeats);
@@ -77,11 +76,36 @@ export default function UserUpdateDetails() {
     function changePassword (){
       navigate('/UserChangePassword'); 
   }
+  function componentDidMount() {
+    if(flag)
+  {
+    console.log(user);
+    flag= false;
+    axios.get('/user')
+    .then(res => {
+      cancelToken: new CancelToken(function executor(c) {
+        // An executor function receives a cancel function as a parameter
+        cancel = c;
+      })
+      console.log(res.data);
+      setFirstName(res.data.firstName);
+      setLastName(res.data.lastName);
+      setEmail(res.data.email);
+      setPassportNumber(res.data.passportNumber);
+      cancel();
+  
+    })
+    .catch(function (error) {
+        console.log(error);
+    })}
+        
+      
+}
 
 return (
-
 <>
 {Navbar()};
+{componentDidMount()};
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">

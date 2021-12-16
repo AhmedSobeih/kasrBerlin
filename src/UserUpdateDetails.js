@@ -25,8 +25,9 @@ export default function UserUpdateDetails() {
     const [username, setUserName] = useState(user);
     const CancelToken = axios.CancelToken;
     let cancel;
+    console.log(user == null)
 
-  if(flag)
+  if(user == null)
   {
     console.log(user);
     flag= false;
