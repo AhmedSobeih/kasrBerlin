@@ -68,6 +68,9 @@ app.get("/newAdmin",async(req,res)=>{
     res.send(admin)
 });
 
+
+
+
 //returns the username of the session
 app.get("/session",async(req,res)=>{
   if(session.username==undefined)
@@ -76,7 +79,17 @@ app.get("/session",async(req,res)=>{
     res.send(session.username);
 });
 
+
+
 //MS2
+app.get("/flightSeatsFirst", async(req,res)=>{
+  const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
+  console.log(flight[0]);
+  let seats=flight[0].IsFirstSeatBusy;
+  console.log(seats);
+   res.status(200).json(seats);
+});
+
 app.get("/departureFlight", async(req,res)=>{
   res.send(departureFlight);
 });
@@ -85,6 +98,7 @@ app.post("/departureFlight",async(req,res)=>{
 
   departureFlight=req.body;
   res.send(true);
+
   // const user = await Users.find({username : session.username});
   // console.log("hii");
   // console.log(departureFlight);
@@ -475,12 +489,9 @@ app.post("/searchFlight",(req,res)=>{
         BaggageAllowance: req.body.baggageAllowance,
 
         
-        IsBusinessSeatBusy: Array.from({ length:req.body.businessSeats/4 }, () => (
-          Array.from({ length:4 }, ()=> false))),
-        IsEconomySeatBusy: Array.from({ length:req.body.economySeats/4 }, () => (
-          Array.from({ length:4 }, ()=> false))),  
-        IsFirstSeatBusy: Array.from({ length:req.body.firstSeats/4 }, () => (
-          Array.from({ length:4 }, ()=> false))) ,
+        IsBusinessSeatBusy: Array.from({ length:req.body.businessSeats }, () => false),
+        IsEconomySeatBusy: Array.from({ length:req.body.economySeats }, () => false),
+        IsFirstSeatBusy: Array.from({ length:req.body.firstSeats }, () => false), 
         BaggageAllowance: req.body.baggageAllowance 
       });
       try{
