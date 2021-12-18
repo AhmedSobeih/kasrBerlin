@@ -35,7 +35,7 @@ export default function UpdateFlight(){
     const CancelToken = axios.CancelToken;
     let cancel;
 
-  if(flag)
+  if(ArrivalAirport == "")
   {
     flag= false;
     console.log(1);

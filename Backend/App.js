@@ -322,31 +322,39 @@ app.get('/flight/:number', async (req,res)=>{
     
 });
 
-app.get('/reservation/:username', async (req,res)=>{
-  const u = await Users.find({username : req.params.username});
-  const flights = u[0].flightsReserved;
+app.get('/reservation', async (req,res)=>{
+  const u = await Reservation.find({User : session.username});
   const result = [];
-  for (let i = 0; i < flights.length; i++) {
-    var flight = await Flight.find({FlightNumber : flights[i]});
-    console.log(flight[0].ArrivalDate);
-    result[i]= {FlightNumber: flights[i],
-                DepatureDate: flight[0].DepatureDate,
-                ArrivalDate: flight[0].ArrivalDate,
-                DepatureAirport: flight[0].DepatureAirport,
-                ArrivalAirport: flight[0].ArrivalAirport,
-                Class: u[0].flightsReservedDetails[i][0],
-                Seats: u[0].flightsReservedDetails[i][1],
-                Price: u[0].flightsReservedDetails[i][2]};
-}
-  console.log(result);
+  for(let i=0 ; i<u.length;i++)
+  {
+    const flights = u[i];
+    var departureFlight = await Flight.find({FlightNumber : flights.DepartureFlightNumber});
+    var arrivalFlight = await Flight.find({FlightNumber : flights.ArrivalFlightNumber});
+    result[i]= {DepatureFlightFlightNumber: flights.DepartureFlightNumber,
+                DepatureFlightDepatureDate: departureFlight[0].DepatureDate,
+                DepatureFlightArrivalDate: departureFlight[0].ArrivalDate,
+                DepatureFlightDepatureAirport: departureFlight[0].DepatureAirport,
+                DepatureFlightArrivalAirport: departureFlight[0].ArrivalAirport,
+                ArrivalFlightFlightNumber: flights.ArrivalFlightNumber,
+                ArrivalFlightDepatureDate: arrivalFlight[0].DepatureDate,
+                ArrivalFlightArrivalDate: arrivalFlight[0].ArrivalDate,
+                ArrivalFlightDepatureAirport: arrivalFlight[0].DepatureAirport,
+                ArrivalFlightArrivalAirport: arrivalFlight[0].ArrivalAirport,
+                CabinClass: flights.CabinClass,
+                DepatureFlightSeats: flights.Seats,
+                ArrivalFlightSeats: flights.Seats,
+                Price: flights.Price,
+                ReservationNumber: flights.ReservationNumber};
+      
+  }
 
   res.send(result);
     
 });
 
 //to get the username
-app.get('/user/:username', async (req,res)=>{
-  const u = await Users.find({username : req.params.username});
+app.get('/user', async (req,res)=>{
+  const u = await Users.find({username : session.username});
 
   res.send(u[0]);
     
@@ -527,9 +535,9 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.put('/password/:username', async (req,res)=>{
+    app.put('/password', async (req,res)=>{
       
-      const username = req.params;
+      const username = session.username;
       const filter = req.params;
       var result = {status : false, response: ""};
       const u = await Users.find({username : session.username, password: req.body.oldPassword});
@@ -553,12 +561,9 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.put('/user/:username', (req,res)=>{
+    app.put('/user', (req,res)=>{
       
-      const username = req.params;
-      const filter = req.params;
-      console.log(filter);
-      console.log(req.body);
+      const filter = {username: session.username};
       Users.findOneAndUpdate(filter, req.body, {
         new: true,
       })
@@ -589,38 +594,12 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.delete('/reservation/:username',async (req,res)=>{
-      const username = req.params.username;
-      const flightNumber = parseInt(req.body.flightNumber);
-      console.log(flightNumber);
-      const u = await Users.find({username : req.params.username});
-      const flights = u[0].flightsReserved;
-      console.log(u[0]);
-      const flightsReservedDetails = u[0].flightsReservedDetails;
-      console.log("flightsReserved before: " + flights);
-    console.log("flightsReservedDetails before: " + flightsReservedDetails);
-      for (var i = 0; i < flights.length; i++) {
-        if(flights[i]== flightNumber)
-        {
-          flights.splice(i,1)
-          flightsReservedDetails.splice(i,1);
-        }
-    }
-    console.log("flightsReserved: " + flights);
-    console.log("flightsReservedDetails" + flightsReservedDetails);
-      
-      
-      const filter = {flightsReserved : flights,flightsReservedDetails : flightsReservedDetails };
-      console.log(filter);
-      console.log(username);
-      Users.findOneAndUpdate({username:username}, filter, {
-        new: true,
-      })
-      .then((flight)=>{
-        console.log("updated");
-        res.send(true);
+    app.delete('/reservation',async (req,res)=>{
+      Reservation.findOneAndRemove(req.body)
+      .then((Reservation)=>{
+        res.send(true);//if successful, redirect to the home page
     }).catch((err) =>  res.send(false))
-        
+      
     });
 
 

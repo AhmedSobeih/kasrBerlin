@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
 import UserHome from 'UserHome';
 var username;
 
@@ -55,7 +55,7 @@ class ViewReservations extends Component {
   
     componentDidMount() {
         console.log(username + ": username in viewReservation");
-        axios.get('/reservation/' + username)
+        axios.get('/reservation')
             .then(res => {
                 this.setState({ flightsCollection: res.data });
             })
@@ -63,12 +63,12 @@ class ViewReservations extends Component {
                 console.log(error);
             })
     }
-    gotoCancelReservation(deletedFlightNumber) {
+    gotoCancelReservation(deletedReservationNumber) {
         var bodyFormData = new FormData();
-        bodyFormData.append('flightNumber', deletedFlightNumber);
+        bodyFormData.append('ReservationNumber', deletedReservationNumber);
         axios({
             method: "delete",
-            url: "/reservation/" + username,
+            url: "/reservation",
             headers: { "Content-Type": "multipart/form-data" },
             data: bodyFormData,
           })
@@ -108,6 +108,7 @@ class ViewReservations extends Component {
   <thead>
     <tr>
       <th scope="col">#</th>
+      <th scope="col">Flight Type</th>
       <th scope="col">Flight Number</th>
       <th scope="col">Departure Date</th>
       <th scope="col">Arrival Date</th>
@@ -119,27 +120,29 @@ class ViewReservations extends Component {
       <th scope="col">Price</th>
     </tr>
   </thead>
+  
   <tbody>
       {this.state.flightsCollection.map((fl,index) => 
                             (
+
                                   <tr>
       <th scope="row">{index+1}</th>
-      
-      <td>{fl.FlightNumber}</td>
-      <td>{fl.DepatureDate}</td>
-      <td>{fl.ArrivalDate}</td>
-      <td>{fl.DepatureAirport}</td>
-      <td>{fl.ArrivalAirport}</td>
-      <td>{fl.Class}</td>
-      <td>{fl.Seats.length}</td>
-      <td>{fl.Seats.join(",")}</td>
+      <td>Departure</td>
+      <td>{fl.DepatureFlightFlightNumber}</td>
+      <td>{fl.DepatureFlightDepatureDate}</td>
+      <td>{fl.DepatureFlightArrivalDate}</td>
+      <td>{fl.DepatureFlightDepatureAirport}</td>
+      <td>{fl.DepatureFlightArrivalAirport}</td>
+      <td>{fl.CabinClass}</td>
+      <td>{fl.DepatureFlightSeats.length}</td>
+      <td>[{fl.DepatureFlightSeats.join(",")}]</td>
       <td>{fl.Price}</td>
       <td><button 
                       className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button" 
                       onClick={(e) =>{ e.preventDefault();
-                        if (window.confirm("Are you sure you want to cancel the reservation?")) {
-                            this.gotoCancelReservation(fl.FlightNumber);
+                        if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
+                            this.gotoCancelReservation(fl.ReservationNumber);
 
                       } else {
                         
@@ -153,7 +156,47 @@ class ViewReservations extends Component {
       <td>
      </td>
     </tr>
+    
         )
+        
+                         )}
+                         {this.state.flightsCollection.map((fl,index) => 
+                            (
+                                
+                                  <tr>
+      <th scope="row">{index+1}</th>
+      <td>Arrival</td>
+      <td>{fl.ArrivalFlightFlightNumber}</td>
+      <td>{fl.ArrivalFlightDepatureDate}</td>
+      <td>{fl.ArrivalFlightArrivalDate}</td>
+      <td>{fl.ArrivalFlightDepatureAirport}</td>
+      <td>{fl.ArrivalFlightArrivalAirport}</td>
+      <td>{fl.CabinClass}</td>
+      <td>{fl.ArrivalFlightSeats.length}</td>
+      <td>[{fl.ArrivalFlightSeats.join(",")}]</td>
+      <td>{fl.Price}</td>
+      <td><button 
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" 
+                      onClick={(e) =>{ e.preventDefault();
+                        if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
+                            this.gotoCancelReservation(fl.ReservationNumber);
+
+                      } else {
+                        
+                        }
+                        
+                        }}
+                      
+                    >
+                      Cancel Reservation 
+     </button> </td>
+      <td>
+     </td>
+    </tr>
+    
+        )
+        
                          )}
 
   </tbody>
