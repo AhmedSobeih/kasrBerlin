@@ -34,7 +34,7 @@ export default function UpdateFlight(){
     const [isUser, setIsUser] = useState(false);
 
       useEffect(() => {
-        axios.get('/returnFlight')
+         axios.get('/returnFlight')
       .then(res => {
         setReturnFlight(res.data);
 
@@ -42,7 +42,7 @@ export default function UpdateFlight(){
       .catch(function (error) {
           console.log(error);
       })
-      axios.get('/departureFlight')
+       axios.get('/departureFlight')
       .then(res => {
         setDepartureFlight(res.data);
 
@@ -50,7 +50,7 @@ export default function UpdateFlight(){
       .catch(function (error) {
           console.log(error);
       })
-      axios.get('/session')
+       axios.get('/session')
       .then(res => {
         if(res.data==false)
           setIsUser(false);

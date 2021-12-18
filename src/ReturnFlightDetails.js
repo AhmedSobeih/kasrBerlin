@@ -539,7 +539,7 @@ return(
                         
                       //   }
                       changeReturnFlight();
-                      navigate('/summary');
+                      navigate('/FlightSeats');
                         
                             }}
                     >
