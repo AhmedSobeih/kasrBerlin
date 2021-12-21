@@ -83,7 +83,8 @@ function dateConversion(date){
    function reserveFlight(){
     axios.get('/session')
     .then(res => {
-      if(res.data==false)
+      console.log(res.data)
+      if(res.data===false)
       {
         if (window.confirm("You must be logged in to reserve a flight. Do you want to login?")) {
           navigate('/login');
@@ -94,9 +95,34 @@ function dateConversion(date){
       }
       else{
         axios.get('/reserveFlight')
-    .then(res => {
-            navigate('/Itinerary');
-    })
+        var bodyFormData = new FormData();
+        bodyFormData.append('values', location.state.departureSeats);
+      
+      axios({
+        method: "post",
+        url: "/reserveSeats",
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+          .then((response) => { 
+            
+            console.log(response.data)
+        })
+        bodyFormData = new FormData();
+        bodyFormData.append('values', location.state.returnSeats);
+      
+      axios({
+        method: "post",
+        url: "/reserveReturnSeats",
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+          .then((response) => { 
+          
+            console.log(response.data)
+    
+        })
+        navigate('/Itinerary');
 
       }
     })

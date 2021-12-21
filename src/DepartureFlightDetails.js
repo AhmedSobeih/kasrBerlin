@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 
@@ -22,11 +22,16 @@ export default function UpdateFlight(){
 
     let {flight} = useParams(); 
     const navigate = useNavigate();
+    const location = useLocation();
+
 
     const [FlightNumber, setFlightNumber] = useState(flight);
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
+    var d = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate);
+    var s = d.hour +  " Hours, " +d.min +  " Minutes";
+
     const [DepatureDate, setDepatureDate] = useState("");
     const [ArrivalDate, setArrivalDate] = useState("");
     const [FreeEconomySeatsNum, setFreeEconomySeatsNum] = useState("");
@@ -35,7 +40,7 @@ export default function UpdateFlight(){
 
     const [DepatureAirport, setDepatureAirport] = useState("");
     const [ArrivalAirport, setArrivalAirport] = useState("");
-    const [TripDuration, setTripDuration] = useState("");//Method to be done by ziad
+    const [TripDuration, setTripDuration] = useState(s);//Method to be done by ziad
     const [CabinClass, setCabinClass] = useState("");
     const [BaggageAllowance, setBaggageAllowance] = useState("");
     const [FlightPrice, setFlightPrice] = useState(0);
@@ -155,8 +160,7 @@ export default function UpdateFlight(){
     setFlightPrice(parseInt(res.data.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
     if(SearchCriteria.CabinClass=="First Class")
     setFlightPrice(parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
-    var s = durationCalculation(DepatureDate,ArrivalDate).hour + " hours, " +durationCalculation(DepatureDate,ArrivalDate).min + " minutes" ;
-    setTripDuration(s);  
+
     cancel();
   
     })
@@ -269,6 +273,7 @@ function DoubleLabel(props){
             var userCriteria = SearchCriteria;
             userCriteria.ArrivalAirport = DepatureAirport;
             userCriteria.DepatureAirport = ArrivalAirport;
+            userCriteria.isReturnFlight = true;
           
           axios({
             method: "post",
@@ -284,7 +289,9 @@ function DoubleLabel(props){
         
                } 
                 else{
-                    navigate('/searchReturnFlight', {state: {userCriteria:SearchCriteria, departureFlight:DepartureFlight}});
+                  console.log("TRRRRRRRRIIIIIIIIIPPPPPP");
+                  console.log(TripDuration)
+                    navigate('/searchReturnFlight', {state: {userCriteria:SearchCriteria, departureFlight:DepartureFlight, tripDuration:TripDuration}});
               }
             }) 
           }
@@ -374,7 +381,7 @@ return(
                     >
                       Trip Duration
                     </label>
-                    <div>{durationCalculation(DepatureDate,ArrivalDate).hour} Hours, {durationCalculation(DepatureDate,ArrivalDate).min} Minutes</div>
+                    <div>{TripDuration}</div>
 
                   </div>
                   <div className="relative w-full mb-3">

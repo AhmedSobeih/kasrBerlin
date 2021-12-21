@@ -27,7 +27,7 @@ class SearchResults extends Component {
     constructor(props) {
         super(props);
         const location = this.props.location; 
-        this.state = { flightsCollection: [] , departureFlight: location.state.departureFlight, userCriteria: location.state.userCriteria, DepartureFlightVisibility:"true",  isUser: false, ErrorMessage:"" };
+        this.state = { flightsCollection: [] , departureFlight: location.state.departureFlight, TripDuration: location.state.tripDuration, userCriteria: location.state.userCriteria, DepartureFlightVisibility:"true",  isUser: false, ErrorMessage:"" };
         const navigate = this.props.navigate;
 
     }
@@ -40,17 +40,16 @@ class SearchResults extends Component {
       console.log(location.state.departureFlight);
       // this.setState({userCriteria : location.state.userCriteria});
       // this.setState({departureFlight : location.state.departureFlight});
-        axios.get('/searchResults')
+        axios.get('/searchRetResults')
             .then(res => {
               console.log(res.data);
             
               for(var i=0; i<res.data.length; i++)
               {
                 res.data[i].DepatureDate = this.dateConversion( res.data[i].DepatureDate);
-                console.log(this.state.departureFlight.ArrivalDate);
-                console.log(res.data[i].DepatureDate);
-                console.log(isDateTrue(res.data[i].DepatureDate,this.state.departureFlight.ArrivalDate));
-               
+                res.data[i].ArrivalDate = this.dateConversion( res.data[i].ArrivalDate);
+
+              
                 if(isDateTrue(res.data[i].DepatureDate,this.state.departureFlight.ArrivalDate))
                   {
                     res.data.splice(i,1);
@@ -178,7 +177,6 @@ class SearchResults extends Component {
       ReturnFlight.BaggageAllowance = fl.BaggageAllowance;
       ReturnFlight.FlightPrice = price;
       ReturnFlight.isReturnFlight = true;
-      console.log("SUUUUUUUUIIIIIIIIIII");
       console.log(ReturnFlight);
         this.props.navigate('/returnFlight/'+fl.FlightNumber, {state: {departureFlight:this.state.departureFlight, returnFlight:ReturnFlight}})
     }    
@@ -380,7 +378,7 @@ class SearchResults extends Component {
                     >
                       Trip Duration
                     </label>
-                    <div>{this.state.departureFlight.TripDuration}</div>
+                    <div>{this.state.TripDuration}</div>
 
                   </div>
                   <div className="relative w-full mb-3">

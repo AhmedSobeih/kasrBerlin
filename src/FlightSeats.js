@@ -26,16 +26,14 @@ function confirmSeats() {
     var bodyFormData = new FormData();
     bodyFormData.append('values', values);
   
-  axios({
-    method: "post",
-    url: "/reserveSeats",
-    data: bodyFormData,
-    headers: { "Content-Type": "multipart/form-data" },
-  })
-      .then((response) => { 
-        console.log(response.data)
+         axios({
+            method: "post",
+            url: "/setDepSeats",
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          })
         navigate('/ReturnFlightSeats',{state: {departureFlight:DepartureFlight, returnFlight: ReturnFlight, departureSeats: values}});
-    })
+
   
 }
 

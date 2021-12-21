@@ -137,10 +137,19 @@ function dateConversion(date){
   }*/
 
 
+  if(DepartureFlight==null || ReturnFlight==null)
+  {return(
+    <>
 
+  <h2 className="text-center mt-20" >Please wait while your request is being processed</h2>
+  <div class="loader "></div>
+  
+    </>
+  )
+  }
   
   
-return(
+return(DepartureFlight&&ReturnFlight &&
 
 
 <>
@@ -223,8 +232,8 @@ return(
     </tr>
     <tr>
       <th scope="row">Seats Reserved</th>
-      <td>xx </td>
-      <td>xx</td>
+      <td>{DepartureFlight.seats} </td>
+      <td>{ReturnFlight.seats}</td>
     </tr>
   </tbody>
 </table>

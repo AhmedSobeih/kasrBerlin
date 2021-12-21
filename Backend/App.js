@@ -34,6 +34,9 @@ app.use(session({
     saveUninitialized:false}));
 
 var searchResult = [];
+var searchDepResult = [];
+var searchRetResult = [];
+
 
 //MS2
 var departureFlight = null;
@@ -82,7 +85,7 @@ app.get("/session",async(req,res)=>{
 
 
 
-//MS2
+
 app.get("/flightSeatsFirst", async(req,res)=>{
   
   const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
@@ -300,6 +303,18 @@ app.get("/reservationNumber", async(req,res)=>{
 app.get("/departureFlight", async(req,res)=>{
   res.send(departureFlight);
 });
+app.post("/setDepSeats",async(req,res)=>{
+
+  departureFlight.seats = req.body.values;
+ 
+  res.send(true);
+})
+app.post("/setReturnSeats",async(req,res)=>{
+
+  returnFlight.seats = req.body.values;
+
+  res.send(true);
+})
 
 app.post("/departureFlight",async(req,res)=>{
 
@@ -588,6 +603,16 @@ app.get('/allUsers', async(req, res)=> {
 app.get('/searchResults', async(req, res)=> {
  
   res.send(searchResult);
+ 
+});
+app.get('/searchDepResults', async(req, res)=> {
+ 
+  res.send(searchDepResult);
+ 
+});
+app.get('/searchRetResults', async(req, res)=> {
+ 
+  res.send(searchRetResult);
  
 });
 
@@ -880,15 +905,7 @@ app.post("/searchFlightUser",(req,res)=>{
   Flight.find(req.body).then((result)=>{
     for(var i=0; i<result.length; i++)
     {
-      if(isReturnFlight==true)
-      {
-        if(!isDateTrue(result[i].departureDate,departureFlight.ArrivalDate))
-        {
-          result.splice(i,1);
-          i--;
-          continue;
-        }
-      }
+
       if(cabinClass=="Economy Class")
       {
         if(result[i].FreeEconomySeatsNum<(numberOfAdults+numberOfChildren))
@@ -907,7 +924,14 @@ app.post("/searchFlightUser",(req,res)=>{
       
      
     }
-    searchResult=result;
+
+    if(isReturnFlight=="false")
+      searchDepResult=result;
+    else
+    {
+      searchRetResult=result;
+      console.log("TST");
+    }  
     res.send(result);
 }).catch((err) =>  console.log(err))
   });

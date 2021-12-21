@@ -41,7 +41,7 @@ class SearchResults extends Component {
        
         const location = this.props.location; // this uses Router based states to let us access cour state
         console.log(location.state.s.CabinClass);
-        axios.get('/searchResults')
+        axios.get('/searchDepResults')
             .then(res => {
                 this.setState({ flightsCollection: res.data });
             })
@@ -63,8 +63,8 @@ class SearchResults extends Component {
     })
     }
     
-    gotoFlight(flightNumber) {
-        this.props.navigate('/departureFlight/'+flightNumber)
+    gotoFlight(fl) {
+        this.props.navigate('/departureFlight/'+fl.FlightNumber, {state:{departureFlight:fl}})
     }
 
     getPrice(fl){
@@ -215,7 +215,7 @@ class SearchResults extends Component {
       <td><button 
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"  onClick={(e) =>{ e.preventDefault();
-                        this.gotoFlight(fl.FlightNumber);
+                        this.gotoFlight(fl);
                         
                             }
                         }

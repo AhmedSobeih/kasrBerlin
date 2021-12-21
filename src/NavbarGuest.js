@@ -8,7 +8,7 @@ export default function Navbar(){
 
             <div className="collapse navbar-collapse" id="navلآbbarSupportedContent">
                 <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li className="nav-item"><a className="nav-link" href="/ViewReservations/">Home</a></li>
+                    <li className="nav-item"><a className="nav-link" href="/">Home</a></li>
 
                 </ul>
             </div>
