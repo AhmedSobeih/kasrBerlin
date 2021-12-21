@@ -3,6 +3,8 @@ import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
+import {useLocation} from 'react-router-dom';
+
 
 
 const Anchor =({title})=>{
@@ -15,21 +17,30 @@ const Anchor =({title})=>{
        };
 export default function(props) {
     const navigate = useNavigate();
-  
-    return <SearchResults navigate={navigate}  />;
+    const location = useLocation(); // this uses Router based states to let us access cour state
+
+    return <SearchResults navigate={navigate} location={location}  />;
   }
 
 class SearchResults extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { flightsCollection: [], userCriteria: {}, isUser: false };
+        const location = this.props.location; 
+        this.state = { flightsCollection: [], userCriteria: location.state.s, isUser: false };
         const navigate = this.props.navigate;
 
+
+
     }
+    
+
    
 
     componentDidMount() {
+       
+        const location = this.props.location; // this uses Router based states to let us access cour state
+        console.log(location.state.s.CabinClass);
         axios.get('/searchResults')
             .then(res => {
                 this.setState({ flightsCollection: res.data });
@@ -37,12 +48,9 @@ class SearchResults extends Component {
             .catch(function (error) {
                 console.log(error);
             })
-        axios.get('/userCriteria')
-           .then(res => {
-    
-               this.setState({userCriteria: res.data});
-  
-           })
+            
+            console.log("NNNNNNNNNNN")
+            console.log(this.state.userCriteria);
            axios.get('/session')
             .then(res => {
               if(res.data==false)
@@ -68,6 +76,16 @@ class SearchResults extends Component {
           return parseInt(fl.FirstSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
   
       }    
+      dateConversion(date){
+        let newDate = "";
+        for(var i=0;i<16;i++)
+        {
+            newDate = newDate + date[i];
+        }
+        // 2001-02-10T22:25
+        //2000-10-10T15:02:00.000Z
+        return newDate;
+      }
 
       durationCalculation(departureDate, arrivalDate){
         var departureYear = "";
@@ -146,7 +164,7 @@ class SearchResults extends Component {
  
     render() {
         const  navigate  = this.props.navigate;
-
+        
         return (
 
 
@@ -169,6 +187,8 @@ class SearchResults extends Component {
     <tr>
       <th scope="col">#</th>
       <th scope="col">Flight Number</th>
+      <th scope="col">Departure Airport</th>
+      <th scope="col">Arrival Airport</th>
       <th scope="col">Departure Date</th>
       <th scope="col">Arrival Date</th>
       <th scope="col">Trip Duration</th>
@@ -184,8 +204,10 @@ class SearchResults extends Component {
       <th scope="row">{index+1}</th>
       
       <td>{fl.FlightNumber}</td>
-      <td>{fl.DepatureDate}</td>
-      <td>{fl.ArrivalDate}</td>
+      <td>{fl.DepatureAirport}</td>
+      <td>{fl.ArrivalAirport}</td>
+      <td>{this.dateConversion(fl.DepatureDate)}</td>
+      <td>{this.dateConversion(fl.ArrivalDate)}</td>
       <td>{this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour} hours, {this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min} minutes</td>
       <td>{this.getPrice(fl)}</td>
       <td>{fl.BaggageAllowance}</td>

@@ -39,6 +39,8 @@ export default function UpdateFlight(){
     const [CabinClass, setCabinClass] = useState("");
     const [BaggageAllowance, setBaggageAllowance] = useState("");
     const [FlightPrice, setFlightPrice] = useState(0);
+    const [DepartureFlight, setDepartureFlight] = useState({});
+
     const [isUser, setIsUser] = useState(false);
 
 
@@ -224,22 +226,36 @@ function DoubleLabel(props){
     function changeDepartureFlight (){
 
       var bodyFormData = new FormData();
+      var depFlight = {};
       bodyFormData.append('FlightNumber', FlightNumber);
+      DepartureFlight.FlightNumber = FlightNumber;
       bodyFormData.append('DepatureDate', DepatureDate);
+      DepartureFlight.DepatureDate = DepatureDate;
       bodyFormData.append('ArrivalDate', ArrivalDate);
+      DepartureFlight.ArrivalDate = ArrivalDate;
       bodyFormData.append('FreeEconomySeatsNum', FreeEconomySeatsNum);
+      DepartureFlight.FreeEconomySeatsNum = FreeEconomySeatsNum;
       bodyFormData.append('FreeBusinessSeatsNum', FreeBusinessSeatsNum);
+      DepartureFlight.FreeBusinessSeatsNum = FreeBusinessSeatsNum;
       bodyFormData.append('FreeFirstSeatsNum', FreeFirstSeatsNum);
+      DepartureFlight.FreeFirstSeatsNum = FreeFirstSeatsNum;
       bodyFormData.append('DepatureAirport', DepatureAirport);
+      DepartureFlight.DepatureAirport = DepatureAirport;
       bodyFormData.append('ArrivalAirport', ArrivalAirport);
+      DepartureFlight.ArrivalAirport = ArrivalAirport;
       bodyFormData.append('TripDuration', TripDuration);
+      DepartureFlight.TripDuration = TripDuration;
       bodyFormData.append('CabinClass', CabinClass);
+      DepartureFlight.CabinClass = CabinClass;
       bodyFormData.append('BaggageAllowance', BaggageAllowance);
+      DepartureFlight.BaggageAllowance = BaggageAllowance;
       bodyFormData.append('FlightPrice', FlightPrice);
+      DepartureFlight.FlightPrice = FlightPrice;
       bodyFormData.append('isReturnFlight', true);
+      DepartureFlight.isReturnFlight = false;
 
       
-
+      // setDepartureFlight(depFlight);
 
       console.log(FlightNumber);
     
@@ -268,7 +284,7 @@ function DoubleLabel(props){
         
                } 
                 else{
-                    navigate('/searchReturnFlight');
+                    navigate('/searchReturnFlight', {state: {userCriteria:SearchCriteria, departureFlight:DepartureFlight}});
               }
             }) 
           }

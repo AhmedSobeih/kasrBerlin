@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 
@@ -16,15 +16,18 @@ const Anchor =({title})=>{
        };
 export default function(props) {
     const navigate = useNavigate();
+    const location = useLocation();
+
   
-    return <SearchResults navigate={navigate}  />;
+    return <SearchResults navigate={navigate} location={location}  />;
   }
 
 class SearchResults extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { flightsCollection: [] , departureFlight: {}, userCriteria: {}, DepartureFlightVisibility:"true",  isUser: false };
+        const location = this.props.location; 
+        this.state = { flightsCollection: [] , departureFlight: location.state.departureFlight, userCriteria: location.state.userCriteria, DepartureFlightVisibility:"true",  isUser: false, ErrorMessage:"" };
         const navigate = this.props.navigate;
 
     }
@@ -33,29 +36,125 @@ class SearchResults extends Component {
    
 
     componentDidMount() {
+      const location = this.props.location; // this uses Router based states to let us access cour state
+      console.log(location.state.departureFlight);
+      // this.setState({userCriteria : location.state.userCriteria});
+      // this.setState({departureFlight : location.state.departureFlight});
         axios.get('/searchResults')
             .then(res => {
+              console.log(res.data);
+            
+              for(var i=0; i<res.data.length; i++)
+              {
+                res.data[i].DepatureDate = this.dateConversion( res.data[i].DepatureDate);
+                console.log(this.state.departureFlight.ArrivalDate);
+                console.log(res.data[i].DepatureDate);
+                console.log(isDateTrue(res.data[i].DepatureDate,this.state.departureFlight.ArrivalDate));
+               
+                if(isDateTrue(res.data[i].DepatureDate,this.state.departureFlight.ArrivalDate))
+                  {
+                    res.data.splice(i,1);
+                    i--;
+                    continue;
+                  }
+              }
+              
                 this.setState({ flightsCollection: res.data });
-            })
+      
+                if(res.data.length==0)
+                 {
+                  this.setState({ErrorMessage:"No return flights available for the chosen departure Flight"});
+                  console.log("No return flights available for the chosen departure Flight");
+                 }
+              }
+          
+            )
             .catch(function (error) {
                 console.log(error);
             })
-    axios.get('/departureFlight')
-    .then(res => {
+
+   function isDateTrue(departureDate, arrivalDate){
+    var departureYear = "";
+    var arrivalYear ="";
+    for(let i=0;i<4; i++)
+    {
+        departureYear += departureDate.charAt(i);
+        arrivalYear += arrivalDate.charAt(i);
+    }
+    departureYear = parseInt(departureYear);
+    arrivalYear = parseInt(arrivalYear);
+
+    var departureMonth = "";
+    var arrivalMonth ="";
+    for(let i=5;i<7; i++)
+    {
+        departureMonth += departureDate.charAt(i);
+        arrivalMonth += arrivalDate.charAt(i);
+    }
+    departureMonth = parseInt(departureMonth);
+    arrivalMonth = parseInt(arrivalMonth);
+
+    var departureDay = "";
+    var arrivalDay ="";
+
+    for(let i=8;i<10; i++)
+    {
+        departureDay += departureDate.charAt(i);
+        arrivalDay += arrivalDate.charAt(i);
+    }
+    departureDay = parseInt(departureDay);
+    arrivalDay = parseInt(arrivalDay);
+
+    var departureHour = "";
+    var arrivalHour ="";
+
+    for(let i=11;i<13; i++)
+    {
+        departureHour += departureDate.charAt(i);
+        arrivalHour += arrivalDate.charAt(i);
+    }
+    departureHour = parseInt(departureHour);
+    arrivalHour = parseInt(arrivalHour);
+
+
+    var departureMin = "";
+    var arrivalMin ="";
+
+    for(let i=14;i<16; i++)
+    {
+        departureMin += departureDate.charAt(i);
+        arrivalMin += arrivalDate.charAt(i);
+    }
+    departureMin = parseInt(departureMin);
+    arrivalMin = parseInt(arrivalMin);
+
+
+    const date2 = new Date(arrivalYear, arrivalMonth, arrivalDay, arrivalHour, arrivalMin);
+    const date1 = new Date(departureYear,departureMonth,departureDay,departureHour,departureMin);
+    var diff = date2.valueOf() - date1.valueOf();
+    if(diff>=0)
+        return true;
+    else
+        return false;
+  }
+    // axios.get('/departureFlight')
+    // .then(res => {
     
-      this.setState({departureFlight: res.data});
-      console.log(this.state.departureFlight);
+    //   this.setState({departureFlight: res.data});
+    //   console.log(this.state.departureFlight);
   
-    })
-    axios.get('/userCriteria')
-    .then(res => {
+    // })
+
+
+    // axios.get('/userCriteria')
+    // .then(res => {
     
-      this.setState({userCriteria: res.data});
+    //   this.setState({userCriteria: res.data});
   
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+    // })
+    // .catch(function (error) {
+    //     console.log(error);
+    // })
     axios.get('/session')
             .then(res => {
               if(res.data==false)
@@ -64,9 +163,36 @@ class SearchResults extends Component {
               this.setState({isUser:true});
             })
     }
-    gotoSummary(deletedFlightNumber) {
-        this.props.navigate('/returnFlight/'+deletedFlightNumber)
+    gotoReturnFlight(fl,price) {
+      var ReturnFlight = {};
+      ReturnFlight.FlightNumber = fl.FlightNumber;
+      ReturnFlight.DepatureDate = fl.DepatureDate;
+      ReturnFlight.ArrivalDate = fl.ArrivalDate;
+      ReturnFlight.FreeEconomySeatsNum = fl.FreeEconomySeatsNum;
+      ReturnFlight.FreeBusinessSeatsNum = fl.FreeBusinessSeatsNum;
+      ReturnFlight.FreeFirstSeatsNum = fl.FreeFirstSeatsNum;
+      ReturnFlight.DepatureAirport = fl.DepatureAirport;
+      ReturnFlight.ArrivalAirport = fl.ArrivalAirport;
+      ReturnFlight.TripDuration = fl.TripDuration;
+      ReturnFlight.CabinClass = this.state.userCriteria.CabinClass;
+      ReturnFlight.BaggageAllowance = fl.BaggageAllowance;
+      ReturnFlight.FlightPrice = price;
+      ReturnFlight.isReturnFlight = true;
+      console.log("SUUUUUUUUIIIIIIIIIII");
+      console.log(ReturnFlight);
+        this.props.navigate('/returnFlight/'+fl.FlightNumber, {state: {departureFlight:this.state.departureFlight, returnFlight:ReturnFlight}})
     }    
+
+    dateConversion(date){
+      let newDate = "";
+      for(var i=0;i<16;i++)
+      {
+          newDate = newDate + date[i];
+      }
+      // 2001-02-10T22:25
+      //2000-10-10T15:02:00.000Z
+      return newDate;
+    }
     getPrice(fl){
       if(this.state.departureFlight.CabinClass=="Economy Class")
         return parseInt(fl.EconomySeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
@@ -313,6 +439,7 @@ class SearchResults extends Component {
       <div className="text-blueGray-5000 text-center mb-3 font-bold">
                    <h1>Choose your return flight</h1>
                 </div>
+                
 <table class="table">
   <thead>
     <tr>
@@ -333,16 +460,16 @@ class SearchResults extends Component {
       <th scope="row">{index+1}</th>
       
       <td className>{fl.FlightNumber}</td>
-      <td>{fl.DepatureDate}</td>
-      <td>{fl.ArrivalDate}</td>
+      <td>{this.dateConversion(fl.DepatureDate)}</td>
+      <td>{this.dateConversion(fl.ArrivalDate)}</td>
       <td>{this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour} hours, {this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min} minutes </td>
-      <td>{(this.getPrice(fl))}</td>
+      <td id="price">{(this.getPrice(fl))}</td>
       <td>{fl.BaggageAllowance}</td>
 
       <td><button 
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"  onClick={(e) =>{ e.preventDefault();
-                        this.gotoSummary(fl.FlightNumber);
+                        this.gotoReturnFlight(fl,document.getElementById ( "price" ).innerText)
                         
                             }
                         }
@@ -357,8 +484,13 @@ class SearchResults extends Component {
         )
                          )}
 
+
   </tbody>
+
+  
 </table>
+
+
 
 
 
@@ -379,7 +511,10 @@ class SearchResults extends Component {
                         </tbody>
                     </table>
                 </div>*/}
+                  <div id='searchFail' className="alert-warning text-center">{this.state.ErrorMessage}</div>
+
             </div> 
+            
         )
     }
 }

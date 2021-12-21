@@ -1,8 +1,8 @@
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 
@@ -22,25 +22,21 @@ export default function UpdateFlight(){
 
     let {flight} = useParams(); 
     const navigate = useNavigate();
+    const location = useLocation();
+
 
     const [FlightCreated, setFlightCreated] = useState("");
     const [FlightNumber, setFlightNumber] = useState(flight);
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
-    const [DepatureDate, setDepatureDate] = useState("");
-    const [ArrivalDate, setArrivalDate] = useState("");
-    const [FreeEconomySeatsNum, setFreeEconomySeatsNum] = useState("");
-    const [FreeBusinessSeatsNum, setFreeBusinessSeatsNum] = useState("");
-    const [FreeFirstSeatsNum, setFreeFirstSeatsNum] = useState("");
-    const [DepatureAirport, setDepatureAirport] = useState("");
-    const [ArrivalAirport, setArrivalAirport] = useState("");
-    const [TripDuration, setTripDuration] = useState("");
-    const [CabinClass, setCabinClass] = useState("");
-    const [BaggageAllowance, setBaggageAllowance] = useState("");
-    const [FlightPrice, setFlightPrice] = useState("");
+  
+  
+
     const [SearchCriteria, setSearchCriteria] = useState("");
     const [DepartureFlightVisibility, setDepartureFlightVisibility] = useState("true");
+    const [departureFlight, setDepartureFlight] = useState(location.state.departureFlight);
+    const [returnFlight, setReturnFlight] = useState(location.state.returnFlight);
     const [isUser, setIsUser] = useState(false);
 
 
@@ -48,7 +44,6 @@ export default function UpdateFlight(){
 
 
 
-    const [departureFlight, setDepartureFlight] = useState({});
 
     const CancelToken = axios.CancelToken;
     let cancel;
@@ -62,36 +57,19 @@ export default function UpdateFlight(){
     axios.get('/userCriteria')
     .then(res => {
         setSearchCriteria(res.data);
-      })
 
   
-    axios.get('/flight/'+flight)
-    .then(res => {
-      cancelToken: new CancelToken(function executor(c) {
-        // An executor function receives a cancel function as a parameter
-        cancel = c;
-      })
+    // axios.get('/flight/'+flight)
+    // .then(res => {
+    //   cancelToken: new CancelToken(function executor(c) {
+    //     // An executor function receives a cancel function as a parameter
+    //     cancel = c;
+    //   })
+
+
       
-      setDepatureDate(dateConversion(res.data.DepatureDate));
-      setArrivalDate(dateConversion(res.data.ArrivalDate));
-      setFreeEconomySeatsNum(res.data.FreeEconomySeatsNum);
-      setFreeBusinessSeatsNum(res.data.FreeBusinessSeatsNum);
-      setFreeFirstSeatsNum(res.data.FreeFirstSeatsNum);
 
-      setDepatureAirport(res.data.DepatureAirport);
-      setArrivalAirport(res.data.ArrivalAirport);
-      setCabinClass(departureFlight.CabinClass);
-      var s = durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).hour + " hours, " + durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).min + " minutes";
-
-      setTripDuration(s);
-      setBaggageAllowance(res.data.BaggageAllowance);
-      if(SearchCriteria.CabinClass=="Economy Class")
-      setFlightPrice( parseInt(res.data.EconomySeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
-    if(SearchCriteria.CabinClass=="Business Class")
-    setFlightPrice(parseInt(res.data.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
-    if(SearchCriteria.CabinClass=="First Class")
-    setFlightPrice(parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
-      cancel();
+ 
   
     })
     .catch(function (error) {
@@ -151,7 +129,7 @@ function DoubleLabel(props){
 }
 function showDepartureFlight(e)  {
   const checked = e.target.checked;
-  if (checked) {
+  if (checked) { 
    setDepartureFlightVisibility(false);
   } else {
     setDepartureFlightVisibility(true);
@@ -161,24 +139,23 @@ function showDepartureFlight(e)  {
     function changeReturnFlight (){
 
       var bodyFormData = new FormData();
-      bodyFormData.append('FlightNumber', FlightNumber);
-      bodyFormData.append('DepatureDate', DepatureDate);
-      bodyFormData.append('ArrivalDate', ArrivalDate);
-      bodyFormData.append('FreeEconomySeatsNum', FreeEconomySeatsNum);
-      bodyFormData.append('FreeBusinessSeatsNum', FreeBusinessSeatsNum);
-      bodyFormData.append('FreeFirstSeatsNum', FreeFirstSeatsNum);
-      bodyFormData.append('DepatureAirport', DepatureAirport);
-      bodyFormData.append('ArrivalAirport', ArrivalAirport);
-      bodyFormData.append('TripDuration', TripDuration);
-      bodyFormData.append('CabinClass', CabinClass);
-      bodyFormData.append('FlightPrice', FlightPrice);
-
-      bodyFormData.append('BaggageAllowance', BaggageAllowance);
-
+      bodyFormData.append('FlightNumber', returnFlight.FlightNumber);
+      bodyFormData.append('DepatureDate', returnFlight.DepatureDate);
+      bodyFormData.append('ArrivalDate', returnFlight.ArrivalDate);
+      bodyFormData.append('FreeEconomySeatsNum', returnFlight.FreeEconomySeatsNum);
+      bodyFormData.append('FreeBusinessSeatsNum', returnFlight.FreeBusinessSeatsNum);
+      bodyFormData.append('FreeFirstSeatsNum', returnFlight.FreeFirstSeatsNum);
+      bodyFormData.append('DepatureAirport', returnFlight.DepatureAirport);
+      bodyFormData.append('ArrivalAirport', returnFlight.ArrivalAirport);
+      bodyFormData.append('TripDuration', returnFlight.TripDuration);
+      bodyFormData.append('CabinClass', returnFlight.CabinClass);
+      bodyFormData.append('FlightPrice', returnFlight.FlightPrice);
+      bodyFormData.append('BaggageAllowance', returnFlight.BaggageAllowance);
 
 
-      console.log(FlightNumber);
-    
+      console.log("REEEEEEEEEEEEEEEEETTTTTTTTTTTTTTTT");
+      
+      
       axios({
         method: "post",
         url: "/returnFlight",
@@ -187,10 +164,7 @@ function showDepartureFlight(e)  {
       })
           .then((response) => { 
             console.log(response.data);
-            var bodyFormData2 = new FormData();
-            bodyFormData2.append('DepatureAirport', ArrivalAirport);
-            bodyFormData2.append('ArrivalAirport', DepatureAirport);
-          
+           
        
              
             })
@@ -198,13 +172,22 @@ function showDepartureFlight(e)  {
          
 
       }
-      axios.get('/departureFlight')
-         .then(res => {
+    //   axios.get('/departureFlight')
+    //      .then(res => {
     
-            setDepartureFlight(res.data);
+    //         setDepartureFlight(res.data);
   
-    })
+    // })
 
+    useEffect(() => {
+
+      console.log("KKKKKKKKKKKK");
+      console.log(location.state.returnFlight);
+      var s = durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).hour + " hours, " + durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).min + " minutes";
+
+      returnFlight.TripDuration=s;
+
+    }, [])    
 
 
     function durationCalculation(departureDate, arrivalDate){
@@ -445,7 +428,7 @@ return(
                      >
                        Flight Number
                      </label>
-                     <div>{FlightNumber}</div>
+                     <div>{returnFlight.FlightNumber}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -455,7 +438,7 @@ return(
                      >
                        Depature Date & Time
                      </label>
-                     <div>{DepatureDate}</div>
+                     <div>{returnFlight.DepatureDate}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -465,7 +448,7 @@ return(
                      >
                        Arrival Date & Time
                      </label>
-                     <div>{ArrivalDate}</div>
+                     <div>{returnFlight.ArrivalDate}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -475,7 +458,7 @@ return(
                      >
                        Depature Airport
                      </label>
-                     <div>{DepatureAirport}</div>
+                     <div>{returnFlight.DepatureAirport}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -485,7 +468,7 @@ return(
                      >
                        Arrival Airport
                      </label>
-                     <div>{ArrivalAirport}</div>
+                     <div>{returnFlight.ArrivalAirport}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -495,7 +478,7 @@ return(
                      >
                        Trip Duration
                      </label>
-                     <div>{TripDuration}</div>
+                     <div>{returnFlight.TripDuration}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -505,7 +488,7 @@ return(
                      >
                        Cabin Class
                      </label>
-                     <div>{CabinClass}</div>
+                     <div>{returnFlight.CabinClass}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -515,7 +498,7 @@ return(
                      >
                        Baggage Allowance
                      </label>
-                     <div>{BaggageAllowance}</div>
+                     <div>{returnFlight.BaggageAllowance}</div>
  
                    </div>
                    <div className="relative w-full mb-3">
@@ -525,7 +508,7 @@ return(
                      >
                        Total Flight Price
                      </label>
-                     <div>{FlightPrice}</div>
+                     <div>{returnFlight.FlightPrice}</div>
  
                    </div>
                   <div className="text-center mt-6">
@@ -539,7 +522,7 @@ return(
                         
                       //   }
                       changeReturnFlight();
-                      navigate('/summary');
+                      navigate('/summary', {state: {departureFlight:departureFlight, returnFlight: returnFlight}});
                         
                             }}
                     >

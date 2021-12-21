@@ -59,13 +59,6 @@ function App(){
                <Route path="/Itinerary" element={<Itinerary/>} />
                <Route path="/FlightSeats" element={<FlightSeats/>} />
 
-             
-
-
-
-
-
-
 
             </Routes>
         </Router>

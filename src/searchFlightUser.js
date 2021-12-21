@@ -36,6 +36,8 @@ export default function SearchFlightGuest(){
     const [DepatureAirport, setDepatureAirport] = useState("");
     const [ArrivalAirport, setArrivalAirport] = useState("");
     const [CabinClass, setCabinClass] = useState("Economy Class");
+    const [UserCriteria, setUserCriteria] = useState({});
+
     const [isUser, setIsUser] = useState(false);
 
 
@@ -115,16 +117,24 @@ export default function SearchFlightGuest(){
 
     var bodyFormData = new FormData();
     bodyFormData.append('NumberOfAdults', NumberOfAdults);
+    UserCriteria.NumberOfAdults=NumberOfAdults;
     bodyFormData.append('NumberOfChildren', NumberOfChildren);
+    UserCriteria.NumberOfChildren=NumberOfChildren;
     bodyFormData.append('DepatureTime', DepatureTime);
+    UserCriteria.DepatureTime=DepatureTime;
     bodyFormData.append('DepatureDate', DepatureDate);
+    UserCriteria.DepatureDate=DepatureDate;
     bodyFormData.append('ArrivalTime', ArrivalTime);
+    UserCriteria.ArrivalTime=ArrivalTime;
     bodyFormData.append('ArrivalDate', ArrivalDate);
+    UserCriteria.ArrivalDate=ArrivalDate;
     bodyFormData.append('DepatureAirport', DepatureAirport);
+    UserCriteria.DepatureAirport=DepatureAirport;
     bodyFormData.append('ArrivalAirport', ArrivalAirport);
+    UserCriteria.ArrivalAirport=ArrivalAirport;
     bodyFormData.append('CabinClass', CabinClass);
+    UserCriteria.CabinClass=CabinClass;
     bodyFormData.append('isReturnFlight', false);
-
     
 
     axios({
@@ -153,8 +163,7 @@ export default function SearchFlightGuest(){
 
        } 
         else{
-          console.log(response.data);
-          navigate("/searchResultsUser");
+          navigate("/searchResultsUser", {state: {s:UserCriteria}});
         }
     })
   }

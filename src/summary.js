@@ -2,7 +2,7 @@ import React, {useState,useEffect} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 
@@ -22,34 +22,39 @@ const Anchor =({title})=>{
 export default function UpdateFlight(){
 
     let {flight} = useParams(); 
+    const location = useLocation();
     const navigate = useNavigate();
 
    
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
-    const [DepartureFlight, setDepartureFlight] = useState({});
+    const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
 
-    const [ReturnFlight, setReturnFlight] = useState({});
+    const [ReturnFlight, setReturnFlight] = useState(location.state.returnFlight);
     const [isUser, setIsUser] = useState(false);
 
+
       useEffect(() => {
-        axios.get('/returnFlight')
-      .then(res => {
-        setReturnFlight(res.data);
+        console.log("SSSSSSSSSUUUUUUUUUUUUUUUIIIIIIIIIIIIIIISS");
+      
 
-        })
-      .catch(function (error) {
-          console.log(error);
-      })
-      axios.get('/departureFlight')
-      .then(res => {
-        setDepartureFlight(res.data);
+      //   axios.get('/returnFlight')
+      // .then(res => {
+      //   setReturnFlight(res.data);
 
-        })
-      .catch(function (error) {
-          console.log(error);
-      })
+      //   })
+      // .catch(function (error) {
+      //     console.log(error);
+      // })
+      // axios.get('/departureFlight')
+      // .then(res => {
+      //   setDepartureFlight(res.data);
+
+      //   })
+      // .catch(function (error) {
+      //     console.log(error);
+      // })
       axios.get('/session')
       .then(res => {
         if(res.data==false)
@@ -139,10 +144,20 @@ function DoubleLabel(props){
                   </div>
     );
 }
+if(DepartureFlight==null || ReturnFlight==null)
+{return(
+  <>
+{isUser&&Navbar()};
+{!isUser&&NavbarGuest()};
+<h2 className="text-center mt-20" >Please wait while your request is being processed</h2>
+<div class="loader "></div>
 
+  </>
+)
+}
   
   
-return(
+return(DepartureFlight&&ReturnFlight &&
 
 
 <>
