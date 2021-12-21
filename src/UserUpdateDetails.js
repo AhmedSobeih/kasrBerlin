@@ -3,11 +3,12 @@ import React, {useState} from "react";
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
-import Navbar from 'Navbar';
+import Navbar from 'NavbarUser';
 
 var flag = true;
 
 export default function UserUpdateDetails() {
+    const [ErrorMessage, setErrorMessage] = useState("");
     console.log(useParams());
     const user = useParams().username; 
     console.log(user);
@@ -24,12 +25,13 @@ export default function UserUpdateDetails() {
     const [username, setUserName] = useState(user);
     const CancelToken = axios.CancelToken;
     let cancel;
+    console.log(user == null)
 
-  if(flag)
+  if(user == null)
   {
     console.log(user);
     flag= false;
-    axios.get('/user/'+username)
+    axios.get('/user')
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter
@@ -81,18 +83,17 @@ export default function UserUpdateDetails() {
       
       axios({
         method: "put",
-        url: "/user/" + username,
+        url: "/user",
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       })
           .then((response) => { 
           
             if(response.data==false)
-              console.log("User cannot be updated")
+              setErrorMessage("User cannot be updated");
             else
             {
-              console.log('User updated successfully');
-              navigate('/UserHome');
+              setErrorMessage("User updated successfully");
             }
         })
     }
@@ -176,19 +177,9 @@ return (
                     </button>
                   </div>
                 </form>
-              </div>
-            </div>
-            <div className="flex flex-wrap mt-6 relative">
-              <div className="w-1/2">
-                <a
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                  className="text-blueGray-200"
-                >
-                  <small>Forgot password?</small>
-                </a>
-              </div>
+              </div>            
               <div className="w-1/2 text-right">
+              <div id='searchFail' className="alert-warning">{ErrorMessage}</div>
                 <span></span>
               </div>
             </div>

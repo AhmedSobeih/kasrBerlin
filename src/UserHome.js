@@ -10,11 +10,11 @@ export default function UserHome() {
     var username;
     function viewReservedFlights(){
       console.log(username + " :new username");
-       navigate('/ViewReservations/'+ username);
+       navigate('/ViewReservations');
     }
 
     function goUserAccount(){
-        navigate('/UserAccountDetails/'+ username);        
+        navigate('/UserAccountDetails');        
     }
 
     function goReserveFlight(){

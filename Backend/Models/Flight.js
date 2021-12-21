@@ -23,6 +23,10 @@ const flightSchema = new Schema({
     type: Number,
     required: true
   },
+  FirstSeats: {
+    type: Number,
+    required: true
+  },
   DepatureAirport: {
     type: String,
     required: true
@@ -56,15 +60,15 @@ const flightSchema = new Schema({
     required: true
   },
   IsBusinessSeatBusy: {
-    type: [[Boolean]],
+    type: [Boolean],
     required: true
   },
   IsEconomySeatBusy: {
-    type: [[Boolean]],
+    type: [Boolean],
     required: true
   },
   IsFirstSeatBusy: {
-    type: [[Boolean]],
+    type: [Boolean],
     required: true
   },
   BaggageAllowance: {

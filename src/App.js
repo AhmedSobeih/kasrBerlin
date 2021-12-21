@@ -22,7 +22,7 @@ import ReturnFlightDetails from './ReturnFlightDetails';
 import Summary from './summary';
 import Itinerary from './Itinerary';
 import FlightSeats from './FlightSeats';
-
+import ReturnFlightSeats from 'ReturnFlightSeats';
 
 
 
@@ -41,14 +41,14 @@ function App(){
                 <Route path="/flightByNumber" element={<FlightByNumber/>} />
                 <Route path="/updateFlight/:flight" element={<UpdateFlight/>} />
                 <Route path="/viewFlights" element={<ViewFlights/>} />
-                <Route path="/ViewReservations/:username" element={<ViewReservations/>} />
+                <Route path="/ViewReservations" element={<ViewReservations/>} />
                 <Route path="/searchWithCriteria" element={<SearchWithCriteria/>} />
                 <Route path="/searchResults" element={<SearchResults/>} />
                <Route path="/AdminHome" element={<AdminHome/>} />
                <Route path="/UserHome" element={<UserHome/>} />
-               <Route path="/UserAccountDetails/:username" element={<UserAccountDetails/>} />
-               <Route path="/UserUpdateDetails/:username" element={<UserUpdateDetails/>} />
-               <Route path="/UserChangePassword/:username" element={<UserChangePassword/>} />
+               <Route path="/UserAccountDetails" element={<UserAccountDetails/>} />
+               <Route path="/UserUpdateDetails" element={<UserUpdateDetails/>} />
+               <Route path="/UserChangePassword" element={<UserChangePassword/>} />
                <Route path="/" element={<Index/>} />
                <Route path="/searchFlightUser" element={<SearchFlightUser/>} />
                <Route path="/searchResultsUser" element={<SearchResultsUser/>} />
@@ -58,6 +58,7 @@ function App(){
                <Route path="/summary" element={<Summary/>} />
                <Route path="/Itinerary" element={<Itinerary/>} />
                <Route path="/FlightSeats" element={<FlightSeats/>} />
+               <Route path="/ReturnFlightSeats" element={<ReturnFlightSeats/>} />
 
 
             </Routes>

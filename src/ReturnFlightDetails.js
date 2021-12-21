@@ -522,7 +522,11 @@ return(
                         
                       //   }
                       changeReturnFlight();
+<<<<<<< HEAD
                       navigate('/summary', {state: {departureFlight:departureFlight, returnFlight: returnFlight}});
+=======
+                      navigate('/FlightSeats');
+>>>>>>> 9c17d4f0b60f0f95461f4f9c73a37a5ffcc026f3
                         
                             }}
                     >
