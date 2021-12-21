@@ -7,11 +7,15 @@ import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
 
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate,useLocation} from 'react-router-dom';
 
 
 export default function ReturnFlightSeats() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
+    const [ReturnFlight, setReturnFlight] = useState(location.state.returnFlight);
+
 
 function confirmReturnSeats() {
     const checkboxes = document.querySelectorAll(`input:checked`);
@@ -32,7 +36,7 @@ function confirmReturnSeats() {
   })
       .then((response) => { 
         console.log(response.data)
-        navigate('/summary');
+        navigate('/summary', {state: {departureFlight:DepartureFlight, returnFlight: ReturnFlight, departureSeats: location.state.departureSeats, returnSeats: values}});
 
     })
   

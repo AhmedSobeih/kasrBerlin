@@ -7,10 +7,11 @@ import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
 
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate,useLocation} from 'react-router-dom';
 
 export default function FlightSeats() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     
 function confirmSeats() {
@@ -33,7 +34,7 @@ function confirmSeats() {
   })
       .then((response) => { 
         console.log(response.data)
-        navigate('/ReturnFlightSeats');
+        navigate('/ReturnFlightSeats',{state: {departureFlight:DepartureFlight, returnFlight: ReturnFlight, departureSeats: values}});
     })
   
 }
@@ -100,6 +101,10 @@ const Subscriptions=({plan})=>{
     const [SeatsFirst, setSeatsFirst] = useState([]);
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
+    const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
+    const [ReturnFlight, setReturnFlight] = useState(location.state.returnFlight);
+
+
 
 
      axios.get('/flightSeatsFirst')

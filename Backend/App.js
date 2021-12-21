@@ -716,15 +716,9 @@ app.post("/searchFlight",(req,res)=>{
         BaggageAllowance: req.body.baggageAllowance,
 
         
-<<<<<<< HEAD
-        IsBusinessSeatBusy: Array.from({ length:req.body.businessSeats }, ()=> false),
-        IsEconomySeatBusy: Array.from({ length:req.body.economySeats }, ()=> false),  
-        IsFirstSeatBusy: Array.from({ length:req.body.firstSeats }, ()=> false) ,
-=======
         IsBusinessSeatBusy: Array.from({ length:req.body.businessSeats }, () => false),
         IsEconomySeatBusy: Array.from({ length:req.body.economySeats }, () => false),
         IsFirstSeatBusy: Array.from({ length:req.body.firstSeats }, () => false), 
->>>>>>> 9c17d4f0b60f0f95461f4f9c73a37a5ffcc026f3
         BaggageAllowance: req.body.baggageAllowance 
       });
       try{

@@ -36,7 +36,6 @@ export default function UpdateFlight(){
 
 
       useEffect(() => {
-<<<<<<< HEAD
         console.log("SSSSSSSSSUUUUUUUUUUUUUUUIIIIIIIIIIIIIIISS");
       
 
@@ -57,25 +56,6 @@ export default function UpdateFlight(){
       //     console.log(error);
       // })
       axios.get('/session')
-=======
-         axios.get('/returnFlight')
-      .then(res => {
-        setReturnFlight(res.data);
-
-        })
-      .catch(function (error) {
-          console.log(error);
-      })
-       axios.get('/departureFlight')
-      .then(res => {
-        setDepartureFlight(res.data);
-
-        })
-      .catch(function (error) {
-          console.log(error);
-      })
-       axios.get('/session')
->>>>>>> 9c17d4f0b60f0f95461f4f9c73a37a5ffcc026f3
       .then(res => {
         if(res.data==false)
           setIsUser(false);
@@ -257,8 +237,11 @@ return(DepartureFlight&&ReturnFlight &&
     </tr>
     <tr>
       <th scope="row">Seats Reserved</th>
-      <td>xx </td>
-      <td>xx</td>
+      <td>{location.state.departureSeats.map((seat) => <span className="mr-2">{seat}   </span>)} 
+      </td>
+      <td>{location.state.returnSeats.map((seat) => <span className="mr-2">{seat}   </span>)} 
+      </td>
+
     </tr>
   </tbody>
 </table>
