@@ -29,6 +29,7 @@ export default function Itinerary(){
 
     const [ReturnFlight, setReturnFlight] = useState("");
     const [isUser, setIsUser] = useState({});
+    const [ReservationNumber, setReservationNumber] = useState("");
 
     
 
@@ -40,6 +41,28 @@ export default function Itinerary(){
     const CancelToken = axios.CancelToken;
     let cancel;
    
+
+
+
+     axios.get('/reservationNumber')
+     .then(res => {
+        cancelToken: new CancelToken(function executor(c) {
+          // An executor function receives a cancel function as a parameter
+          cancel = c;
+        })
+        
+        setReservationNumber(res.data);
+     
+
+
+      })
+      .catch(function (error) {
+          console.log(error);
+      })
+
+
+
+
 
       axios.get('/departureFlight')
       .then(res => {
@@ -148,6 +171,10 @@ return(
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <th scope="row">Confirmation/Booking Number</th>
+      <td>{ReservationNumber}</td>
+    </tr>
   <tr>
       <th scope="row">Flight Number</th>
       <td>{DepartureFlight.FlightNumber}</td>

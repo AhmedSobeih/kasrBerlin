@@ -288,22 +288,11 @@ app.post("/reserveReturnSeats",async(req,res)=>{
 });
 
 
+app.get("/reservationNumber", async(req,res)=>{
+  console.log(reservationNumber)
+   res.status(200).json(reservationNumber);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+})
 
 
 
