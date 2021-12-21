@@ -9,12 +9,11 @@ import './assets/styles/tailwind.css';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
 
-export default function FlightSeats() {
+
+export default function ReturnFlightSeats() {
     const navigate = useNavigate();
 
-    
-function confirmSeats() {
-
+function confirmReturnSeats() {
     const checkboxes = document.querySelectorAll(`input:checked`);
     let values = [];
     checkboxes.forEach((checkbox) => {
@@ -27,17 +26,17 @@ function confirmSeats() {
   
   axios({
     method: "post",
-    url: "/reserveSeats",
+    url: "/reserveReturnSeats",
     data: bodyFormData,
     headers: { "Content-Type": "multipart/form-data" },
   })
       .then((response) => { 
         console.log(response.data)
-        navigate('/ReturnFlightSeats');
+        navigate('/summary');
+
     })
   
 }
-
 
 
 
@@ -96,21 +95,20 @@ const Subscriptions=({plan})=>{
 
 
 
-
     const [SeatsFirst, setSeatsFirst] = useState([]);
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
 
 
-     axios.get('/flightSeatsFirst')
+     axios.get('/returnFlightSeatsFirst')
     .then(res => {
       setSeatsFirst(res.data);
     });
-    axios.get('/flightSeatsBusiness')
+    axios.get('/returnFlightSeatsBusiness')
     .then(res => {
       setSeatsBusiness(res.data);
     });
-     axios.get('/flightSeatsEconomy')
+     axios.get('/returnFlightSeatsEconomy')
     .then(res => {
       setSeatsEconomy(res.data);
     });
@@ -151,7 +149,7 @@ const Subscriptions=({plan})=>{
         
     <div class="plane">
         <div class="cockpit">
-            <h1>Reserve Your Seat</h1>
+            <h1>Reserve Your Return Flight Seat</h1>
         </div>
         <div class="exit exit--front fuselage">
         </div>
@@ -220,7 +218,7 @@ const Subscriptions=({plan})=>{
                                     
                                         ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
-                                                            <input type="checkbox" disabled id={index+SeatsFirst.length+SeatsBusiness.length+1} />
+                                                            <input type="checkbox" disabled id={index+SeatsBusiness.length+SeatsBusiness.length+1} />
                                                             <label for={index+SeatsFirst.length+SeatsBusiness.length+1}>{index+SeatsFirst.length+SeatsBusiness.length+1}</label>
                                                         </li>
 
@@ -251,8 +249,9 @@ const Subscriptions=({plan})=>{
                       // } else {
                         
                       //   }
-                    confirmSeats();   
                     
+                    confirmReturnSeats();
+
                             }}
                     >
                       Confirm Seats

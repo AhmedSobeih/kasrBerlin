@@ -39,10 +39,11 @@ var searchResult = [];
 var departureFlight = null;
 var returnFlight = null;
 var userPreferredCriteria=null;
-var reservationNumber=1;
+var reservationNumber=20;
 // #Importing the userController
 
-
+var seats=[];
+var returnSeats=[];
 
 // configurations
 // Mongo DB
@@ -83,12 +84,229 @@ app.get("/session",async(req,res)=>{
 
 //MS2
 app.get("/flightSeatsFirst", async(req,res)=>{
+  
   const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
-  console.log(flight[0]);
   let seats=flight[0].IsFirstSeatBusy;
-  console.log(seats);
    res.status(200).json(seats);
 });
+
+app.get("/flightSeatsBusiness", async(req,res)=>{
+  const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
+  let seats=flight[0].IsBusinessSeatBusy;
+   res.status(200).json(seats);
+});
+
+app.get("/flightSeatsEconomy", async(req,res)=>{
+  const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
+  let seats=flight[0].IsEconomySeatBusy;
+   res.status(200).json(seats);
+});
+
+
+app.get("/returnFlightSeatsFirst", async(req,res)=>{
+  console.log(returnFlight)
+  const returnFl = await Flight.find({FlightNumber : parseInt(returnFlight.FlightNumber)});
+  let seats=returnFl[0].IsFirstSeatBusy;
+   res.status(200).json(seats);
+});
+
+app.get("/returnFlightSeatsBusiness", async(req,res)=>{
+  const returnFl = await Flight.find({FlightNumber : parseInt(returnFlight.FlightNumber)});
+  let seats=returnFl[0].IsBusinessSeatBusy;
+   res.status(200).json(seats);
+});
+
+app.get("/returnFlightSeatsEconomy", async(req,res)=>{
+  const returnFl = await Flight.find({FlightNumber : parseInt(returnFlight.FlightNumber)});
+  let seats=returnFl[0].IsEconomySeatBusy;
+   res.status(200).json(seats);
+});
+
+
+
+app.post("/reserveSeats",async(req,res)=>{
+  const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
+   let reservedSeats=req.body.values.split(',');
+
+
+
+  if(userPreferredCriteria.CabinClass=="First Class")
+   {
+     console.log("first")
+   let newFirstSeats=new Array((flight[0].IsFirstSeatBusy).length);
+   newFirstSeats=flight[0].IsFirstSeatBusy;
+      console.log(req.body.values.length)
+
+   for(let i=0;i<(reservedSeats).length;i++){
+     let ind=(parseInt(reservedSeats[i]))-1;
+      console.log(ind)
+    newFirstSeats[ind]=true;
+   }
+   Flight.findOneAndUpdate({FlightNumber : parseInt(departureFlight.FlightNumber)}, {IsFirstSeatBusy: newFirstSeats}, {
+          new: true,
+        }).then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+   }
+
+
+
+   
+   else if(userPreferredCriteria.CabinClass=="Business Class")
+  {
+         console.log("business")
+
+   let newBusinessSeats=new Array((flight[0].IsBusinessSeatBusy).length);
+   newBusinessSeats=flight[0].IsBusinessSeatBusy;
+   let arrayLengthToBeDeduced=(flight[0].IsFirstSeatBusy).length;
+   console.log(arrayLengthToBeDeduced)
+   
+   for(let i=0;i<(reservedSeats).length;i++){
+     let ind=(parseInt(reservedSeats[i]))-arrayLengthToBeDeduced-1;
+      console.log(ind)
+    newBusinessSeats[ind]=true;
+   }
+
+   console.log(flight[0].newBusinessSeats)
+   Flight.findOneAndUpdate({FlightNumber : parseInt(departureFlight.FlightNumber)}, {IsBusinessSeatBusy: newBusinessSeats}, {
+          new: true,
+        }).then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+
+    console.log(flight[0].IsBusinessSeatBusy)
+
+  }
+  else if(userPreferredCriteria.CabinClass=="Economy Class")
+  {
+         console.log("economy")
+
+       let newEconomySeats=new Array((flight[0].IsEconomySeatBusy).length);
+   newEconomySeats=flight[0].IsEconomySeatBusy;
+   let arrayLengthToBeDeduced=(flight[0].IsFirstSeatBusy).length+(flight[0].IsBusinessSeatBusy).length;
+
+   for(let i=0;i<(reservedSeats).length;i++){
+     let ind=(parseInt(reservedSeats[i]))-arrayLengthToBeDeduced-1;
+      console.log(ind)
+    newEconomySeats[ind]=true;
+   }
+   Flight.findOneAndUpdate({FlightNumber : parseInt(departureFlight.FlightNumber)}, {IsEconomySeatBusy: newEconomySeats}, {
+          new: true,
+        }).then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+  }
+
+  for(let i=0;i<reservedSeats.length;i++){
+    seats=parseInt(reservedSeats[i]);
+  }
+  res.send(true);
+});
+
+
+
+
+
+app.post("/reserveReturnSeats",async(req,res)=>{
+  const flight = await Flight.find({FlightNumber : parseInt(returnFlight.FlightNumber)});
+   let reservedReturnSeats=req.body.values.split(',');
+
+
+
+  if(userPreferredCriteria.CabinClass=="First Class")
+   {
+     console.log("first")
+   let newFirstSeats=new Array((flight[0].IsFirstSeatBusy).length);
+   newFirstSeats=flight[0].IsFirstSeatBusy;
+      console.log(req.body.values.length)
+
+   for(let i=0;i<(reservedReturnSeats).length;i++){
+     let ind=(parseInt(reservedReturnSeats[i]))-1;
+      console.log(ind)
+    newFirstSeats[ind]=true;
+   }
+   Flight.findOneAndUpdate({FlightNumber : parseInt(returnFlight.FlightNumber)}, {IsFirstSeatBusy: newFirstSeats}, {
+          new: true,
+        }).then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+   }
+
+
+
+   
+   else if(userPreferredCriteria.CabinClass=="Business Class")
+  {
+         console.log("business")
+
+   let newBusinessSeats=new Array((flight[0].IsBusinessSeatBusy).length);
+   newBusinessSeats=flight[0].IsBusinessSeatBusy;
+   let arrayLengthToBeDeduced=(flight[0].IsFirstSeatBusy).length;
+   console.log(arrayLengthToBeDeduced)
+   
+   for(let i=0;i<(reservedReturnSeats).length;i++){
+     let ind=(parseInt(reservedReturnSeats[i]))-arrayLengthToBeDeduced-1;
+      console.log(ind)
+    newBusinessSeats[ind]=true;
+   }
+
+   console.log(flight[0].newBusinessSeats)
+   Flight.findOneAndUpdate({FlightNumber : parseInt(returnFlight.FlightNumber)}, {IsBusinessSeatBusy: newBusinessSeats}, {
+          new: true,
+        }).then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+
+    console.log(flight[0].IsBusinessSeatBusy)
+
+  }
+  else if(userPreferredCriteria.CabinClass=="Economy Class")
+  {
+         console.log("economy")
+
+       let newEconomySeats=new Array((flight[0].IsEconomySeatBusy).length);
+   newEconomySeats=flight[0].IsEconomySeatBusy;
+   let arrayLengthToBeDeduced=(flight[0].IsFirstSeatBusy).length+(flight[0].IsBusinessSeatBusy).length;
+
+   for(let i=0;i<(reservedReturnSeats).length;i++){
+     let ind=(parseInt(reservedReturnSeats[i]))-arrayLengthToBeDeduced-1;
+      console.log(ind)
+    newEconomySeats[ind]=true;
+   }
+   Flight.findOneAndUpdate({FlightNumber : parseInt(returnFlight.FlightNumber)}, {IsEconomySeatBusy: newEconomySeats}, {
+          new: true,
+        }).then((flight)=>{
+        console.log("updated");
+    }).catch((err) =>  console.log(err) )
+  }
+
+  for(let i=0;i<reservedReturnSeats.length;i++){
+    returnSeats=parseInt(reservedReturnSeats[i]);
+  }
+   
+  res.send(true);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.get("/departureFlight", async(req,res)=>{
   res.send(departureFlight);
@@ -155,7 +373,8 @@ app.get("/reserveFlight", async(req,res)=>{
         CabinClass: userPreferredCriteria.CabinClass,
         Price: parseInt(departureFlight.FlightPrice)+parseInt(returnFlight.FlightPrice),
         User: session.username ,
-        Seats:[1]
+        Seats:seats,
+        ReturnSeats:returnSeats
       })
       try{
         await newReservation.save(newReservation);

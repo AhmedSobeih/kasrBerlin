@@ -30,8 +30,11 @@ ReservationNumber: {
   Seats: {
     type: [Number],
     required: true
+  },
+  ReturnSeats: {
+    type: [Number],
+    required: true
   }
-  
 }, { timestamps: true });
 
 const Reservation = mongoose.model('Reservation', reservationSchema);
