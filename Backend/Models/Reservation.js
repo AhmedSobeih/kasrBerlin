@@ -28,11 +28,11 @@ ReservationNumber: {
     required: true
   }, 
   Seats: {
-    type: [Number],
+    type: [String],
     required: true
   },
   ReturnSeats: {
-    type: [Number],
+    type: [String],
     required: true
   }
 }, { timestamps: true });
