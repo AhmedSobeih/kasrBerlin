@@ -19,7 +19,14 @@ const searchedFlights = [];
 var multer = require('multer');
 var upload = multer();
 
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 
+// These id's and secrets should come from .env file.
+const CLIENT_ID = '1095244162204-4k8f4ivhloocnl5vn9r3giirtv942roi.apps.googleusercontent.com';
+const CLEINT_SECRET = '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';
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+const REFRESH_TOKEN = '1//04kcDdwX9kY-aCgYIARAAGAQSNwF-L9Ir5OIazB8L9CmVFH9uJykOD4iMWsA99dRMKMr1eDBFO8SZRBdwkhe8hx6_OFLh6u5B1Cw';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -57,6 +64,63 @@ mongoose.connect(MongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 /*
                                                     Start of your code
 */
+const oAuth2Client = new google.auth.OAuth2(
+  CLIENT_ID,
+  CLEINT_SECRET,
+  REDIRECT_URI
+);
+
+app.get("/ViewReservations",async(req,res)=>{
+const user=await Users.find({username : session.username});
+
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+console.log(user[0].email)
+
+async function sendMail() {
+  try {
+    const accessToken = await oAuth2Client.getAccessToken();
+
+    const transport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: 'airoairlines@gmail.com',
+        clientId: CLIENT_ID,
+        clientSecret: CLEINT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken,
+      },
+    });
+    console.log(user[0].email);
+    const mailOptions = {
+      from: 'AIROAIRLINES <airoairlines@gmail.com>',
+      to: user[0].email,
+      subject: 'Hello from gmail using API',
+      text: 'Hello from gmail email using API',
+    };
+    console.log(user[0].email)
+    const result = await transport.sendMail(mailOptions);
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+sendMail()
+  .then((result) => console.log('Email sent...', result))
+  .catch((error) => console.log(error.message));
+})
+
+//returns the username of the session
+app.get("/session",async(req,res)=>{
+  if(session.username==undefined)
+    res.send(false);
+  else
+    res.send(session.username);
+});
+
+
+
 app.get("/newAdmin",async(req,res)=>{
   const admin =new Users({
     firstName:"admin",

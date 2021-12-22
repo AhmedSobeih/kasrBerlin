@@ -143,12 +143,13 @@ class ViewReservations extends Component {
                       onClick={(e) =>{ e.preventDefault();
                         if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
                             this.gotoCancelReservation(fl.ReservationNumber);
-
-                      } else {
+                            axios.get('/ViewReservations')
+                            .then(res => {
+                              console.log(res.data)
+                      }) 
                         
                         }
-                        
-                        }}
+                    }}
                       
                     >
                       Cancel Reservation 
@@ -181,12 +182,13 @@ class ViewReservations extends Component {
                       onClick={(e) =>{ e.preventDefault();
                         if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
                             this.gotoCancelReservation(fl.ReservationNumber);
-
-                      } else {
+                            axios.get('/ViewReservations')
+                            .then(res => {
+                              console.log(res.data)
+                      }) 
                         
                         }
-                        
-                        }}
+                    }}
                       
                     >
                       Cancel Reservation 
