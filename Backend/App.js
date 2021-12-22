@@ -43,8 +43,8 @@ app.use(session({
 var searchResult = [];
 var searchDepResult = [];
 var searchRetResult = [];
-
-
+var reservationToBeDeleted=0;
+var refundedPrice=0;
 //MS2
 var departureFlight = null;
 var returnFlight = null;
@@ -71,6 +71,8 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 
 app.get("/ViewReservations",async(req,res)=>{
+
+   
 const user=await Users.find({username : session.username});
 
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
@@ -96,7 +98,7 @@ async function sendMail() {
       from: 'AIROAIRLINES <airoairlines@gmail.com>',
       to: user[0].email,
       subject: 'Hello from gmail using API',
-      text: 'Hello from gmail email using API',
+      text: 'Hello '+user[0].lastName + " you have cancelled flight with booking number "+reservationToBeDeleted+" and the amount to be refunded "+refundedPrice 
     };
     console.log(user[0].email)
     const result = await transport.sendMail(mailOptions);
@@ -892,6 +894,9 @@ app.post("/searchFlight",(req,res)=>{
     });
 
     app.delete('/reservation',async (req,res)=>{
+      reservationToBeDeleted=parseInt(req.body.ReservationNumber);
+      const flightReserved= await Reservation.find({username : session.username ,ReservationNumber:reservationToBeDeleted});
+      refundedPrice=flightReserved[0].Price;  
       Reservation.findOneAndRemove(req.body)
       .then((Reservation)=>{
         res.send(true);//if successful, redirect to the home page
