@@ -15,7 +15,11 @@ ReservationNumber: {
     type: Number,
     required: true
   },
-  CabinClass:{
+  DepartureCabinClass:{
+    type:String,
+    required: true
+  },
+  ReturnCabinClass:{
     type:String,
     required: true
   },

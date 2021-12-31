@@ -162,7 +162,7 @@ class SearchResults extends Component {
               this.setState({isUser:true});
             })
     }
-    gotoReturnFlight(fl,price) {
+    gotoReturnFlight(fl,price,duration) {
       var ReturnFlight = {};
       ReturnFlight.FlightNumber = fl.FlightNumber;
       ReturnFlight.DepatureDate = fl.DepatureDate;
@@ -172,8 +172,8 @@ class SearchResults extends Component {
       ReturnFlight.FreeFirstSeatsNum = fl.FreeFirstSeatsNum;
       ReturnFlight.DepatureAirport = fl.DepatureAirport;
       ReturnFlight.ArrivalAirport = fl.ArrivalAirport;
-      ReturnFlight.TripDuration = fl.TripDuration;
-      ReturnFlight.CabinClass = this.state.userCriteria.CabinClass;
+      ReturnFlight.TripDuration = duration;
+      ReturnFlight.CabinClass = this.state.userCriteria.ReturnCabinClass;
       ReturnFlight.BaggageAllowance = fl.BaggageAllowance;
       ReturnFlight.FlightPrice = price;
       ReturnFlight.isReturnFlight = true;
@@ -192,11 +192,11 @@ class SearchResults extends Component {
       return newDate;
     }
     getPrice(fl){
-      if(this.state.departureFlight.CabinClass=="Economy Class")
+      if(this.state.userCriteria.ReturnCabinClass=="Economy Class")
         return parseInt(fl.EconomySeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
-      if(this.state.departureFlight.CabinClass=="Business Class")
+      if(this.state.userCriteria.ReturnCabinClass=="Business Class")
         return parseInt(fl.BusinessSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
-      if(this.state.departureFlight.CabinClass=="First Class")
+      if(this.state.userCriteria.ReturnCabinClass=="First Class")
         return parseInt(fl.FirstSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
 
     }    
@@ -460,14 +460,14 @@ class SearchResults extends Component {
       <td className>{fl.FlightNumber}</td>
       <td>{this.dateConversion(fl.DepatureDate)}</td>
       <td>{this.dateConversion(fl.ArrivalDate)}</td>
-      <td>{this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour} hours, {this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min} minutes </td>
+      <td id="tripDuration">{this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour} hours, {this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min} minutes </td>
       <td id="price">{(this.getPrice(fl))}</td>
       <td>{fl.BaggageAllowance}</td>
 
       <td><button 
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"  onClick={(e) =>{ e.preventDefault();
-                        this.gotoReturnFlight(fl,document.getElementById ( "price" ).innerText)
+                        this.gotoReturnFlight(fl,this.getPrice(fl),document.getElementById ( "tripDuration" ).innerText )
                         
                             }
                         }

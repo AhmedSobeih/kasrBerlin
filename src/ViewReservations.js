@@ -107,7 +107,8 @@ class ViewReservations extends Component {
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">#</th>
+    <th scope="col">#</th>
+      <th scope="col">Reservation Number</th>
       <th scope="col">Flight Type</th>
       <th scope="col">Flight Number</th>
       <th scope="col">Departure Date</th>
@@ -127,14 +128,17 @@ class ViewReservations extends Component {
                             (
 
                                   <tr>
+
       <th scope="row">{index+1}</th>
+      <td>{fl.ReservationNumber}</td>
       <td>Departure</td>
       <td>{fl.DepatureFlightFlightNumber}</td>
       <td>{fl.DepatureFlightDepatureDate}</td>
       <td>{fl.DepatureFlightArrivalDate}</td>
       <td>{fl.DepatureFlightDepatureAirport}</td>
       <td>{fl.DepatureFlightArrivalAirport}</td>
-      <td>{fl.CabinClass}</td>
+      <td>{fl.DepartureCabinClass}</td>
+
       <td>{fl.DepatureFlightSeats.length}</td>
       <td>[{fl.DepatureFlightSeats.join(",")}]</td>
       <td>{fl.Price}</td>
@@ -156,6 +160,55 @@ class ViewReservations extends Component {
                     >
                       Cancel Reservation 
      </button> </td>
+     <td><button 
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" 
+                      onClick={(e) =>{ e.preventDefault();
+                        var bodyFormData = new FormData();
+
+                        bodyFormData.append('flightNumber', fl.DepatureFlightFlightNumber);
+                        bodyFormData.append('CabinClass', fl.DepartureCabinClass);
+
+                       axios({
+                        method: "post",
+                        url: "/departureFlightByNumber",
+                        data: bodyFormData,
+                        headers: { "Content-Type": "multipart/form-data" },
+                      })
+                      .then((response) => { 
+                        console.log("response");
+
+                        console.log(response);
+                        navigate('/changeSeats', {state: {ReservationNumber: fl.ReservationNumber, Type:"Departure", values: fl.DepatureFlightSeats}});
+
+                      })
+
+  
+  
+ 
+                        
+                    }}
+                      
+                    >
+                      Change seats
+     </button> </td>
+     <td><button 
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" 
+                      onClick={(e) =>{ e.preventDefault();
+                        axios.get('/flight/'+fl.DepatureFlightFlightNumber)
+                        .then(res => {
+                          navigate('/changeSearchFlight', {state: {reservation: fl, oldFlight:res.data, Type:"Departure"} })
+
+                        });
+                       
+                       
+                        
+                    }}
+                      
+                    >
+                      Change Flight
+     </button> </td>
       <td>
      </td>
     </tr>
@@ -168,13 +221,14 @@ class ViewReservations extends Component {
                                 
                                   <tr>
       <th scope="row">{index+1}</th>
+      <td>{fl.ReservationNumber}</td>
       <td>Arrival</td>
       <td>{fl.ArrivalFlightFlightNumber}</td>
       <td>{fl.ArrivalFlightDepatureDate}</td>
       <td>{fl.ArrivalFlightArrivalDate}</td>
       <td>{fl.ArrivalFlightDepatureAirport}</td>
       <td>{fl.ArrivalFlightArrivalAirport}</td>
-      <td>{fl.CabinClass}</td>
+      <td>{fl.ReturnCabinClass}</td>
       <td>{fl.ArrivalFlightSeats.length}</td>
       <td>[{fl.ArrivalFlightSeats.join(",")}]</td>
       <td>{fl.Price}</td>
@@ -195,6 +249,52 @@ class ViewReservations extends Component {
                       
                     >
                       Cancel Reservation 
+     </button> </td>
+     <td><button 
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" 
+                      onClick={(e) =>{ e.preventDefault();
+
+                        var bodyFormData = new FormData();
+
+                        bodyFormData.append('flightNumber', fl.ArrivalFlightFlightNumber);
+                        bodyFormData.append('CabinClass', fl.ReturnCabinClass);
+
+                      
+                       axios({
+                        method: "post",
+                        url: "/returnFlightByNumber",
+                        data: bodyFormData,
+                        headers: { "Content-Type": "multipart/form-data" },
+                      })
+                      .then((response) => { 
+
+                        navigate('/changeSeats', {state: {ReservationNumber: fl.ReservationNumber, Type:"Return", values:fl.DepatureFlightSeats}});
+
+                      })
+                        
+                        
+                    }}
+                      
+                    >
+                      Change seats
+     </button> </td>
+     <td><button 
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" 
+                      onClick={(e) =>{ e.preventDefault();
+
+                      axios.get('/flight/'+fl.ArrivalFlightFlightNumber)
+                      .then(res => {
+                        navigate('/changeSearchFlight', {state: {reservation: fl, oldFlight:res.data, Type:"Return"} })
+
+                      });
+                     
+                        
+                    }}
+                      
+                    >
+                      Change Flight
      </button> </td>
       <td>
      </td>

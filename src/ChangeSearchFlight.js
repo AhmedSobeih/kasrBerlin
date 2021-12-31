@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest.js';
 
@@ -17,29 +17,24 @@ const Anchor =({title})=>{
        };
 
 export default function SearchFlightGuest(){
-    const [NumberOfAdultsVisibility, setNumberOfAdultsVisibility] = useState(true);
-    const [NumberOfChildrenVisibility, setNumberOfChildrenVisibility] = useState(true);
+
     const [DepartureDateVisibility, setDepartureDateVisibility] = useState(true);
     const [ArrivalDateVisibility, setArrivalDateVisibility] = useState(true);
-    const [DepartureAirportVisibility, setDepartureAirportVisibility] = useState(true);
-    const [ArrivalAirportVisibility, setArrivalAirportVisibility] = useState(true);
-    const [DepartureCabinClassVisibility, setDepartureCabinClassVisibility] = useState(true);
-    const [ReturnCabinClassVisibility, setReturnCabinClassVisibility] = useState(true);
-
 
 
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const [NumberOfAdults, setNumberOfAdults] = useState(0);
+
+    const [NumberOfAdults, setNumberOfAdults] = useState(location.state.reservation.DepatureFlightSeats.length);
     const [NumberOfChildren, setNumberOfChildren] = useState(0);
     const [DepatureTime, setDepatureTime] = useState("");
     const [DepatureDate, setDepatureDate] = useState("");
     const [ArrivalTime, setArrivalTime] = useState("");
     const [ArrivalDate, setArrivalDate] = useState("");
-    const [DepatureAirport, setDepatureAirport] = useState("");
-    const [ArrivalAirport, setArrivalAirport] = useState("");
-    const [DepartureCabinClass, setDepartureCabinClass] = useState("Economy Class");
-    const [ReturnCabinClass, setReturnCabinClass] = useState("Economy Class");
+    const [DepatureAirport, setDepatureAirport] = useState(location.state.oldFlight.DepatureAirport);
+    const [ArrivalAirport, setArrivalAirport] = useState(location.state.oldFlight.ArrivalAirport);
+    const [CabinClass, setCabinClass] = useState("Economy Class");
     const [UserCriteria, setUserCriteria] = useState({});
 
     const [isUser, setIsUser] = useState(false);
@@ -50,22 +45,7 @@ export default function SearchFlightGuest(){
 
 
     
-    const showNumberOfAdults = (e) => {
-    const checked = e.target.checked;
-    if (checked) {
-     setNumberOfAdultsVisibility(false);
-    } else {
-     setNumberOfAdultsVisibility(true);
-    }
-  };
-  const showNumberOfChildren = (e) => {
-    const checked = e.target.checked;
-    if (checked) {
-     setNumberOfChildrenVisibility(false);
-    } else {
-     setNumberOfChildrenVisibility(true);
-    }
-  };
+   
   const showDepartureDate = (e) => {
     const checked = e.target.checked;
     if (checked) {
@@ -83,52 +63,9 @@ export default function SearchFlightGuest(){
     }
   };
 
-  const showDepartureAirport = (e) => {
-    const checked = e.target.checked;
-    if (checked) {
-     setDepartureAirportVisibility(false);
-    } else {
-     setDepartureAirportVisibility(true);
-    }
-  };
-  const showArrivalAirport = (e) => {
-    const checked = e.target.checked;
-    if (checked) {
-     setArrivalAirportVisibility(false);
-    } else {
-     setArrivalAirportVisibility(true);
-    }
-  };
-  const showDepartureCabinClass = (e) => {
-    const checked = e.target.checked;
-    if (checked) {
-    {
-      setDepartureCabinClassVisibility(false);
-      setDepartureCabinClass('Economy Class');
-    } 
-    } else {
-     setDepartureCabinClassVisibility(true);
-     setDepartureCabinClass('');
-
-    }
-  };
-  const showReturnCabinClass = (e) => {
-    const checked = e.target.checked;
-    if (checked) {
-    {
-      setReturnCabinClassVisibility(false);
-      setReturnCabinClass('Economy Class');
-    } 
-    } else {
-     setReturnCabinClassVisibility(true);
-     setReturnCabinClass('');
-
-    }
-  };
   
-  
-  
-
+ 
+ 
   function searchFlight (){
     if(NumberOfAdults<=0 && NumberOfChildren<=0)
     {
@@ -137,10 +74,10 @@ export default function SearchFlightGuest(){
     }
 
     var bodyFormData = new FormData();
-    bodyFormData.append('NumberOfAdults', NumberOfAdults);
+    bodyFormData.append('NumberOfAdults', location.state.reservation.DepatureFlightSeats.length);
     UserCriteria.NumberOfAdults=NumberOfAdults;
-    bodyFormData.append('NumberOfChildren', NumberOfChildren);
-    UserCriteria.NumberOfChildren=NumberOfChildren;
+    bodyFormData.append('NumberOfChildren', 0);
+    UserCriteria.NumberOfChildren=0;
     bodyFormData.append('DepatureTime', DepatureTime);
     UserCriteria.DepatureTime=DepatureTime;
     bodyFormData.append('DepatureDate', DepatureDate);
@@ -153,13 +90,28 @@ export default function SearchFlightGuest(){
     UserCriteria.DepatureAirport=DepatureAirport;
     bodyFormData.append('ArrivalAirport', ArrivalAirport);
     UserCriteria.ArrivalAirport=ArrivalAirport;
-    setDepartureCabinClass(document.getElementById("DepartureCabinClass").value);
-    setReturnCabinClass(document.getElementById("ReturnCabinClass").value);
-    bodyFormData.append('DepartureCabinClass', DepartureCabinClass);
-    UserCriteria.DepartureCabinClass=DepartureCabinClass;
-    bodyFormData.append('ReturnCabinClass', ReturnCabinClass);
-    UserCriteria.ReturnCabinClass=ReturnCabinClass;
+    setCabinClass(document.getElementById("CabinClass").value);
+    if(location.state.Type=="Departure")
+   { 
+    
+    bodyFormData.append('DepartureCabinClass', CabinClass);
+    UserCriteria.DepartureCabinClass=CabinClass;
+    bodyFormData.append('ReturnCabinClass', location.state.reservation.ReturnCabinClass);
+    UserCriteria.ReturnCabinClass=location.state.reservation.ReturnCabinClass;
     bodyFormData.append('isReturnFlight', false);
+
+  }
+    else
+   {
+     console.log("Departure " + location.state.reservation.DepartureCabinClass);
+    bodyFormData.append('DepartureCabinClass', location.state.reservation.DepartureCabinClass);
+    UserCriteria.DepartureCabinClass=location.state.reservation.DepartureCabinClass;
+    console.log("Return  " + CabinClass);
+
+    bodyFormData.append('ReturnCabinClass', CabinClass);
+    UserCriteria.ReturnCabinClass=CabinClass;
+    bodyFormData.append('isReturnFlight', false);
+   }
     
 
     axios({
@@ -188,8 +140,7 @@ export default function SearchFlightGuest(){
 
        } 
         else{
-          console.log(UserCriteria);
-          navigate("/searchResultsUser", {state: {s:UserCriteria}});
+          navigate("/changeSearchResFlight", {state: {reservation:location.state.reservation,s:UserCriteria, oldFlight: location.state.oldFlight, Type:location.state.Type}});
         }
     })
   }
@@ -226,17 +177,9 @@ export default function SearchFlightGuest(){
     console.log(ArrivalAirport);
   }
 
-  function handleDepartureCabinClass(text){
-   
-    var select = document.getElementById('DepartureCabinClass');
-    var text = select.options[select.selectedIndex].text;
-    console.log(text); // English
-    setDepartureCabinClass(text);
-    // console.log(DepartureCabinClass);
-  }
-  function handleReturnCabinClass(text){
-    setReturnCabinClass(document.getElementById("ReturnCabinClass").value);
-    console.log(ReturnCabinClass);
+  function handleCabinClass(text){
+    setCabinClass(document.getElementById("CabinClass").value);
+    console.log(CabinClass);
   }
     axios.get('/session')
     .then(res => {
@@ -284,22 +227,7 @@ return(
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
                 <form>
                    
-                <div className="relative w-full mb-3" >
-                    
-                    <label
-                    style={{margin:'5px'}}
-                      className="uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Number of Adults
-                    </label>
-                    <input
-
-                     type="number" onChangeCapture={(e) => {
-                      handleNumberOfAdults(e);}}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                  </div>
+               
                   <div className="relative w-full mb-3" >
                    
                     <label
@@ -307,14 +235,9 @@ return(
                       className="uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Number of Children
+                      Number of Seats
                     </label>
-                    <input
-
-                     type="number" onChangeCapture={(e) => {
-                      handleNumberOfChildren(e);}}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
+                   <div>{location.state.reservation.DepatureFlightSeats.length}</div>
                   </div>
                   
                   <div className="relative w-full mb-3">
@@ -323,30 +246,15 @@ return(
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                     Departure Flight Cabin Class
+                      Cabin Class
                     </label>
-                    <select name = "dropdown" id="DepartureCabinClass" onChange={handleDepartureCabinClass}>
+                    <select name = "dropdown" id="CabinClass" onChange={handleCabinClass}>
             <option value = "Economy Class">Economy Class</option>
             <option value = "Business Class" >Business Class</option>
             <option value = "First Class" >First Class</option>
 
          </select>
                   </div>
-                  <div className="relative w-full mb-3">
-                      
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Return Flight Cabin Class
-                      </label>
-                      <select name = "dropdown" id="ReturnCabinClass" onChange={handleReturnCabinClass}>
-              <option value = "Economy Class">Economy Class</option>
-              <option value = "Business Class" >Business Class</option>
-              <option value = "First Class" >First Class</option>
-  
-           </select>
-                    </div>
                   <div className="relative w-full mb-3" >
                      <input type="checkbox" name="number" value="number"  onClick={(e) => {
                                 showDepartureDate(e);
@@ -387,44 +295,28 @@ return(
                   </div>
                   
                   <div className="relative w-full mb-3" >
-                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
-                                showDepartureAirport(e);
-                            }}/>
+                    
                     <label
-                    style={{margin:'5px'}}
+                    style={{margin:'0px'}}
                       className="uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Departure Airport
+                    Departure Airport
                     </label>
-                    <input
-                     hidden={DepartureAirportVisibility} 
-
-                     type="text" onChangeCapture={(e) => {
-                      handleDepatureAirport(e);}}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
+                   <div>{location.state.oldFlight.DepatureAirport}</div>
                   </div>
                   
                  
                   <div className="relative w-full mb-3" >
-                     <input type="checkbox" name="number" value="number"  onClick={(e) => {
-                                showArrivalAirport(e);
-                            }}/>
+                    
                     <label
-                    style={{margin:'5px'}}
+                    style={{margin:'0px'}}
                       className="uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
                       Arrival Airport
                     </label>
-                    <input
-                     hidden={ArrivalAirportVisibility} 
-
-                     type="text" onChangeCapture={(e) => {
-                      handleArrivalAirport(e);}}
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
+                   <div>{location.state.oldFlight.ArrivalAirport}</div>
                   </div>
                
                   <div className="text-center mt-6">

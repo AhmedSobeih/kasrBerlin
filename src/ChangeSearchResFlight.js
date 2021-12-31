@@ -48,7 +48,8 @@ class SearchResults extends Component {
                 console.log(error);
             })
             
-            
+            console.log("NNNNNNNNNNN")
+            console.log(this.state.userCriteria);
            axios.get('/session')
             .then(res => {
               if(res.data==false)
@@ -61,18 +62,61 @@ class SearchResults extends Component {
     })
     }
     
-    gotoFlight(fl) {
-        this.props.navigate('/departureFlight/'+fl.FlightNumber, {state:{departureFlight:fl}})
+    gotoFlight(fl, price ,priceDifference) {
+        var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
+        fl.TripDuration = duration;
+        this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type}})
     }
 
     getPrice(fl){
+        
+        if(this.props.location.state.Type=="Departure")
+        {
         if(this.state.userCriteria.DepartureCabinClass=="Economy Class")
           return parseInt(fl.EconomySeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
         if(this.state.userCriteria.DepartureCabinClass=="Business Class")
-          return parseInt(fl.BusinessSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+            return parseInt(fl.BusinessSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
         if(this.state.userCriteria.DepartureCabinClass=="First Class")
           return parseInt(fl.FirstSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
-  
+        }
+        else
+        {
+        if(this.state.userCriteria.ReturnCabinClass=="Economy Class")
+          return parseInt(fl.EconomySeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+        if(this.state.userCriteria.ReturnCabinClass=="Business Class")
+            return parseInt(fl.BusinessSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+        if(this.state.userCriteria.ReturnCabinClass=="First Class")
+          return parseInt(fl.FirstSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+
+        }
+      }    
+      getPriceOldFlight(fl){
+
+        if(this.props.location.state.Type=="Departure")
+        {
+
+            if(this.props.location.state.reservation.DepartureCabinClass=="Economy Class")
+            {
+                 return parseInt(fl.EconomySeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+
+            }
+            if(this.props.location.state.reservation.DepartureCabinClass=="Business Class")
+                 return parseInt(fl.BusinessSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+            if(this.props.location.state.reservation.DepartureCabinClass=="First Class")
+                 return parseInt(fl.FirstSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+        }
+        else
+        {
+            if(this.props.location.state.reservation.ReturnCabinClass=="Economy Class")
+            {
+
+                 return parseInt(fl.EconomySeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+            }
+                if(this.props.location.state.reservation.ReturnCabinClass=="Business Class")
+                 return parseInt(fl.BusinessSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+            if(this.props.location.state.reservation.ReturnCabinClass=="First Class")
+                 return parseInt(fl.FirstSeatPrice)*(parseInt(this.state.userCriteria.NumberOfAdults)+parseInt(this.state.userCriteria.NumberOfChildren));
+        }
       }    
       dateConversion(date){
         let newDate = "";
@@ -190,7 +234,7 @@ class SearchResults extends Component {
       <th scope="col">Departure Date</th>
       <th scope="col">Arrival Date</th>
       <th scope="col">Trip Duration</th>
-      <th scope="col">Total Price</th>
+      <th scope="col">Price Difference</th>
       <th scope="col">Baggage Allowance per Passenger</th>
 
     </tr>
@@ -207,13 +251,13 @@ class SearchResults extends Component {
       <td>{this.dateConversion(fl.DepatureDate)}</td>
       <td>{this.dateConversion(fl.ArrivalDate)}</td>
       <td>{this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour} hours, {this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min} minutes</td>
-      <td>{this.getPrice(fl)}</td>
+      <td>{this.getPrice(fl)-this.getPriceOldFlight(this.props.location.state.oldFlight)}</td>
       <td>{fl.BaggageAllowance}</td>
 
       <td><button 
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"  onClick={(e) =>{ e.preventDefault();
-                        this.gotoFlight(fl);
+                        this.gotoFlight(fl, this.getPrice(fl), this.getPrice(fl)-this.getPriceOldFlight(this.props.location.state.oldFlight));
                         
                             }
                         }

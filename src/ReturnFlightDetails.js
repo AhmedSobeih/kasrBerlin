@@ -37,6 +37,8 @@ export default function UpdateFlight(){
     const [DepartureFlightVisibility, setDepartureFlightVisibility] = useState("true");
     const [departureFlight, setDepartureFlight] = useState(location.state.departureFlight);
     const [returnFlight, setReturnFlight] = useState(location.state.returnFlight);
+    const [TripDuration, setTripDuration] = useState(location.state.tripDuration);
+
     const [isUser, setIsUser] = useState(false);
 
 
@@ -153,7 +155,6 @@ function showDepartureFlight(e)  {
       bodyFormData.append('BaggageAllowance', returnFlight.BaggageAllowance);
 
 
-      console.log("REEEEEEEEEEEEEEEEETTTTTTTTTTTTTTTT");
       
       
       axios({
@@ -181,8 +182,7 @@ function showDepartureFlight(e)  {
 
     useEffect(() => {
 
-      console.log("KKKKKKKKKKKK");
-      console.log(location.state.returnFlight);
+    
       var s = durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).hour + " hours, " + durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).min + " minutes";
 
       returnFlight.TripDuration=s;

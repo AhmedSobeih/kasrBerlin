@@ -137,40 +137,14 @@ export default function UpdateFlight(){
               else
                 setIsUser(true);
             })
-    axios.get('/flight/'+flight)
-    .then(res => {
-      cancelToken: new CancelToken(function executor(c) {
-        // An executor function receives a cancel function as a parameter
-        cancel = c;
-      })
-      
-      setDepatureDate(dateConversion(res.data.DepatureDate));
-      setArrivalDate(dateConversion(res.data.ArrivalDate));
-      setFreeEconomySeatsNum(res.data.FreeEconomySeatsNum);
-      setFreeBusinessSeatsNum(res.data.FreeBusinessSeatsNum);
-      setFreeFirstSeatsNum(res.data.FreeFirstSeatsNum);
-      setDepatureAirport(res.data.DepatureAirport);
-      setArrivalAirport(res.data.ArrivalAirport);
-     
-    //setCabinClass(res.data.CabinClass);
-      setBaggageAllowance(res.data.BaggageAllowance);
-      if(SearchCriteria.DepartureCabinClass=="Economy Class")
-      setFlightPrice( parseInt(res.data.EconomySeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
-    if(SearchCriteria.DepartureCabinClass=="Business Class")
-    setFlightPrice(parseInt(res.data.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
-    if(SearchCriteria.DepartureCabinClass=="First Class")
-    setFlightPrice(parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
 
-    cancel();
-  
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
     axios.get('/userCriteria')
     .then(res => {
       setSearchCriteria(res.data);
-      setCabinClass(res.data.DepartureCabinClass);
+      if(location.state.Type=="Departure")
+        setCabinClass(res.data.DepartureCabinClass);
+      else
+      setCabinClass(res.data.ReturnCabinClass);
       
     })
     
@@ -262,8 +236,8 @@ function DoubleLabel(props){
       // setDepartureFlight(depFlight);
 
       console.log(FlightNumber);
-    
-      axios({
+      
+        axios({
         method: "post",
         url: "/departureFlight",
         data: bodyFormData,
@@ -289,13 +263,49 @@ function DoubleLabel(props){
         
                } 
                 else{
-                 
-                    navigate('/searchReturnFlight', {state: {userCriteria:SearchCriteria, departureFlight:DepartureFlight, tripDuration:TripDuration}});
+                  var bodyFormData = new FormData();
+                  bodyFormData.append('FlightNumber', location.state.departureFlight.FlightNumber);
+                  bodyFormData.append('DepatureDate',location.state.departureFlight.DepatureDate);
+                  bodyFormData.append('ArrivalDate',  location.state.departureFlight.ArrivalDate);
+                  bodyFormData.append('FreeEconomySeatsNum',  location.state.departureFlight.FreeEconomySeatsNum);
+                  bodyFormData.append('FreeBusinessSeatsNum',  location.state.departureFlight.FreeBusinessSeatsNum);
+                  bodyFormData.append('FreeFirstSeatsNum',  location.state.departureFlight.FreeFirstSeatsNum);
+                  bodyFormData.append('DepatureAirport',  location.state.departureFlight.DepatureAirport);
+                  bodyFormData.append('ArrivalAirport',  location.state.departureFlight.ArrivalAirport);
+                  bodyFormData.append('TripDuration',  location.state.departureFlight.TripDuration);
+                  bodyFormData.append('CabinClass',  CabinClass);
+                  bodyFormData.append('BaggageAllowance',  location.state.departureFlight.BaggageAllowance);
+                  bodyFormData.append('FlightPrice',  location.state.FlightPrice);
+                  if(location.state.Type=="Departure")
+                  {
+                    axios({
+                    method: "post",
+                    url: "/departureFlight",
+                    data: bodyFormData,
+                    headers: { "Content-Type": "multipart/form-data" },
+                    })
+                  }
+                  else
+                  {
+                    axios({
+                      method: "post",
+                      url: "/returnFlight",
+                      data: bodyFormData,
+                      headers: { "Content-Type": "multipart/form-data" },
+                      })
+                  }
+                   
+                    navigate('/newDepFlightSeats', {state: {reservation:location.state.reservation,userCriteria:SearchCriteria, departureFlight:location.state.departureFlight, tripDuration:TripDuration, Type:location.state.Type}});
+                  
+                
+                    
               }
             }) 
           }
         )
-      }
+      
+
+    }
   
   
 return(
@@ -329,7 +339,7 @@ return(
                     >
                       Flight Number
                     </label>
-                    <div>{FlightNumber}</div>
+                    <div>{location.state.departureFlight.FlightNumber}</div>
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -339,7 +349,7 @@ return(
                     >
                       Depature Date & Time
                     </label>
-                    <div>{DepatureDate}</div>
+                    <div>{location.state.departureFlight.DepatureDate}</div>
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -349,7 +359,7 @@ return(
                     >
                       Arrival Date & Time
                     </label>
-                    <div>{ArrivalDate}</div>
+                    <div>{location.state.departureFlight.ArrivalDate}</div>
 
                   </div>
                  
@@ -360,7 +370,7 @@ return(
                     >
                       Depature Airport
                     </label>
-                    <div>{DepatureAirport}</div>
+                    <div>{location.state.departureFlight.DepatureAirport}</div>
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -370,7 +380,7 @@ return(
                     >
                       Arrival Airport
                     </label>
-                    <div>{ArrivalAirport}</div>
+                    <div>{location.state.departureFlight.ArrivalAirport}</div>
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -400,7 +410,17 @@ return(
                     >
                       Baggage Allowance
                     </label>
-                    <div>{BaggageAllowance}</div>
+                    <div>{location.state.departureFlight.BaggageAllowance}</div>
+
+                  </div>
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Total Price
+                    </label>
+                    <div>{location.state.FlightPrice}</div>
 
                   </div>
 
@@ -409,9 +429,9 @@ return(
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Total Flight Price
+                      Price Difference
                     </label>
-                    <div>{FlightPrice}</div>
+                    <div>{location.state.priceDifference}</div>
 
                   </div>
                   <div className="text-center mt-6">
