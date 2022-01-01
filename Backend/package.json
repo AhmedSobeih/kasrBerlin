@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "App.js",
+  "proxy": "http://localhost:8000",
   "scripts": {
+    "devStart": "nodemon App.js",
+    "devStartAuth": "nodemon authServer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -12,10 +15,13 @@
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "googleapis": "^92.0.0",
+    "http-proxy-middleware": "^2.0.1",
     "js": "^0.1.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.13",
     "multer": "^1.4.3",
     "nodemailer": "^6.7.2",
+    "nodemon": "^2.0.15",
     "webpack-node-externals": "^3.0.0"
   }
 }

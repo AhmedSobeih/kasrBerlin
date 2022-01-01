@@ -1,12 +1,19 @@
 import React, {useState} from "react";
+import ReactDOM from 'react-dom';
 import './css/styles.css';
 import './assets/styles/index.css';
 import Navbar from 'NavbarUser';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 import axios from 'axios';
 
 export default function UserHome() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    var refreshToken = location.state.refreshToken;
+    var accessToken = location.state.accessToken;
+    console.log(refreshToken);
+
     var username;
     function viewReservedFlights(){
       console.log(username + " :new username");
@@ -33,14 +40,15 @@ export default function UserHome() {
         var bodyFormData = new FormData();
         bodyFormData.append('username', username);
       
-      
+        console.log("Iam here");
        axios({
         method: "get",
         url: "/session",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
+            
             console.log(response.data);
             handleUserName(response.data);
             

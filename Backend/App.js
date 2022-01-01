@@ -3,12 +3,16 @@
 const express = require("express");
 const mongoose = require('mongoose');
 const path = require('path');
+const proxy = require('http-proxy-middleware')
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 // THIS IS WRONG NEVER DO THAT !! Only for the task we put the DB Link here!! NEVER DO THAAAT AGAIN !!
 const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,cluster0-shard-00-01.izp8e.mongodb.net:27017,cluster0-shard-00-02.izp8e.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-jkas6k-shard-0&authSource=admin&retryWrites=true&w=majority' ;
 
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
+
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
 const Reservation = require('./Models/Reservation');
@@ -32,6 +36,10 @@ const REFRESH_TOKEN = '1//04kcDdwX9kY-aCgYIARAAGAQSNwF-L9Ir5OIazB8L9CmVFH9uJykOD
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.array()); 
+
+module.exports = function(app) {
+  app.use(proxy('/auth', { target: 'http://localhost:8080/' }))
+}
 
 
 /* Initializing the main project folder */
@@ -70,14 +78,13 @@ const oAuth2Client = new google.auth.OAuth2(
   CLEINT_SECRET,
   REDIRECT_URI
 );
-
-app.get("/ViewReservations",async(req,res)=>{
-
+// problem : email 
+app.get("/ViewReservations", authenticateToken, async (req,res)=>{
+console.log(req.user);
    
-const user=await Users.find({username : session.username});
+const user=await Users.find({username : req.user.name});
 
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
-console.log(user[0].email)
 
 async function sendMail() {
   try {
@@ -115,12 +122,12 @@ sendMail()
 })
 
 //returns the username of the session
-app.get("/session",async(req,res)=>{
-  if(session.username==undefined)
-    res.send(false);
-  else
-    res.send(session.username);
+app.get("/session", authenticateToken, async(req,res)=>{
+  console.log("Iam here");
+  res.send(req.user.name);
 });
+
+
 
 
 
@@ -642,7 +649,8 @@ app.post("/departureFlight",async(req,res)=>{
   departureFlight=req.body;
   res.send(true);
   });
- 
+
+
 app.post("/departureFlightByNumber",async(req,res)=>{
 
     var departureFlightNumber=parseInt(req.body.flightNumber);
@@ -676,9 +684,9 @@ app.post("/returnFlightByNumber",async(req,res)=>{
       */
       //we need to create a session
 
-app.get("/reserveFlight", async(req,res)=>{
+app.get("/reserveFlight", authenticateToken, async(req,res)=>{
       console.log("hii");
-      if(session.username==undefined)
+      if(req.user.name==undefined)
       {
         res.send(false);
         return;
@@ -691,7 +699,7 @@ app.get("/reserveFlight", async(req,res)=>{
         DepartureCabinClass: userPreferredCriteria.DepartureCabinClass,
         ReturnCabinClass: userPreferredCriteria.ReturnCabinClass,
         Price: parseInt(departureFlight.FlightPrice)+parseInt(returnFlight.FlightPrice),
-        User: session.username ,
+        User: req.user.name ,
         Seats:departureFlight.seats,
         ReturnSeats:returnFlight.seats
       })
@@ -933,29 +941,45 @@ app.get('/searchRetResults', async(req, res)=> {
 });
 
 
-app.post('/login',(req,res) =>{
-  var result = { state: false, type : 1 };
-  Users.find({username:req.body.username, password:req.body.password})
-  .then((user)=>{
+// app.post('/login',(req,res) =>{
+//   var result = { state: false, type : 1 };
+//   // const user = {username:req.body.username, password:req.body.password}
+//   // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+//   // res.json({accessToken : accessToken});
+//   Users.find({username:req.body.username, password:req.body.password})
+//   .then((user)=>{ 
 
-      // console.log(user);
-      if(user.length == 0)
-      {
-          res.send(result);
-      }
-      else
-      {
-        session.username=req.body.username;
-        var loggedIn = user[0].type;
-        result.state = true;
-        result.type = loggedIn;
+//       // console.log(user);
+//       if(user.length == 0)
+//       {
+//           res.send(result);
+//       }
+//       else
+//       {
+//         session.username=req.body.username;
+//         var loggedIn = user[0].type;
+//         result.state = true;
+//         result.type = loggedIn;
         
-        res.send(result);
-        console.log(result);
-      }
-      //we need to create a session
-  }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
-})
+//         res.send(result);
+//         console.log(result);
+//       }
+//       //we need to create a session
+//   }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
+// })
+
+function authenticateToken(req,res,next){
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  console.log(token);
+  if(token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err,user) => {
+    if(err) return res.send(err) // you have a token but you no longer have access
+    req.user = user;
+    next();
+  })
+}
 
 // for creating a new user (not completed yet)
 app.post('/register',async(req,res) =>{

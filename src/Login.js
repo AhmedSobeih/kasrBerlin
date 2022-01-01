@@ -14,6 +14,8 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  var accessToken;
+  var refreshToken;
 
   function componentDidMount() {
     axios.get('/allFlights')
@@ -35,6 +37,7 @@ function tryLogin (){
   var bodyFormData = new FormData();
   bodyFormData.append('username', username);
   bodyFormData.append('password', password);
+  console.log(bodyFormData);
 
 
  axios({
@@ -44,6 +47,9 @@ function tryLogin (){
   headers: { "Content-Type": "multipart/form-data" },
 })
     .then((response) => { 
+      accessToken = response.data.accessToken;
+      refreshToken = response.data.refreshToken ;
+      console.log(accessToken);
       if(response.data.state == false)
        {
         setLoginSuccess('Invalid username or password!');
@@ -52,9 +58,9 @@ function tryLogin (){
       else
       {
         if(response.data.type == 0)
-          navigate('/AdminHome');
+          navigate('/AdminHome', {state: {accessToken: accessToken, refreshToken: refreshToken}});
         else
-          navigate('/UserHome');
+          navigate('/UserHome', {state: {accessToken: accessToken, refreshToken: refreshToken}});
       }
         
   })
@@ -63,6 +69,7 @@ function tryLogin (){
 
 function handleEmail(text){
   setUsername(text.target.value);
+  console.log(username);
 }
 
 function handlePassword(text){
