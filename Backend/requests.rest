@@ -1,0 +1,11 @@
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+    "username": "ziadkhaled",
+    "password": "ziadkhaled"
+}
+
+###
+GET http://localhost:8000/reserveFlight
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiemlhZGtoYWxlZCIsImlhdCI6MTY0MTA1ODYyNSwiZXhwIjoxNjQxMDU4NjQwfQ.SQacAf5MxaRg-ZAHadfatImtG2EQ8AeZkJDMsQTUqIo

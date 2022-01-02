@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 
 var flag = true;
@@ -10,6 +10,16 @@ var flag = true;
 export default function UserChangePassword() {
     const user = useParams().username; 
     const navigate = useNavigate();
+    const location = useLocation();
+    try{
+      var refreshToken = location.state.refreshToken;
+    var accessToken = location.state.accessToken;
+    var type = location.state.type;
+    }
+    catch(err)
+    {
+      navigate('/login');
+    }
     const [loginSuccess, setLoginSuccess] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -48,7 +58,7 @@ export default function UserChangePassword() {
         method: "put",
         url: "/password",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data","Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
             console.log(response.data);

@@ -1,49 +1,64 @@
 import React, {useState} from "react";
+import ReactDOM from 'react-dom';
 import './css/styles.css';
 import './assets/styles/index.css';
 import Navbar from 'NavbarUser';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 import axios from 'axios';
 
 export default function UserHome() {
     const navigate = useNavigate();
+    const location = useLocation();
+    try{
+    var refreshToken = location.state.refreshToken;
+    var accessToken = location.state.accessToken;
+    var type = location.state.type;
+    }
+    catch(err)
+    {
+      navigate('/');
+    }
+
+    
+
     var username;
     function viewReservedFlights(){
-      console.log(username + " :new username");
-       navigate('/ViewReservations');
+       navigate('/ViewReservations', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});  
     }
 
     function goUserAccount(){
-        navigate('/UserAccountDetails');        
+        navigate('/UserAccountDetails', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});      
     }
 
     function goReserveFlight(){
-      navigate('/searchFlightUser');        
+      navigate('/searchFlightUser', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});       
   }
     function goSearchFlights(){
-      navigate('/searchWithCriteria');
+      navigate('/searchWithCriteria', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});
     }
     function handleUserName(text){
-        console.log("text: "+ text);
         username = text;
-        console.log("username: "+ username);
       }
     function getUserName (){
         // const data = { username, password}
         var bodyFormData = new FormData();
         bodyFormData.append('username', username);
       
-      
        axios({
         method: "get",
         url: "/session",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
-            console.log(response.data);
-            handleUserName(response.data);
-            
+            if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
+              {
+                navigate('/login');
+              }
+            else
+            { 
+            }
+                     
         })
         return username;
       }

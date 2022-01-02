@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 
 var flag = true;
@@ -11,9 +11,17 @@ export default function UserUpdateDetails() {
     const [ErrorMessage, setErrorMessage] = useState("");
     console.log(useParams());
     const user = useParams().username; 
-    console.log(user);
-
     const navigate = useNavigate();
+    const location = useLocation();
+    try{
+      var refreshToken = location.state.refreshToken;
+    var accessToken = location.state.accessToken;
+    var type = location.state.type;
+    }
+    catch(err)
+    {
+      navigate('/login');
+    }
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -31,7 +39,11 @@ export default function UserUpdateDetails() {
   {
     console.log(user);
     flag= false;
-    axios.get('/user')
+    axios({
+      method: "get",
+      url: "/user",
+      headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+    })
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter
@@ -85,7 +97,7 @@ export default function UserUpdateDetails() {
         method: "put",
         url: "/user",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
           

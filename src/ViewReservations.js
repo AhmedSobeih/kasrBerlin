@@ -1,36 +1,49 @@
 import React, { Component, useState } from 'react';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import UserHome from 'UserHome';
 var username;
+var refreshToken;
+var accessToken;
+var type ;
+let authorized = true;
 
 export default function(props) {
+  
     const navigate = useNavigate();
+    const location = useLocation();
     const user = useParams().username;
     username = user;
-    return <ViewReservations navigate={navigate}  />;
+    return <ViewReservations navigate={navigate} location={location}  />;
   }
 
   function getUserName (){
     // const data = { username, password}
     var bodyFormData = new FormData();
     bodyFormData.append('username', username);
-  
+    console.log(accessToken);
   
    axios({
     method: "get",
     url: "/session",
     data: bodyFormData,
-    headers: { "Content-Type": "multipart/form-data" },
-  })
-      .then((response) => { 
-        console.log(response.data);
-        username = response.data;
-        
-    })
-    return username;
-  }
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+      })
+          .then((response) => { 
+            if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
+              {
+                authorized = false;
+              }
+            else
+            {
+              authorized = true;
+              console.log(response.data);   
+            }
+                     
+        })
+        return username;
+      }
 
 
 const Anchor =({title})=>{
@@ -45,15 +58,29 @@ const Anchor =({title})=>{
 class ViewReservations extends Component {
 
     constructor(props) {
-        
         super(props);
-        this.state = { flightsCollection: [] };
+        const location = this.props.location; 
         const navigate = this.props.navigate;
+        this.state = { flightsCollection: [] };
 
     }
    
   
-    componentDidMount() {
+    async componentDidMount() {
+      const navigate = this.props.navigate;
+      try{
+        const location = this.props.location;
+      refreshToken = location.state.refreshToken;
+      accessToken = location.state.accessToken;
+      type = await location.state.type;
+      console.log("accessToken" + accessToken);
+      console.log("type" +type);
+      console.log("authorized: " + authorized);
+      if(authorized == false || type == 0)
+      {
+        navigate('/login');
+      }
+        
         console.log(username + ": username in viewReservation");
         axios.get('/reservation')
             .then(res => {
@@ -62,6 +89,17 @@ class ViewReservations extends Component {
             .catch(function (error) {
                 console.log(error);
             })
+      }
+      catch(err)
+      {
+        this.navToLogin();
+        console.log(err);
+      }
+      
+    }
+    async navToLogin()
+    {
+      await this.props.navigate('/login');
     }
     gotoCancelReservation(deletedReservationNumber) {
         var bodyFormData = new FormData();

@@ -14,6 +14,8 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  var accessToken;
+  var refreshToken;
 
   function componentDidMount() {
     axios.get('/allFlights')
@@ -44,6 +46,8 @@ function tryLogin (){
   headers: { "Content-Type": "multipart/form-data" },
 })
     .then((response) => { 
+      accessToken = response.data.accessToken;
+      refreshToken = response.data.refreshToken ;
       if(response.data.state == false)
        {
         setLoginSuccess('Invalid username or password!');
@@ -52,9 +56,9 @@ function tryLogin (){
       else
       {
         if(response.data.type == 0)
-          navigate('/AdminHome');
+          navigate('/AdminHome', {state: {accessToken: accessToken, refreshToken: refreshToken, type:response.data.type }});
         else
-          navigate('/UserHome');
+          navigate('/UserHome', {state: {accessToken: accessToken, refreshToken: refreshToken, type:response.data.type}});
       }
         
   })
