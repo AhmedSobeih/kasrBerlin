@@ -131,7 +131,7 @@ app.post('/login', (req, res) => {
 })
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15555555s' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1555555s' })
 }
 
 ////authServer
@@ -1456,7 +1456,7 @@ app.post("/userCriteria", async(req,res)=>{
   
 
 });
-app.post("/searchFlightUser",(req,res)=>{
+app.post("/searchFlightUser", (req,res)=>{
 
     var isReturnFlight = req.body.isReturnFlight;
     var numberOfAdults=0;

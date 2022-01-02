@@ -5,36 +5,42 @@ import './assets/styles/index.css';
 import Navbar from 'NavbarUser';
 import {useNavigate, useLocation} from 'react-router-dom';
 import axios from 'axios';
+import configData from "./config.json";
 
 export default function UserHome() {
     const navigate = useNavigate();
-    const location = useLocation();
     try{
-    var refreshToken = location.state.refreshToken;
-    var accessToken = location.state.accessToken;
-    var type = location.state.type;
+    var accessToken = configData.PersonalAccessToken;
+    var refreshToken = configData.PersonalRefreshToken;
+    var type = configData.Type;
+    if(type == 0)
+    {
+      navigate('/');
+    }
     }
     catch(err)
     {
       navigate('/');
     }
 
-    
+    console.log("accessToken: " + accessToken);
+    console.log("RefreshToken: " + refreshToken);
+    console.log("type: " + type);
 
     var username;
     function viewReservedFlights(){
-       navigate('/ViewReservations', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});  
+       navigate('/ViewReservations');  
     }
 
     function goUserAccount(){
-        navigate('/UserAccountDetails', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});      
+        navigate('/UserAccountDetails');      
     }
 
     function goReserveFlight(){
-      navigate('/searchFlightUser', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});       
+      navigate('/searchFlightUser');       
   }
     function goSearchFlights(){
-      navigate('/searchWithCriteria', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});
+      navigate('/searchWithCriteria');
     }
     function handleUserName(text){
         username = text;
@@ -53,7 +59,7 @@ export default function UserHome() {
           .then((response) => { 
             if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
               {
-                navigate('/login');
+                navigate('/');
               }
             else
             { 

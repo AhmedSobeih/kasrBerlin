@@ -2,9 +2,10 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest.js';
+import configData from "./config.json";
 
 
 const Anchor =({title})=>{
@@ -29,6 +30,19 @@ export default function SearchFlightGuest(){
 
 
     const navigate = useNavigate();
+    try{
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      var type = configData.Type;
+      if(type == 0)
+      {
+        navigate('/');
+      }
+      }
+      catch(err)
+      {
+        navigate('/');
+      }
 
     const [NumberOfAdults, setNumberOfAdults] = useState(0);
     const [NumberOfChildren, setNumberOfChildren] = useState(0);
@@ -166,7 +180,7 @@ export default function SearchFlightGuest(){
       method: "post",
       url: "/userCriteria",
       data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { "Content-Type": "multipart/form-data"},
     })
         .then((response) => { 
           
@@ -177,7 +191,7 @@ export default function SearchFlightGuest(){
     method: "post",
     url: "/searchFlightUser",
     data: bodyFormData,
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { "Content-Type": "multipart/form-data"},
   })
       .then((response) => { 
         
@@ -238,13 +252,7 @@ export default function SearchFlightGuest(){
     setReturnCabinClass(document.getElementById("ReturnCabinClass").value);
     console.log(ReturnCabinClass);
   }
-    axios.get('/session')
-    .then(res => {
-      if(res.data==false)
-        setIsUser(false);
-      else
-        setIsUser(true);
-    })
+   
   
 
 

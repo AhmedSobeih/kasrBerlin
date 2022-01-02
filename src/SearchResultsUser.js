@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 import {useLocation} from 'react-router-dom';
+import configData from "./config.json";
 
 
 
@@ -17,18 +18,39 @@ const Anchor =({title})=>{
        };
 export default function(props) {
     const navigate = useNavigate();
-    const location = useLocation(); // this uses Router based states to let us access cour state
+    const location = useLocation();
+    var isUser = true;
+     // this uses Router based states to let us access cour state
+    try{
+        var accessToken = configData.PersonalAccessToken;
+        var refreshToken = configData.PersonalRefreshToken;
+        var type = configData.Type;
+        if(type == 0 || accessToken == null)
+        {
+            navigate('/');
+        }
+        }
+        catch(err)
+        {
+            navigate('/');
+        }
+        if(accessToken == null)
+        {
+            isUser = false;
+        }
 
-    return <SearchResults navigate={navigate} location={location}  />;
+    return <SearchResults navigate={navigate} location={location} accessToken = {accessToken}  isUser = {isUser} />;
   }
+  
 
 class SearchResults extends Component {
 
     constructor(props) {
         super(props);
-        const location = this.props.location; 
-        this.state = { flightsCollection: [], userCriteria: location.state.s, isUser: false };
+        const location = this.props.location;
+        this.state = { flightsCollection: [], userCriteria: location.state.s, isUser: this.props.isUser };
         const navigate = this.props.navigate;
+        var accessToken = this.props.accessToken;
 
 
 
@@ -40,22 +62,33 @@ class SearchResults extends Component {
     componentDidMount() {
        
         const location = this.props.location; // this uses Router based states to let us access cour state
-        axios.get('/searchDepResults')
+        axios({
+            method: "get",
+            url: '/searchDepResults',
+            headers: { "Content-Type": "multipart/form-data"},
+          })
             .then(res => {
-                this.setState({ flightsCollection: res.data });
+                console.log(res.data);
+                if(res.data.name == "JsonWebTokenError")
+                {
+                    //no session and do something comment
+                }
+                else
+                {
+                    if(res.data.name == "TokenExpiredError")
+                    {
+                        //session expired comment
+                    }
+                    else{
+                        this.setState({ flightsCollection: res.data });
+                    }
+                }
             })
             .catch(function (error) {
                 console.log(error);
             })
             
             
-           axios.get('/session')
-            .then(res => {
-              if(res.data==false)
-                this.setState({isUser:false});
-              else
-              this.setState({isUser:true});
-            })
     .catch(function (error) {
         console.log(error);
     })
@@ -153,6 +186,8 @@ class SearchResults extends Component {
         }
         return result;
       }
+
+      
     
           
 

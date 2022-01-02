@@ -3,6 +3,8 @@ import './css/styles.css';
 import './assets/styles/index.css';
 import Navbar from 'Navbar';
 import {useNavigate} from 'react-router-dom';
+import configData from "./config.json";
+
 
 export default function AdminHome() {
     const navigate = useNavigate();
