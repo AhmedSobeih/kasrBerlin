@@ -78,6 +78,65 @@ const oAuth2Client = new google.auth.OAuth2(
   CLEINT_SECRET,
   REDIRECT_URI
 );
+
+///authServer
+
+
+let refreshTokens = []
+
+app.post('/token', (req, res) => {
+  const refreshToken = req.body.token
+  if (refreshToken == null) return res.sendStatus(401)
+  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403)
+    const accessToken = generateAccessToken({ name: user.name })
+    res.json({ accessToken: accessToken })
+  })
+})
+
+app.delete('/logout', (req, res) => {
+  refreshTokens = refreshTokens.filter(token => token !== req.body.token)
+  res.sendStatus(204)
+})
+
+app.post('/login', (req, res) => {
+  // Authenticate User
+    console.log("I am here");
+    var result = { state: false, type : 1 };
+    const username = req.body.username
+    console.log(req.body.username);
+    Users.find({username:req.body.username, password:req.body.password})
+  .then((user)=>{ 
+      // console.log(user);
+      if(user.length == 0)
+      {
+          res.send(result);
+      }
+      else
+      {
+        const userr = {name: username}
+
+        const accessToken = generateAccessToken(userr)
+        const refreshToken = jwt.sign(userr, process.env.REFRESH_TOKEN_SECRET)
+        refreshTokens.push(refreshToken)
+        res.json({ accessToken: accessToken, refreshToken: refreshToken, type: user[0].type})
+        var loggedIn = user[0].type;
+        result.state = true;
+        result.type = loggedIn;
+        
+        // res.send(result);
+        // console.log(result);
+      }
+      //we need to create a session
+  }).catch((err) => console.log(err));
+})
+
+function generateAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15555555s' })
+}
+
+////authServer
 // problem : email 
 app.get("/ViewReservations", authenticateToken, async (req,res)=>{
 console.log(req.user);
