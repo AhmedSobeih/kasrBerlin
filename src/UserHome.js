@@ -9,10 +9,17 @@ import axios from 'axios';
 export default function UserHome() {
     const navigate = useNavigate();
     const location = useLocation();
-
+    try{
     var refreshToken = location.state.refreshToken;
     var accessToken = location.state.accessToken;
     var type = location.state.type;
+    }
+    catch(err)
+    {
+      navigate('/');
+    }
+
+    
 
     var username;
     function viewReservedFlights(){
@@ -44,7 +51,7 @@ export default function UserHome() {
         headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
-            if(response.data.name == "TokenExpiredError")
+            if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
               {
                 navigate('/login');
               }

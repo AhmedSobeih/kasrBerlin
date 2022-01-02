@@ -102,10 +102,8 @@ app.delete('/logout', (req, res) => {
 
 app.post('/login', (req, res) => {
   // Authenticate User
-    console.log("I am here");
     var result = { state: false, type : 1 };
     const username = req.body.username
-    console.log(req.body.username);
     Users.find({username:req.body.username, password:req.body.password})
   .then((user)=>{ 
       // console.log(user);
@@ -182,7 +180,6 @@ sendMail()
 
 //returns the username of the session
 app.get("/session", authenticateToken, async(req,res)=>{
-  console.log("Iam here");
   res.send(req.user.name);
 });
 
@@ -959,8 +956,8 @@ app.get('/reservation', async (req,res)=>{
 });
 
 //to get the username
-app.get('/user', async (req,res)=>{
-  const u = await Users.find({username : session.username});
+app.get('/user',authenticateToken, async (req,res)=>{
+  const u = await Users.find({username : req.user.name});
 
   res.send(u[0]);
     
@@ -1030,7 +1027,6 @@ app.get('/searchRetResults', async(req, res)=> {
 function authenticateToken(req,res,next){
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  console.log(token);
   if(token == null) return res.sendStatus(401);
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err,user) => {
@@ -1167,16 +1163,16 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.put('/password', async (req,res)=>{
+    app.put('/password',authenticateToken, async (req,res)=>{
       
-      const username = session.username;
+      const username = req.user.name;
       const filter = req.params;
       var result = {status : false, response: ""};
-      const u = await Users.find({username : session.username, password: req.body.oldPassword});
+      const u = await Users.find({username : req.user.name, password: req.body.oldPassword});
       console.log(u[0]== null);
       if(u[0] != null)
       {
-        Users.findOneAndUpdate({username : session.username}, {password: req.body.newPassword}, {
+        Users.findOneAndUpdate({username : req.user.name}, {password: req.body.newPassword}, {
           new: true,
         })
         .then((user)=>{
@@ -1193,9 +1189,9 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.put('/user', (req,res)=>{
+    app.put('/user',authenticateToken, (req,res)=>{
       
-      const filter = {username: session.username};
+      const filter = {username: req.user.name};
       Users.findOneAndUpdate(filter, req.body, {
         new: true,
       })
