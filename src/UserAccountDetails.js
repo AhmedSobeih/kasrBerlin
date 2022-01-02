@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 
 var flag = true;
@@ -11,9 +11,18 @@ var firstFlag = true;
 export default function UserAccountDetails() {
     console.log(useParams());
     const user = useParams().username; 
-    console.log(user);
-
     const navigate = useNavigate();
+    const location = useLocation();
+    try{
+      var refreshToken = location.state.refreshToken;
+    var accessToken = location.state.accessToken;
+    var type = location.state.type;
+    }
+    catch(err)
+    {
+      navigate('/login');
+    }
+    
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -28,7 +37,11 @@ export default function UserAccountDetails() {
 
 
     console.log(user);
-    axios.get('/user')
+    axios({
+      method: "get",
+      url: "/user",
+      headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+    })
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter
@@ -71,17 +84,21 @@ export default function UserAccountDetails() {
        // navigate('/viewFlights');
     }
     function updateUser (){
-        navigate('/UserUpdateDetails'); 
+        navigate('/UserUpdateDetails', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});  
     }
     function changePassword (){
-      navigate('/UserChangePassword'); 
+      navigate('/UserChangePassword', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});  
   }
   function componentDidMount() {
     if(flag)
   {
     console.log(user);
     flag= false;
-    axios.get('/user')
+    axios({
+      method: "get",
+      url: "/user",
+      headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+    })
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter
