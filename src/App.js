@@ -28,7 +28,7 @@ import ChangeSearchFlight from 'ChangeSearchFlight';
 import ChangeSearchResFlight from 'ChangeSearchResFlight';
 import ChangeFlightDetails from 'ChangeFlightDetails';
 import ChangeNewFlightSeats from 'ChangeNewFlightSeats';
-
+import StripContainer from './StripContainer';
 
 
 
@@ -40,8 +40,10 @@ import ChangeNewFlightSeats from 'ChangeNewFlightSeats';
 
 
 function App(){
+            console.log(process.env.REACT_APP_PUBLIC_KEY)
+
     return(
-        
+
         <Router>
             <Routes>
                 <Route path="/login" exact element={<Login/>} />
@@ -73,6 +75,7 @@ function App(){
                <Route path="/changeSearchResFlight" element={<ChangeSearchResFlight/>} />
                <Route path="/changeFlightDetails" element={<ChangeFlightDetails/>} />
                <Route path="/changeNewFlightSeats" element={<ChangeNewFlightSeats/>} />
+               <Route path="/StripContainer" element={<StripContainer/>} />
 
 
 

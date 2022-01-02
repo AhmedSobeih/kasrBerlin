@@ -1,10 +1,22 @@
 
+
+
+
 // External variables
 const express = require("express");
 const mongoose = require('mongoose');
 const path = require('path');
 // THIS IS WRONG NEVER DO THAT !! Only for the task we put the DB Link here!! NEVER DO THAAAT AGAIN !!
 const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,cluster0-shard-00-01.izp8e.mongodb.net:27017,cluster0-shard-00-02.izp8e.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-jkas6k-shard-0&authSource=admin&retryWrites=true&w=majority' ;
+
+
+
+//stripe
+require("dotenv").config();
+const stripe = require("stripe")(process.env.Secret_Key);
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
 
 //App variables
 const app = express();
@@ -28,7 +40,9 @@ const CLIENT_ID = '1095244162204-4k8f4ivhloocnl5vn9r3giirtv942roi.apps.googleuse
 const CLEINT_SECRET = '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';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 const REFRESH_TOKEN = '1//04kcDdwX9kY-aCgYIARAAGAQSNwF-L9Ir5OIazB8L9CmVFH9uJykOD4iMWsA99dRMKMr1eDBFO8SZRBdwkhe8hx6_OFLh6u5B1Cw';
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.array()); 
@@ -113,6 +127,36 @@ sendMail()
   .then((result) => console.log('Email sent...', result))
   .catch((error) => console.log(error.message));
 })
+
+
+
+
+//stripe post request
+app.post("/stripe/charge", cors(), async (req, res) => {
+  console.log("stripe-routes.js 9 | route reached", req.body);
+  let { amount, id } = req.body;
+  console.log("stripe-routes.js 10 | amount and id", amount, id);
+  try {
+    const payment = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: "USD",
+      description: "Your Company Description",
+      payment_method: id,
+      confirm: true,
+    });
+    console.log("stripe-routes.js 19 | payment", payment);
+    res.json({
+      message: "Payment Successful",
+      success: true,
+    });
+  } catch (error) {
+    console.log("stripe-routes.js 17 | error", error);
+    res.json({
+      message: "Payment Failed",
+      success: false,
+    });
+  }
+});
 
 //returns the username of the session
 app.get("/session",async(req,res)=>{
