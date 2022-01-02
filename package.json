@@ -2,7 +2,7 @@
   "name": "myapp",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8080",
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@react-navigation/stack": "^5.14.9",
     "@testing-library/jest-dom": "^5.15.0",

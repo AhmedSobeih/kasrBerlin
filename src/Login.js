@@ -37,7 +37,6 @@ function tryLogin (){
   var bodyFormData = new FormData();
   bodyFormData.append('username', username);
   bodyFormData.append('password', password);
-  console.log(bodyFormData);
 
 
  axios({
@@ -49,7 +48,6 @@ function tryLogin (){
     .then((response) => { 
       accessToken = response.data.accessToken;
       refreshToken = response.data.refreshToken ;
-      console.log(accessToken);
       if(response.data.state == false)
        {
         setLoginSuccess('Invalid username or password!');
@@ -58,9 +56,9 @@ function tryLogin (){
       else
       {
         if(response.data.type == 0)
-          navigate('/AdminHome', {state: {accessToken: accessToken, refreshToken: refreshToken}});
+          navigate('/AdminHome', {state: {accessToken: accessToken, refreshToken: refreshToken, type:response.data.type }});
         else
-          navigate('/UserHome', {state: {accessToken: accessToken, refreshToken: refreshToken}});
+          navigate('/UserHome', {state: {accessToken: accessToken, refreshToken: refreshToken, type:response.data.type}});
       }
         
   })
@@ -69,7 +67,6 @@ function tryLogin (){
 
 function handleEmail(text){
   setUsername(text.target.value);
-  console.log(username);
 }
 
 function handlePassword(text){

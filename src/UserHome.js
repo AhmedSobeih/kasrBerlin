@@ -12,35 +12,31 @@ export default function UserHome() {
 
     var refreshToken = location.state.refreshToken;
     var accessToken = location.state.accessToken;
-    console.log(refreshToken);
+    var type = location.state.type;
 
     var username;
     function viewReservedFlights(){
-      console.log(username + " :new username");
-       navigate('/ViewReservations');
+       navigate('/ViewReservations', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});  
     }
 
     function goUserAccount(){
-        navigate('/UserAccountDetails');        
+        navigate('/UserAccountDetails', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});      
     }
 
     function goReserveFlight(){
-      navigate('/searchFlightUser');        
+      navigate('/searchFlightUser', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});       
   }
     function goSearchFlights(){
-      navigate('/searchWithCriteria');
+      navigate('/searchWithCriteria', {state: {accessToken: accessToken, refreshToken: refreshToken, type:type }});
     }
     function handleUserName(text){
-        console.log("text: "+ text);
         username = text;
-        console.log("username: "+ username);
       }
     function getUserName (){
         // const data = { username, password}
         var bodyFormData = new FormData();
         bodyFormData.append('username', username);
       
-        console.log("Iam here");
        axios({
         method: "get",
         url: "/session",
@@ -48,10 +44,14 @@ export default function UserHome() {
         headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
-            
-            console.log(response.data);
-            handleUserName(response.data);
-            
+            if(response.data.name == "TokenExpiredError")
+              {
+                navigate('/login');
+              }
+            else
+            { 
+            }
+                     
         })
         return username;
       }
