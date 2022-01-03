@@ -92,6 +92,8 @@ class ViewReservations extends Component {
       }
       catch(err)
       {
+        console.log("I am here");
+        this.props.navigate('/login');
         this.navToLogin();
         console.log(err);
       }

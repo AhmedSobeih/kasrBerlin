@@ -23,10 +23,6 @@ export default function UserHome() {
       navigate('/');
     }
 
-    console.log("accessToken: " + accessToken);
-    console.log("RefreshToken: " + refreshToken);
-    console.log("type: " + type);
-
     var username;
     function viewReservedFlights(){
        navigate('/ViewReservations');  
