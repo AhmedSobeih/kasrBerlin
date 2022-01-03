@@ -4,22 +4,26 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
+import configData from "./config.json";
 
 var flag = true;
 
 export default function UserChangePassword() {
     const user = useParams().username; 
     const navigate = useNavigate();
-    const location = useLocation();
     try{
-      var refreshToken = location.state.refreshToken;
-    var accessToken = location.state.accessToken;
-    var type = location.state.type;
-    }
-    catch(err)
-    {
-      navigate('/login');
-    }
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      var type = configData.Type;
+      if(type == 0)
+      {
+        navigate('/');
+      }
+      }
+      catch(err)
+      {
+        navigate('/');
+      }
     const [loginSuccess, setLoginSuccess] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");

@@ -3,6 +3,7 @@ import axios from 'axios';
 import {useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
+import configData from "./config.json";
 
 var flag= false;
 
@@ -17,9 +18,18 @@ const Anchor =({title})=>{
 export default function(props) {
     const navigate = useNavigate();
     const location = useLocation();
+    var isUser = true;
+    // this uses Router based states to let us access cour state
+       var accessToken = configData.PersonalAccessToken;
+       var refreshToken = configData.PersonalRefreshToken;
+       var type = configData.Type;
+       if(accessToken == null)
+       {
+           isUser = false;
+       }
 
   
-    return <SearchResults navigate={navigate} location={location}  />;
+    return <SearchResults navigate={navigate} location={location} accessToken = {accessToken}  isUser = {isUser} />;
   }
 
 class SearchResults extends Component {
@@ -27,7 +37,7 @@ class SearchResults extends Component {
     constructor(props) {
         super(props);
         const location = this.props.location; 
-        this.state = { flightsCollection: [] , departureFlight: location.state.departureFlight, TripDuration: location.state.tripDuration, userCriteria: location.state.userCriteria, DepartureFlightVisibility:"true",  isUser: false, ErrorMessage:"" };
+        this.state = { flightsCollection: [] , departureFlight: location.state.departureFlight, TripDuration: location.state.tripDuration, userCriteria: location.state.userCriteria, DepartureFlightVisibility:"true",  isUser: this.props.isUser, ErrorMessage:"" };
         const navigate = this.props.navigate;
 
     }
@@ -154,13 +164,7 @@ class SearchResults extends Component {
     // .catch(function (error) {
     //     console.log(error);
     // })
-    axios.get('/session')
-            .then(res => {
-              if(res.data==false)
-                this.setState({isUser:false});
-              else
-              this.setState({isUser:true});
-            })
+    
     }
     gotoReturnFlight(fl,price,duration) {
       var ReturnFlight = {};

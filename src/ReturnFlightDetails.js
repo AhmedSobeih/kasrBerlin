@@ -5,7 +5,16 @@ import axios from 'axios';
 import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
+import configData from "./config.json";
+var FlightCreated;
+    var FlightNumber;
+    var SearchCriteria;
+    var DepartureFlightVisibility ;
+    var departureFlight;
+    var returnFlight;
+    var TripDuration;
 
+    var isUser= true ;
 
 var flag = true;
 
@@ -19,27 +28,41 @@ const Anchor =({title})=>{
        };
 
 export default function UpdateFlight(){
+    console.log("heeeereeeee");
 
     let {flight} = useParams(); 
     const navigate = useNavigate();
     const location = useLocation();
 
+if(SearchCriteria == null)
+{
+  console.log("heeeereeeee222");
+    FlightCreated= ""
+    FlightNumber = flight;
+    SearchCriteria= "";
+    DepartureFlightVisibility = true;
+    departureFlight= location.state.departureFlight;
+    returnFlight = location.state.returnFlight;
+    TripDuration = location.state.tripDuration;
+    var s = durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).hour + " hours, " + durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).min + " minutes";
 
-    const [FlightCreated, setFlightCreated] = useState("");
-    const [FlightNumber, setFlightNumber] = useState(flight);
-    //problem will occur in the conversion between mongoose and html in date conversion
-    // mongoose: ""
-    //html: "2021-11-10T16:32"
-  
-  
+      returnFlight.TripDuration=s;
 
-    const [SearchCriteria, setSearchCriteria] = useState("");
-    const [DepartureFlightVisibility, setDepartureFlightVisibility] = useState("true");
-    const [departureFlight, setDepartureFlight] = useState(location.state.departureFlight);
-    const [returnFlight, setReturnFlight] = useState(location.state.returnFlight);
-    const [TripDuration, setTripDuration] = useState(location.state.tripDuration);
+    isUser= true ;
 
-    const [isUser, setIsUser] = useState(false);
+    try{
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      var type = configData.Type;
+      if(accessToken == null)
+      {
+        isUser = false;
+      }
+      }
+      catch(err)
+      {
+        isUser = false;
+      }
 
 
 
@@ -49,27 +72,13 @@ export default function UpdateFlight(){
 
     const CancelToken = axios.CancelToken;
     let cancel;
-    axios.get('/session')
-    .then(res => {
-      if(res.data==false)
-        setIsUser(false);
-      else
-        setIsUser(true);
-    })
+    
+
+/// to be edited
     axios.get('/userCriteria')
     .then(res => {
-        setSearchCriteria(res.data);
-
-  
-    // axios.get('/flight/'+flight)
-    // .then(res => {
-    //   cancelToken: new CancelToken(function executor(c) {
-    //     // An executor function receives a cancel function as a parameter
-    //     cancel = c;
-    //   })
-
-
-      
+        SearchCriteria = res.data;
+/// to be edited
 
  
   
@@ -132,9 +141,9 @@ function DoubleLabel(props){
 function showDepartureFlight(e)  {
   const checked = e.target.checked;
   if (checked) { 
-   setDepartureFlightVisibility(false);
+   DepartureFlightVisibility = false;
   } else {
-    setDepartureFlightVisibility(true);
+    DepartureFlightVisibility = true;
   }
 };
   
@@ -180,14 +189,14 @@ function showDepartureFlight(e)  {
   
     // })
 
-    useEffect(() => {
+    // useEffect(() => {
 
     
-      var s = durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).hour + " hours, " + durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).min + " minutes";
+    //   var s = durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).hour + " hours, " + durationCalculation(returnFlight.DepatureDate,returnFlight.ArrivalDate).min + " minutes";
 
-      returnFlight.TripDuration=s;
+    //   returnFlight.TripDuration=s;
 
-    }, [])    
+    // }, [])    
 
 
     function durationCalculation(departureDate, arrivalDate){
@@ -541,5 +550,5 @@ return(
         </div>
       </div>
     </>
-);}
+);}}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));

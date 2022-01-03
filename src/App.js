@@ -89,3 +89,21 @@ function App(){
 }
 
 export default App;
+
+var accessToken = "asda";
+//module.exports.accessToken = accessToken;
+var setAccessToken = function setAccessToken(text)
+{
+    console.log("I am in setting access token");
+    accessToken = text;
+}
+//module.exports.setAccessToken = setAccessToken;
+
+var refreshToken;
+function setRefreshToken(text)
+{
+    refreshToken = text;
+}
+
+
+

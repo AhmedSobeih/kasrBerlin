@@ -5,6 +5,24 @@ import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
+import configData from "./config.json";
+
+var DepatureDate ;
+var ArrivalDate ;
+var FreeEconomySeatsNum ;
+var FreeBusinessSeatsNum ;
+var FreeFirstSeatsNum ;
+
+var DepatureAirport;
+var ArrivalAirport ;
+var TripDuration;
+var CabinClass;
+var BaggageAllowance;
+var FlightPrice;
+var DepartureFlight;
+var SearchCriteria;
+var isUser;
+var ErrorMessage ;
 
 
 var flag = true;
@@ -19,41 +37,56 @@ const Anchor =({title})=>{
        };
 
 export default function UpdateFlight(){
-
+    console.log("hereeee");
     let {flight} = useParams(); 
     const navigate = useNavigate();
     const location = useLocation();
 
-
-    const [FlightNumber, setFlightNumber] = useState(flight);
+    var FlightNumber = flight;
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
     //html: "2021-11-10T16:32"
-    var d = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate);
-    var s = d.hour +  " Hours, " +d.min +  " Minutes";
 
-    const [DepatureDate, setDepatureDate] = useState("");
-    const [ArrivalDate, setArrivalDate] = useState("");
-    const [FreeEconomySeatsNum, setFreeEconomySeatsNum] = useState("");
-    const [FreeBusinessSeatsNum, setFreeBusinessSeatsNum] = useState("");
-    const [FreeFirstSeatsNum, setFreeFirstSeatsNum] = useState("");
+    if(SearchCriteria == null)
+    {
+      console.log("heeeye");
+      var d = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate);
+      var s = d.hour +  " Hours, " +d.min +  " Minutes";
+      TripDuration= s;
+      DepatureDate = "";
+        ArrivalDate = "";
+        FreeEconomySeatsNum = "";
+    FreeBusinessSeatsNum = "";
+    FreeFirstSeatsNum = "";
 
-    const [DepatureAirport, setDepatureAirport] = useState("");
-    const [ArrivalAirport, setArrivalAirport] = useState("");
-    const [TripDuration, setTripDuration] = useState(s);//Method to be done by ziad
-    const [CabinClass, setCabinClass] = useState("");
-    const [BaggageAllowance, setBaggageAllowance] = useState("");
-    const [FlightPrice, setFlightPrice] = useState(0);
-    const [DepartureFlight, setDepartureFlight] = useState({});
+     DepatureAirport= "";
+     ArrivalAirport = "";
+     CabinClass="";
+     BaggageAllowance = "";
+     FlightPrice= 0;
+     DepartureFlight ={};
+     SearchCriteria ={};
+     isUser= true;
+     ErrorMessage = "";
 
-    const [isUser, setIsUser] = useState(false);
+
+    try{
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      var type = configData.Type;
+      if(accessToken == null)
+      {
+        isUser = false;
+      }
+      }
+      catch(err)
+      {
+        isUser = false;
+      }
 
 
-
-    const [SearchCriteria, setSearchCriteria] = useState({});
-
-    const [ErrorMessage, setErrorMessage] = useState("");
-
+    
+  
     function durationCalculation(departureDate, arrivalDate){
       var departureYear = "";
       var arrivalYear ="";
@@ -129,14 +162,6 @@ export default function UpdateFlight(){
 
  
     flag= false;
-    console.log(1);
-    axios.get('/session')
-            .then(res => {
-              if(res.data==false)
-                setIsUser(false);
-              else
-                setIsUser(true);
-            })
     axios.get('/flight/'+flight)
     .then(res => {
       cancelToken: new CancelToken(function executor(c) {
@@ -144,22 +169,22 @@ export default function UpdateFlight(){
         cancel = c;
       })
       
-      setDepatureDate(dateConversion(res.data.DepatureDate));
-      setArrivalDate(dateConversion(res.data.ArrivalDate));
-      setFreeEconomySeatsNum(res.data.FreeEconomySeatsNum);
-      setFreeBusinessSeatsNum(res.data.FreeBusinessSeatsNum);
-      setFreeFirstSeatsNum(res.data.FreeFirstSeatsNum);
-      setDepatureAirport(res.data.DepatureAirport);
-      setArrivalAirport(res.data.ArrivalAirport);
+      DepatureDate = dateConversion(res.data.DepatureDate);
+      ArrivalDate= dateConversion(res.data.ArrivalDate);
+      FreeEconomySeatsNum =res.data.FreeEconomySeatsNum;
+      FreeBusinessSeatsNum =res.data.FreeBusinessSeatsNum;
+      FreeFirstSeatsNum =res.data.FreeFirstSeatsNum;
+      DepatureAirport =res.data.DepatureAirport;
+      ArrivalAirport =res.data.ArrivalAirport;
      
     //setCabinClass(res.data.CabinClass);
-      setBaggageAllowance(res.data.BaggageAllowance);
+      BaggageAllowance= res.data.BaggageAllowance;
       if(SearchCriteria.DepartureCabinClass=="Economy Class")
-      setFlightPrice( parseInt(res.data.EconomySeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
+        FlightPrice = parseInt(res.data.EconomySeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));
     if(SearchCriteria.DepartureCabinClass=="Business Class")
-    setFlightPrice(parseInt(res.data.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
+      FlightPrice =parseInt(res.data.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));
     if(SearchCriteria.DepartureCabinClass=="First Class")
-    setFlightPrice(parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren)));
+     FlightPrice = parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));
 
     cancel();
   
@@ -169,8 +194,8 @@ export default function UpdateFlight(){
     })
     axios.get('/userCriteria')
     .then(res => {
-      setSearchCriteria(res.data);
-      setCabinClass(res.data.DepartureCabinClass);
+      SearchCriteria = res.data;
+      CabinClass= res.data.DepartureCabinClass;
       
     })
     
@@ -284,7 +309,7 @@ function DoubleLabel(props){
               .then((response) => { 
                 if(response.data==false)
                {
-               setErrorMessage('This departure flight has no available return flights');
+               ErrorMessage = 'This departure flight has no available return flights';
                 // document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
         
                } 
@@ -296,7 +321,6 @@ function DoubleLabel(props){
           }
         )
       }
-  
   
 return(
 
@@ -445,5 +469,5 @@ return(
         </div>
       </div>
     </>
-);}
+);}}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));

@@ -1,26 +1,18 @@
 
-
-
-
 // External variables
 const express = require("express");
 const mongoose = require('mongoose');
 const path = require('path');
+const proxy = require('http-proxy-middleware')
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 // THIS IS WRONG NEVER DO THAT !! Only for the task we put the DB Link here!! NEVER DO THAAAT AGAIN !!
 const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,cluster0-shard-00-01.izp8e.mongodb.net:27017,cluster0-shard-00-02.izp8e.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-jkas6k-shard-0&authSource=admin&retryWrites=true&w=majority' ;
-
-
-
-//stripe
-require("dotenv").config();
-const stripe = require("stripe")(process.env.Secret_Key);
-const bodyParser = require("body-parser");
-const cors = require("cors");
-
 
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
+
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
 const Reservation = require('./Models/Reservation');
@@ -40,12 +32,14 @@ const CLIENT_ID = '1095244162204-4k8f4ivhloocnl5vn9r3giirtv942roi.apps.googleuse
 const CLEINT_SECRET = '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';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 const REFRESH_TOKEN = '1//04kcDdwX9kY-aCgYIARAAGAQSNwF-L9Ir5OIazB8L9CmVFH9uJykOD4iMWsA99dRMKMr1eDBFO8SZRBdwkhe8hx6_OFLh6u5B1Cw';
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.array()); 
+
+module.exports = function(app) {
+  app.use(proxy('/auth', { target: 'http://localhost:8080/' }))
+}
 
 
 /* Initializing the main project folder */
@@ -64,7 +58,7 @@ var refundedPrice=0;
 var departureFlight = null;
 var returnFlight = null;
 var userPreferredCriteria=null;
-var reservationNumber=62;
+var reservationNumber=20;
 // #Importing the userController
 
 var seats=[];
@@ -85,13 +79,67 @@ const oAuth2Client = new google.auth.OAuth2(
   REDIRECT_URI
 );
 
-app.get("/ViewReservations",async(req,res)=>{
+///authServer
 
+
+let refreshTokens = []
+
+app.post('/token', (req, res) => {
+  const refreshToken = req.body.token
+  if (refreshToken == null) return res.sendStatus(401)
+  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403)
+    const accessToken = generateAccessToken({ name: user.name })
+    res.json({ accessToken: accessToken })
+  })
+})
+
+app.delete('/logout', (req, res) => {
+  refreshTokens = refreshTokens.filter(token => token !== req.body.token)
+  res.sendStatus(204)
+})
+
+app.post('/login', (req, res) => {
+  // Authenticate User
+    var result = { state: false, type : 1 };
+    const username = req.body.username
+    Users.find({username:req.body.username, password:req.body.password})
+  .then((user)=>{ 
+      if(user.length == 0)
+      {
+          res.send(result);
+      }
+      else
+      {
+        const userr = {name: username}
+
+        const accessToken = generateAccessToken(userr)
+        const refreshToken = jwt.sign(userr, process.env.REFRESH_TOKEN_SECRET)
+        refreshTokens.push(refreshToken)
+        res.json({ accessToken: accessToken, refreshToken: refreshToken, type: user[0].type})
+        var loggedIn = user[0].type;
+        result.state = true;
+        result.type = loggedIn;
+        
+        // res.send(result);
+        // console.log(result);
+      }
+      //we need to create a session
+  }).catch((err) => console.log(err));
+})
+
+function generateAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1555555s' })
+}
+
+////authServer
+// problem : email 
+app.get("/ViewReservations", authenticateToken, async (req,res)=>{
    
-const user=await Users.find({username : session.username});
+const user=await Users.find({username : req.user.name});
 
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
-console.log(user[0].email)
 
 async function sendMail() {
   try {
@@ -108,14 +156,12 @@ async function sendMail() {
         accessToken: accessToken,
       },
     });
-    console.log(user[0].email);
     const mailOptions = {
       from: 'AIROAIRLINES <airoairlines@gmail.com>',
       to: user[0].email,
       subject: 'Hello from gmail using API',
       text: 'Hello '+user[0].lastName + " you have cancelled flight with booking number "+reservationToBeDeleted+" and the amount to be refunded "+refundedPrice 
     };
-    console.log(user[0].email)
     const result = await transport.sendMail(mailOptions);
     return result;
   } catch (error) {
@@ -128,49 +174,12 @@ sendMail()
   .catch((error) => console.log(error.message));
 })
 
-
-app.get("/totalPrice",async(req,res)=>{
-
-  let pp=(parseInt(departureFlight.FlightPrice)+parseInt(returnFlight.FlightPrice))
-     res.status(200).json(pp);
-
- 
-});
-
-//stripe post request
-app.post("/stripe/charge", cors(), async (req, res) => {
-  console.log("stripe-routes.js 9 | route reached", req.body);
-  let {amount,id} = req.body;
-  console.log("stripe-routes.js 10 | amount and id", amount,id);
-  try {
-    const payment = await stripe.paymentIntents.create({
-      amount: amount,
-      currency: "USD",
-      description: "Payment for Airo Flight Company",
-      payment_method: id,
-      confirm: true,
-    });
-    console.log("stripe-routes.js 19 | payment", payment);
-    res.json({
-      message: "Payment Successful",
-      success: true,
-    });
-  } catch (error) {
-    console.log("stripe-routes.js 17 | error", error);
-    res.json({
-      message: "Payment Failed",
-      success: false,
-    });
-  }
-});
-
 //returns the username of the session
-app.get("/session",async(req,res)=>{
-  if(session.username==undefined)
-    res.send(false);
-  else
-    res.send(session.username);
+app.get("/session", authenticateToken, async(req,res)=>{
+  res.send(req.user.name);
 });
+
+
 
 
 
@@ -244,21 +253,17 @@ app.get("/returnFlightSeatsEconomy", async(req,res)=>{
 
 
 app.post("/reserveSeats",async(req,res)=>{
-  console.log(userPreferredCriteria);
   const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
    let reservedSeats=req.body.values.split(',');
 
 
   if(userPreferredCriteria.DepartureCabinClass=="First Class")
    {
-     console.log("first")
    let newFirstSeats=new Array((flight[0].IsFirstSeatBusy).length);
    newFirstSeats=flight[0].IsFirstSeatBusy;
-      console.log(req.body.values.length)
 
    for(let i=0;i<(reservedSeats).length;i++){
      let ind=(parseInt(reservedSeats[i]))-1;
-      console.log(ind)
     newFirstSeats[ind]=true;
    }
    Flight.findOneAndUpdate({FlightNumber : parseInt(departureFlight.FlightNumber)}, {IsFirstSeatBusy: newFirstSeats}, {
@@ -278,11 +283,9 @@ app.post("/reserveSeats",async(req,res)=>{
    let newBusinessSeats=new Array((flight[0].IsBusinessSeatBusy).length);
    newBusinessSeats=flight[0].IsBusinessSeatBusy;
    let arrayLengthToBeDeduced=(flight[0].IsFirstSeatBusy).length;
-   console.log(arrayLengthToBeDeduced)
    
    for(let i=0;i<(reservedSeats).length;i++){
      let ind=(parseInt(reservedSeats[i]))-arrayLengthToBeDeduced-1;
-      console.log(ind)
     newBusinessSeats[ind]=true;
    }
 
@@ -293,12 +296,10 @@ app.post("/reserveSeats",async(req,res)=>{
         console.log("updated");
     }).catch((err) =>  console.log(err) )
 
-    console.log(flight[0].IsBusinessSeatBusy)
 
   }
   else if(userPreferredCriteria.DepartureCabinClass=="Economy Class")
   {
-         console.log("economy")
 
    let newEconomySeats=new Array((flight[0].IsEconomySeatBusy).length);
    newEconomySeats=flight[0].IsEconomySeatBusy;
@@ -306,7 +307,6 @@ app.post("/reserveSeats",async(req,res)=>{
 
    for(let i=0;i<(reservedSeats).length;i++){
      let ind=(parseInt(reservedSeats[i]))-arrayLengthToBeDeduced-1;
-      console.log(ind)
     newEconomySeats[ind]=true;
    }
    Flight.findOneAndUpdate({FlightNumber : parseInt(departureFlight.FlightNumber)}, {IsEconomySeatBusy: newEconomySeats}, {
@@ -408,6 +408,7 @@ app.post("/reserveReturnSeats",async(req,res)=>{
 
 
 app.get("/reservationNumber", async(req,res)=>{
+  console.log(reservationNumber)
    res.status(200).json(reservationNumber);
 
 })
@@ -681,7 +682,6 @@ app.post("/setDepSeats",async(req,res)=>{
 app.post("/setReturnSeats",async(req,res)=>{
 
   returnFlight.seats = req.body.values;
-  console.log(returnFlight.seats);
   res.send(true);
 })
 
@@ -690,7 +690,8 @@ app.post("/departureFlight",async(req,res)=>{
   departureFlight=req.body;
   res.send(true);
   });
- 
+
+
 app.post("/departureFlightByNumber",async(req,res)=>{
 
     var departureFlightNumber=parseInt(req.body.flightNumber);
@@ -724,9 +725,8 @@ app.post("/returnFlightByNumber",async(req,res)=>{
       */
       //we need to create a session
 
-app.get("/reserveFlight", async(req,res)=>{
-      console.log("hii");
-      if(session.username==undefined)
+app.get("/reserveFlight", authenticateToken, async(req,res)=>{
+      if(req.user.name==undefined)
       {
         res.send(false);
         return;
@@ -739,7 +739,7 @@ app.get("/reserveFlight", async(req,res)=>{
         DepartureCabinClass: userPreferredCriteria.DepartureCabinClass,
         ReturnCabinClass: userPreferredCriteria.ReturnCabinClass,
         Price: parseInt(departureFlight.FlightPrice)+parseInt(returnFlight.FlightPrice),
-        User: session.username ,
+        User: req.user.name ,
         Seats:departureFlight.seats,
         ReturnSeats:returnFlight.seats
       })
@@ -940,8 +940,8 @@ app.get('/reservation', async (req,res)=>{
 });
 
 //to get the username
-app.get('/user', async (req,res)=>{
-  const u = await Users.find({username : session.username});
+app.get('/user',authenticateToken, async (req,res)=>{
+  const u = await Users.find({username : req.user.name});
 
   res.send(u[0]);
     
@@ -950,7 +950,6 @@ app.get('/user', async (req,res)=>{
 app.get('/allFlights', async(req, res)=> {
  
   const u = await Flight.find();
-  console.log(u);
   res.send(u);
  
 });
@@ -981,33 +980,47 @@ app.get('/searchRetResults', async(req, res)=> {
 });
 
 
-app.post('/login',(req,res) =>{
-  var result = { state: false, type : 1 };
-  Users.find({username:req.body.username, password:req.body.password})
-  .then((user)=>{
+// app.post('/login',(req,res) =>{
+//   var result = { state: false, type : 1 };
+//   // const user = {username:req.body.username, password:req.body.password}
+//   // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+//   // res.json({accessToken : accessToken});
+//   Users.find({username:req.body.username, password:req.body.password})
+//   .then((user)=>{ 
 
-      // console.log(user);
-      if(user.length == 0)
-      {
-          res.send(result);
-      }
-      else
-      {
-        session.username=req.body.username;
-        var loggedIn = user[0].type;
-        result.state = true;
-        result.type = loggedIn;
+//       // console.log(user);
+//       if(user.length == 0)
+//       {
+//           res.send(result);
+//       }
+//       else
+//       {
+//         session.username=req.body.username;
+//         var loggedIn = user[0].type;
+//         result.state = true;
+//         result.type = loggedIn;
         
-        res.send(result);
-        console.log(result);
-      }
-      //we need to create a session
-  }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
-})
+//         res.send(result);
+//         console.log(result);
+//       }
+//       //we need to create a session
+//   }).catch((err) => res.json({ error: err, username:req.body.username, password:req.body.password }));//if an error happened while accessing db, return string error
+// })
+
+function authenticateToken(req,res,next){
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if(token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err,user) => {
+    if(err) return res.send(err) // you have a token but you no longer have access
+    req.user = user;
+    next();
+  })
+}
 
 // for creating a new user (not completed yet)
 app.post('/register',async(req,res) =>{
-  console.log(req.body);
       const newUser =new Users({
         firstName:req.body.firstName,
         lastName: req.body.lastName,
@@ -1037,7 +1050,6 @@ app.post('/register',async(req,res) =>{
 
 app.post("/searchFlight",(req,res)=>{
 
-  console.log(req.body);
     
   Object.keys(req.body).forEach(key => {
     if (req.body[key]== '') {
@@ -1057,14 +1069,11 @@ app.post("/searchFlight",(req,res)=>{
     res.send(false);
   } 
 
-  console.log(req.body);
-
   
   const s = { FlightNumber: 10 };
   
   // console.log(req.body);  
   Flight.find(req.body).then((result)=>{
-    console.log(result);
     searchResult=result;
     res.send(result);
 }).catch((err) =>  console.log('EEEEEEEEEEEEEEEEEEEE'))
@@ -1101,7 +1110,6 @@ app.post("/searchFlight",(req,res)=>{
       });
       try{
         await newFlight.save(newFlight);
-        console.log(newFlight);
         res.send(true);
       }
       catch(err)
@@ -1113,8 +1121,6 @@ app.post("/searchFlight",(req,res)=>{
     app.put('/flight/:FlightNumber', (req,res)=>{
       const flightNumber = req.params;
       const filter = req.params;
-      console.log(filter);
-      console.log(req.body);
       Object.keys(req.body).forEach(key => {
           if(key == 'FlightNumber' || key == 'EconomySeats' || key == 'BusinessSeats' )
             req.body[key]= parseInt(req.body[key]);
@@ -1123,8 +1129,6 @@ app.post("/searchFlight",(req,res)=>{
         }
         
       );
-      console.log(req.body);
-      console.log(filter);
    
    
 
@@ -1132,21 +1136,19 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.put('/password', async (req,res)=>{
+    app.put('/password',authenticateToken, async (req,res)=>{
       
-      const username = session.username;
+      const username = req.user.name;
       const filter = req.params;
       var result = {status : false, response: ""};
-      const u = await Users.find({username : session.username, password: req.body.oldPassword});
-      console.log(u[0]== null);
+      const u = await Users.find({username : req.user.name, password: req.body.oldPassword});
       if(u[0] != null)
       {
-        Users.findOneAndUpdate({username : session.username}, {password: req.body.newPassword}, {
+        Users.findOneAndUpdate({username : req.user.name}, {password: req.body.newPassword}, {
           new: true,
         })
         .then((user)=>{
           result.status = true;
-          console.log(result);
           res.send(result);
       }).catch((err) =>  res.send(result))
       }
@@ -1158,9 +1160,9 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.put('/user', (req,res)=>{
+    app.put('/user',authenticateToken, (req,res)=>{
       
-      const filter = {username: session.username};
+      const filter = {username: req.user.name};
       Users.findOneAndUpdate(filter, req.body, {
         new: true,
       })
@@ -1181,9 +1183,7 @@ app.post("/searchFlight",(req,res)=>{
 
     app.delete('/flight/:number', (req,res)=>{
       const flightNumber = req.params;
-      console.log(flightNumber);
       const filter = {flightNumber: flightNumber};
-      console.log(filter);
       Flight.findOneAndRemove(filter)
       .then((flight)=>{
         res.send('deleted');//if successful, redirect to the home page
@@ -1203,10 +1203,7 @@ app.post("/searchFlight",(req,res)=>{
         var retFlightNum = Reservation.ArrivalFlightNumber;
         const dFlight = await Flight.find({FlightNumber : parseInt(depFlightNum)});
         const rFlight = await Flight.find({FlightNumber : parseInt(retFlightNum)});
-        console.log(dFlight[0]);
-        console.log(rFlight[0]);
 
-        console.log(Reservation.DepartureCabinClass);
         
         if(Reservation.DepartureCabinClass=="Economy Class")
         {
@@ -1214,16 +1211,13 @@ app.post("/searchFlight",(req,res)=>{
 
           newEconomySeats=dFlight[0].IsEconomySeatBusy;
 
-          console.log(dFlight[0].IsFirstSeatBusy);
-          console.log(dFlight[0].IsBusinessSeatBusy);
 
           var arrayLengthToBeDeduced=(dFlight[0].IsFirstSeatBusy).length+(dFlight[0].IsBusinessSeatBusy).length;
 
           
-          console.log(Reservation.Seats);
+
           for(let i=0;i<(Reservation.Seats).length;i++){
             let ind=(parseInt(Reservation.Seats[i]))-arrayLengthToBeDeduced-1;
-             console.log(ind)
            newEconomySeats[ind]=false;
           }
           Flight.findOneAndUpdate({FlightNumber : parseInt(depFlightNum)}, {IsEconomySeatBusy: newEconomySeats}, {
@@ -1239,16 +1233,13 @@ app.post("/searchFlight",(req,res)=>{
 
           newEconomySeats=rFlight[0].IsEconomySeatBusy;
 
-          console.log(rFlight[0].IsFirstSeatBusy);
-          console.log(rFlight[0].IsBusinessSeatBusy);
-
           arrayLengthToBeDeduced=(rFlight[0].IsFirstSeatBusy).length+(rFlight[0].IsBusinessSeatBusy).length;
 
           
-          console.log(Reservation.Seats);
+
           for(let i=0;i<(Reservation.ReturnSeats).length;i++){
             let ind=(parseInt(Reservation.ReturnSeats[i]))-arrayLengthToBeDeduced-1;
-             console.log(ind)
+
            newEconomySeats[ind]=false;
           }
           Flight.findOneAndUpdate({FlightNumber : parseInt(retFlightNum)}, {IsEconomySeatBusy: newEconomySeats}, {
@@ -1262,16 +1253,14 @@ app.post("/searchFlight",(req,res)=>{
 
           newBusinessSeats=dFlight[0].IsBusinessSeatBusy;
 
-          console.log(dFlight[0].IsFirstSeatBusy);
-          console.log(dFlight[0].IsBusinessSeatBusy);
 
           var arrayLengthToBeDeduced=(dFlight[0].IsFirstSeatBusy).length;
 
           
-          console.log(Reservation.Seats);
+
           for(let i=0;i<(Reservation.Seats).length;i++){
             let ind=(parseInt(Reservation.Seats[i]))-arrayLengthToBeDeduced-1;
-             console.log(ind)
+
              newBusinessSeats[ind]=false;
           }
           Flight.findOneAndUpdate({FlightNumber : parseInt(depFlightNum)}, {IsBusinessSeatBusy: newBusinessSeats}, {
@@ -1288,16 +1277,11 @@ app.post("/searchFlight",(req,res)=>{
 
           newFirstSeats=dFlight[0].IsFirstSeatBusy;
 
-          console.log(dFlight[0].IsFirstSeatBusy);
-          console.log(dFlight[0].IsBusinessSeatBusy);
-
           var arrayLengthToBeDeduced=0;
 
-          
-          console.log(Reservation.Seats);
           for(let i=0;i<(Reservation.Seats).length;i++){
             let ind=(parseInt(Reservation.Seats[i]))-1;
-             console.log(ind)
+
              newFirstSeats[ind]=false;
           }
           Flight.findOneAndUpdate({FlightNumber : parseInt(depFlightNum)}, {IsFirstSeatBusy: newFirstSeats}, {
@@ -1314,17 +1298,12 @@ app.post("/searchFlight",(req,res)=>{
           let newEconomySeats=new Array((rFlight[0].IsEconomySeatBusy).length);
     
           newEconomySeats=rFlight[0].IsEconomySeatBusy;
-    
-          console.log(rFlight[0].IsFirstSeatBusy);
-          console.log(rFlight[0].IsBusinessSeatBusy);
-    
+
           arrayLengthToBeDeduced=(rFlight[0].IsFirstSeatBusy).length+(rFlight[0].IsBusinessSeatBusy).length;
     
           
-          console.log(Reservation.Seats);
           for(let i=0;i<(Reservation.ReturnSeats).length;i++){
             let ind=(parseInt(Reservation.ReturnSeats[i]))-arrayLengthToBeDeduced-1;
-             console.log(ind)
            newEconomySeats[ind]=false;
           }
           Flight.findOneAndUpdate({FlightNumber : parseInt(retFlightNum)}, {IsEconomySeatBusy: newEconomySeats}, {
@@ -1343,16 +1322,12 @@ app.post("/searchFlight",(req,res)=>{
             newBusinessSeats=rFlight[0].IsBusinessSeatBusy;
             arrayLengthToBeDeduced=(rFlight[0].IsFirstSeatBusy).length;
 
-            console.log(rFlight[0].IsFirstSeatBusy);
-            console.log(rFlight[0].IsBusinessSeatBusy);
   
             // arrayLengthToBeDeduced=(rFlight[0].IsFirstSeatBusy).length;
   
             
-            console.log(Reservation.Seats);
             for(let i=0;i<(Reservation.ReturnSeats).length;i++){
               let ind=(parseInt(Reservation.ReturnSeats[i]))-arrayLengthToBeDeduced-1;
-               console.log(ind)
                newBusinessSeats[ind]=false;
             }
             Flight.findOneAndUpdate({FlightNumber : parseInt(retFlightNum)}, {IsBusinessSeatBusy: newBusinessSeats}, {
@@ -1367,16 +1342,12 @@ app.post("/searchFlight",(req,res)=>{
 
           newFirstSeats=rFlight[0].IsFirstSeatBusy;
 
-          console.log(rFlight[0].IsFirstSeatBusy);
-          console.log(rFlight[0].IsBusinessSeatBusy);
 
           arrayLengthToBeDeduced=0;
 
           
-          console.log(Reservation.Seats);
           for(let i=0;i<(Reservation.ReturnSeats).length;i++){
             let ind=(parseInt(Reservation.ReturnSeats[i]))-arrayLengthToBeDeduced-1;
-             console.log(ind)
              newFirstSeats[ind]=false;
           }
           Flight.findOneAndUpdate({FlightNumber : parseInt(retFlightNum)}, {IsFirstSeatBusy: newFirstSeats}, {
@@ -1396,9 +1367,7 @@ app.post("/searchFlight",(req,res)=>{
 
     app.delete('/flight/:number', (req,res)=>{
       const flightNumber = req.params;
-      console.log(flightNumber);
       const filter = {flightNumber: flightNumber};
-      console.log(filter);
       Flight.findOneAndRemove(filter)
       .then((flight)=>{
         res.send('deleted');//if successful, redirect to the home page
@@ -1415,17 +1384,18 @@ app.post("/searchFlight",(req,res)=>{
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 app.get("/userCriteria", async(req,res)=>{
+  console.log("get ");
+  console.log(userPreferredCriteria);
   res.send(userPreferredCriteria);
 });
 
 app.post("/userCriteria", async(req,res)=>{
-  userPreferredCriteria=req.body;
-  console.log("TTTTTTTTTTTTTTTTTTTTTst")
-  console.log(userPreferredCriteria);
   
-
+  userPreferredCriteria=req.body;
+  console.log("set ");
+  console.log(userPreferredCriteria);
 });
-app.post("/searchFlightUser",(req,res)=>{
+app.post("/searchFlightUser", (req,res)=>{
 
     var isReturnFlight = req.body.isReturnFlight;
     var numberOfAdults=0;
@@ -1533,7 +1503,6 @@ app.post("/searchFlightUser",(req,res)=>{
     else
     {
       searchRetResult=result;
-      console.log("TST");
     }  
     res.send(result);
 }).catch((err) =>  console.log(err))

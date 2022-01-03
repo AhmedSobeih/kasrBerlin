@@ -5,17 +5,19 @@ import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
 import {useNavigate} from 'react-router-dom';
+import configData from "./config.json";
+
 
 import axios from 'axios';
 
 
 export default function Login() {
+  
   const [loginSuccess, setLoginSuccess] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  var accessToken;
-  var refreshToken;
+
 
   function componentDidMount() {
     axios.get('/allFlights')
@@ -46,8 +48,10 @@ function tryLogin (){
   headers: { "Content-Type": "multipart/form-data" },
 })
     .then((response) => { 
-      accessToken = response.data.accessToken;
-      refreshToken = response.data.refreshToken ;
+      configData.PersonalAccessToken = response.data.accessToken ;
+      configData.PersonalRefreshToken = response.data.refreshToken;
+      configData.Type = response.data.type;
+      
       if(response.data.state == false)
        {
         setLoginSuccess('Invalid username or password!');
@@ -56,9 +60,9 @@ function tryLogin (){
       else
       {
         if(response.data.type == 0)
-          navigate('/AdminHome', {state: {accessToken: accessToken, refreshToken: refreshToken, type:response.data.type }});
+          navigate('/AdminHome');
         else
-          navigate('/UserHome', {state: {accessToken: accessToken, refreshToken: refreshToken, type:response.data.type}});
+          navigate('/UserHome');
       }
         
   })

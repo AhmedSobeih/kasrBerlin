@@ -9,6 +9,7 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import session from "express-session";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import configData from "./config.json";
 
 
 //const PUBLIC_KEY = "pk_test_51KD72pKQG3BZSLH4DXKU0bkh6gymwLK6kw3ciOYl1m0pqzrXlT5fZe9cG6wBPBEpKGUpnCZu5HFYB80A5JudoXCy00tvq5YESz";
@@ -33,49 +34,23 @@ export default function UpdateFlight(){
     const location = useLocation();
     const navigate = useNavigate();
 
-   
-    //problem will occur in the conversion between mongoose and html in date conversion
-    // mongoose: ""
-    //html: "2021-11-10T16:32"
     const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
     const [price,setPrice]=useState(0);
     const [ReturnFlight, setReturnFlight] = useState(location.state.returnFlight);
-    const [isUser, setIsUser] = useState(false);
-
-
-      useEffect(() => {
-        console.log("SSSSSSSSSUUUUUUUUUUUUUUUIIIIIIIIIIIIIIISS");
-      
-
-      //   axios.get('/returnFlight')
-      // .then(res => {
-      //   setReturnFlight(res.data);
-
-      //   })
-      // .catch(function (error) {
-      //     console.log(error);
-      // })
-      // axios.get('/departureFlight')
-      // .then(res => {
-      //   setDepartureFlight(res.data);
-
-      //   })
-      // .catch(function (error) {
-      //     console.log(error);
-      // })
-      axios.get('/session')
-      .then(res => {
-        if(res.data==false)
-          setIsUser(false);
-        else
-          setIsUser(true);
-      })
-        // code to run on component mount
-      }, [])    
-      
- 
- 
-     
+    const [isUser, setIsUser] = useState(true);
+    try{
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      var type = configData.Type;
+      if(type == 0 || accessToken == null)
+      {
+        setIsUser(false);
+      }
+      }
+      catch(err)
+      {
+        setIsUser(false);
+      }
   
 
 function dateConversion(date){
@@ -89,18 +64,14 @@ function dateConversion(date){
     return newDate;
   }
    function reserveFlight(){
-    axios.get('/session')
-    .then(res => {
-      console.log(res.data)
-      if(res.data===false)
+
+      if(isUser===false)
       {
+        window.confirm("You must be logged in to reserve a flight. Do you want to login?");
         if (window.confirm("You must be logged in to reserve a flight. Do you want to login?")) {
           navigate('/login');
 
-       } else {
-         
-         }
-      }
+      }} 
       else{
         axios.get('/reserveFlight')
         var bodyFormData = new FormData();
@@ -134,12 +105,7 @@ function dateConversion(date){
         navigate('/Itinerary');
 
       }
-    })
-    
-            
-
-
-  }
+    }
     axios.get('/totalPrice')
       .then(res => {
         console.log(parseInt(res.data));
