@@ -42,6 +42,15 @@ module.exports = function(app) {
 }
 
 
+
+//stripe
+require("dotenv").config();
+const stripe = require("stripe")(process.env.Secret_Key);
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+app.use(cors());
+
 /* Initializing the main project folder */
 app.use(express.static('public'));
 app.use(session({
@@ -135,6 +144,43 @@ function generateAccessToken(user) {
 
 ////authServer
 // problem : email 
+
+
+app.get("/totalPrice",async(req,res)=>{
+
+  let pp=(parseInt(departureFlight.FlightPrice)+parseInt(returnFlight.FlightPrice))
+     res.status(200).json(pp);
+
+ 
+});
+
+//stripe post request
+app.post("/stripe/charge", cors(), async (req, res) => {
+  console.log("stripe-routes.js 9 | route reached", req.body);
+  let {amount,id} = req.body;
+  console.log("stripe-routes.js 10 | amount and id", amount,id);
+  try {
+    const payment = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: "USD",
+      description: "Payment for Airo Flight Company",
+      payment_method: id,
+      confirm: true,
+    });
+    console.log("stripe-routes.js 19 | payment", payment);
+    res.json({
+      message: "Payment Successful",
+      success: true,
+    });
+  } catch (error) {
+    console.log("stripe-routes.js 17 | error", error);
+    res.json({
+      message: "Payment Failed",
+      success: false,
+    });
+  }
+});
+
 app.get("/ViewReservations", authenticateToken, async (req,res)=>{
    
 const user=await Users.find({username : req.user.name});
