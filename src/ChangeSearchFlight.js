@@ -5,6 +5,8 @@ import axios from 'axios';
 import {useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest.js';
+import configData from "./config.json";
+
 
 
 const Anchor =({title})=>{
@@ -17,6 +19,7 @@ const Anchor =({title})=>{
        };
 
 export default function SearchFlightGuest(){
+    console.log("here");
 
     const [DepartureDateVisibility, setDepartureDateVisibility] = useState(true);
     const [ArrivalDateVisibility, setArrivalDateVisibility] = useState(true);
@@ -42,6 +45,20 @@ export default function SearchFlightGuest(){
 
    
     const [ErrorMessage, setErrorMessage] = useState("");
+
+    try{
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      var type = configData.Type;
+      if(accessToken == null)
+      {
+        isUser = false;
+      }
+      }
+      catch(err)
+      {
+        isUser = false;
+      }
 
 
     
@@ -181,13 +198,22 @@ export default function SearchFlightGuest(){
     setCabinClass(document.getElementById("CabinClass").value);
     console.log(CabinClass);
   }
-    axios.get('/session')
-    .then(res => {
-      if(res.data==false)
-        setIsUser(false);
-      else
-        setIsUser(true);
-    })
+  axios({
+    method: "get",
+    url: "/session",
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ configData.PersonalAccessToken },
+      })
+          .then((response) => { 
+            if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
+              {
+                setIsUser(false);
+              }
+            else
+            {
+              setIsUser(true);
+              console.log(response.data);   
+            }
+});
   
 
 

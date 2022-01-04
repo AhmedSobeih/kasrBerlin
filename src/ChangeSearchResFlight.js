@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 import {useLocation} from 'react-router-dom';
+import configData from "./config.json";
 
+let authorized = true;
 
 
 const Anchor =({title})=>{
@@ -18,8 +20,27 @@ const Anchor =({title})=>{
 export default function(props) {
     const navigate = useNavigate();
     const location = useLocation(); // this uses Router based states to let us access cour state
+    try{
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      console.log(accessToken);
+      var type = configData.Type;
+      if(type == 0 || accessToken == null)
+      {
+          authorized = false;
+      }
+      }
+      catch(err)
+      {
+          authorized = false;
+      }
 
-    return <SearchResults navigate={navigate} location={location}  />;
+      useEffect(() => {
+        if(authorized == false)
+          navigate("/");
+      }, [authorized]);
+
+    return <SearchResults navigate={navigate} location={location} accessToken= {accessToken}  />;
   }
 
 class SearchResults extends Component {
@@ -50,17 +71,23 @@ class SearchResults extends Component {
             
             console.log("NNNNNNNNNNN")
             console.log(this.state.userCriteria);
-           axios.get('/session')
-            .then(res => {
-              if(res.data==false)
-                this.setState({isUser:false});
-              else
-              this.setState({isUser:true});
-            })
-    .catch(function (error) {
-        console.log(error);
-    })
-    }
+            console.log(configData.PersonalAccessToken);
+            axios({
+              method: "get",
+              url: "/session",
+                  headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ configData.PersonalAccessToken },
+                })
+                    .then((response) => { 
+                      if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
+                        {
+                          authorized = false;
+                        }
+                      else
+                      {
+                        authorized = true;
+                        console.log(response.data);   
+                      }
+    });}
     
     gotoFlight(fl, price ,priceDifference) {
         var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";

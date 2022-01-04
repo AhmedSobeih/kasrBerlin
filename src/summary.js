@@ -11,6 +11,11 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import configData from "./config.json";
 
+var DepartureFlight;
+    var price;
+    var ReturnFlight;
+    var isUser;
+
 
 //const PUBLIC_KEY = "pk_test_51KD72pKQG3BZSLH4DXKU0bkh6gymwLK6kw3ciOYl1m0pqzrXlT5fZe9cG6wBPBEpKGUpnCZu5HFYB80A5JudoXCy00tvq5YESz";
 
@@ -28,41 +33,34 @@ const Anchor =({title})=>{
        };
        
 
-export default function UpdateFlight(){
+export default function Summary(){
 
     let {flight} = useParams(); 
     const location = useLocation();
     const navigate = useNavigate();
-
-    const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
-    const [price,setPrice]=useState(0);
-    const [ReturnFlight, setReturnFlight] = useState(location.state.returnFlight);
-    const [isUser, setIsUser] = useState(true);
+    console.log(price);
+if(price == null)
+{
+    console.log("heereee");
+    DepartureFlight= location.state.departureFlight;
+    price = 0;
+    ReturnFlight = location.state.returnFlight;
+    isUser=true;
     try{
       var accessToken = configData.PersonalAccessToken;
       var refreshToken = configData.PersonalRefreshToken;
       var type = configData.Type;
       if(type == 0 || accessToken == null)
       {
-        setIsUser(false);
+        isUser = false;
       }
       }
       catch(err)
       {
-        setIsUser(false);
+        isUser = false;
       }
   
 
-function dateConversion(date){
-    let newDate = "";
-    for(var i=0;i<16;i++)
-    {
-        newDate = newDate + date[i];
-    }
-    // 2001-02-10T22:25
-    //2000-10-10T15:02:00.000Z
-    return newDate;
-  }
    function reserveFlight(){
 
       if(isUser===false)
@@ -73,7 +71,11 @@ function dateConversion(date){
 
       }} 
       else{
-        axios.get('/reserveFlight')
+        axios({
+          method: "get",
+          url: "/reserveFlight",
+          headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+        })
         var bodyFormData = new FormData();
         bodyFormData.append('values', location.state.departureSeats);
       
@@ -102,6 +104,13 @@ function dateConversion(date){
     
         })
        
+
+
+
+
+
+
+        
         navigate('/Itinerary');
 
       }
@@ -109,7 +118,7 @@ function dateConversion(date){
     axios.get('/totalPrice')
       .then(res => {
         console.log(parseInt(res.data));
-        setPrice(parseInt(res.data));
+       price = parseInt(res.data);
       })
   const CheckoutForm = () => {
   const navigate = useNavigate();
@@ -127,14 +136,19 @@ function dateConversion(date){
 
     if (!error) {
       console.log("Stripe 23 | token generated!", paymentMethod);
-     
+    
+
       try {
         const { id } = paymentMethod;
-        const response = await axios.post( "/stripe/charge",
-          {
-            amount:(price*100),
-            id: id
-          }
+        var bodyFormData = new FormData();
+        bodyFormData.append('amount', (price*100));
+        bodyFormData.append('id', id);
+        const response = await axios( {
+          method: "post",
+          url: "/stripe/charge",
+          data: bodyFormData,
+          headers: {"Authorization":"Bearer "+ accessToken },
+        }
         );
 
         console.log("Stripe 35 | data", response.data.success);
@@ -316,9 +330,12 @@ return(DepartureFlight&&ReturnFlight &&
           </div>
         </div>
       </div>
-      <Elements stripe={stripeTestPromise}>
+      {isUser&&<Elements stripe={stripeTestPromise}>
                      <CheckoutForm />
-                 </Elements>
+                 </Elements>}
+                 {!isUser&&<h1>Sorry you must login first To reserve and pay</h1>}
+                 
+     
     </>
-);}
+);}}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));

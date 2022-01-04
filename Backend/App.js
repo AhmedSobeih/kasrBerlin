@@ -90,6 +90,9 @@ const oAuth2Client = new google.auth.OAuth2(
 
 ///authServer
 
+//edits for encryption
+const bcrypt = require('bcrypt')
+
 
 let refreshTokens = []
 
@@ -109,18 +112,16 @@ app.delete('/logout', (req, res) => {
   res.sendStatus(204)
 })
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   // Authenticate User
     var result = { state: false, type : 1 };
     const username = req.body.username
-    Users.find({username:req.body.username, password:req.body.password})
-  .then((user)=>{ 
-      if(user.length == 0)
-      {
-          res.send(result);
-      }
-      else
-      {
+    Users.find({username:req.body.username})
+  .then(async (user)=>{
+    var condition = await bcrypt.compare(req.body.password, user[0].password);
+  if(condition)
+    {
+        
         const userr = {name: username}
 
         const accessToken = generateAccessToken(userr)
@@ -133,7 +134,11 @@ app.post('/login', (req, res) => {
         
         // res.send(result);
         // console.log(result);
-      }
+    }
+    else
+    {
+      res.send(result);
+    }
       //we need to create a session
   }).catch((err) => console.log(err));
 })
@@ -155,7 +160,8 @@ app.get("/totalPrice",async(req,res)=>{
 });
 
 //stripe post request
-app.post("/stripe/charge", cors(), async (req, res) => {
+app.post("/stripe/charge",cors(),authenticateToken, async (req, res) => {
+  console.log(req.user.name);
   console.log("stripe-routes.js 9 | route reached", req.body);
   let {amount,id} = req.body;
   console.log("stripe-routes.js 10 | amount and id", amount,id);
@@ -222,6 +228,7 @@ sendMail()
 
 //returns the username of the session
 app.get("/session", authenticateToken, async(req,res)=>{
+  console.log(req.user.name);
   res.send(req.user.name);
 });
 
@@ -244,16 +251,6 @@ app.get("/newAdmin",async(req,res)=>{
     res.send(admin)
 });
 
-
-
-
-//returns the username of the session
-app.get("/session",async(req,res)=>{
-  if(session.username==undefined)
-    res.send(false);
-  else
-    res.send(session.username);
-});
 
 
 
@@ -732,6 +729,8 @@ app.post("/setReturnSeats",async(req,res)=>{
 })
 
 app.post("/departureFlight",async(req,res)=>{
+  console.log("departureFlight: ");
+  console.log(req.body);
 
   departureFlight=req.body;
   res.send(true);
@@ -954,8 +953,8 @@ app.get('/flight/:number', async (req,res)=>{
     
 });
 
-app.get('/reservation', async (req,res)=>{
-  const u = await Reservation.find({User : session.username});
+app.get('/reservation',authenticateToken, async (req,res)=>{
+  const u = await Reservation.find({User : req.user.name});
   const result = [];
   for(let i=0 ; i<u.length;i++)
   {
@@ -1064,7 +1063,6 @@ function authenticateToken(req,res,next){
     next();
   })
 }
-
 // for creating a new user (not completed yet)
 app.post('/register',async(req,res) =>{
       const newUser =new Users({
@@ -1075,7 +1073,7 @@ app.post('/register',async(req,res) =>{
         email: req.body.email ,
         passportNumber: req.body.passportNumber,
         username: req.body.username,
-        password: req.body.password,
+        password: await bcrypt.hash(req.body.password, 10),
         type : 1,
         flightsReserved : [],
         flightsReservedDetails : []
@@ -1237,9 +1235,9 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.delete('/reservation',async (req,res)=>{
+    app.delete('/reservation',authenticateToken, async (req,res)=>{
       reservationToBeDeleted=parseInt(req.body.ReservationNumber);
-      const flightReserved= await Reservation.find({username : session.username ,ReservationNumber:reservationToBeDeleted});
+      const flightReserved= await Reservation.find({username : req.user.name ,ReservationNumber:reservationToBeDeleted});
       refundedPrice=flightReserved[0].Price;  
       var deletedReservation = {};
       Reservation.findOneAndRemove(req.body)

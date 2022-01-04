@@ -11,6 +11,7 @@ export default function UserHome() {
     const navigate = useNavigate();
     try{
     var accessToken = configData.PersonalAccessToken;
+    console.log("accessToken: "+ accessToken)
     var refreshToken = configData.PersonalRefreshToken;
     var type = configData.Type;
     if(type == 0)

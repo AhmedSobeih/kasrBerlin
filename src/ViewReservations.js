@@ -1,29 +1,48 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import axios from 'axios';
 import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import UserHome from 'UserHome';
+import configData from "./config.json";
+
 var username;
-var refreshToken;
-var accessToken;
-var type ;
 let authorized = true;
 
 export default function(props) {
+  
   
     const navigate = useNavigate();
     const location = useLocation();
     const user = useParams().username;
     username = user;
-    return <ViewReservations navigate={navigate} location={location}  />;
+    try{
+      var accessToken = configData.PersonalAccessToken;
+      var refreshToken = configData.PersonalRefreshToken;
+      console.log(accessToken);
+      var type = configData.Type;
+      if(type == 0 || accessToken == null)
+      {
+          authorized = false;
+      }
+      }
+      catch(err)
+      {
+          authorized = false;
+      }
+
+      useEffect(() => {
+        if(authorized == false)
+          navigate("/");
+      }, [authorized]);
+    return <ViewReservations navigate={navigate} location={location} accessToken= {accessToken} />;
   }
 
   function getUserName (){
+    var accessToken = configData.PersonalAccessToken;
     // const data = { username, password}
     var bodyFormData = new FormData();
+    console.log(configData.PersonalAccessToken);
     bodyFormData.append('username', username);
-    console.log(accessToken);
-  
    axios({
     method: "get",
     url: "/session",
@@ -54,6 +73,11 @@ const Anchor =({title})=>{
         </li>
         )
        };
+function MyComponent() {
+        useEffect(() => {
+          // Runs ONCE after initial rendering
+        }, []);
+      }
 
 class ViewReservations extends Component {
 
@@ -61,29 +85,25 @@ class ViewReservations extends Component {
         super(props);
         const location = this.props.location; 
         const navigate = this.props.navigate;
+        const accessToken = this.props.accessToken
         this.state = { flightsCollection: [] };
 
     }
-   
   
     async componentDidMount() {
+      console.log("heererrrree");
       const navigate = this.props.navigate;
+      var accessToken = this.props.accessToken;
       try{
-        const location = this.props.location;
-      refreshToken = location.state.refreshToken;
-      accessToken = location.state.accessToken;
-      type = await location.state.type;
-      console.log("accessToken" + accessToken);
-      console.log("type" +type);
-      console.log("authorized: " + authorized);
-      if(authorized == false || type == 0)
-      {
-        navigate('/login');
-      }
-        
-        console.log(username + ": username in viewReservation");
-        axios.get('/reservation')
+        const location = this.props.location;   
+        axios({
+          method: "get",
+          url: "/reservation",
+          headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+        })
             .then(res => {
+                console.log(res.data);
+
                 this.setState({ flightsCollection: res.data });
             })
             .catch(function (error) {
@@ -105,11 +125,12 @@ class ViewReservations extends Component {
     }
     gotoCancelReservation(deletedReservationNumber) {
         var bodyFormData = new FormData();
+        var accessToken = this.props.accessToken;
         bodyFormData.append('ReservationNumber', deletedReservationNumber);
         axios({
             method: "delete",
             url: "/reservation",
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
             data: bodyFormData,
           })
               .then((response) => { 
@@ -119,11 +140,7 @@ class ViewReservations extends Component {
                 {this.componentDidMount() }
             })
         }
-    // deleteFlight(deletedFlightNumber) {
-    
-          
-
-        
+     
 
    
  
@@ -189,7 +206,11 @@ class ViewReservations extends Component {
                       onClick={(e) =>{ e.preventDefault();
                         if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
                             this.gotoCancelReservation(fl.ReservationNumber);
-                            axios.get('/ViewReservations')
+                            axios({
+                              method: "get",
+                              url: "/ViewReservations",
+                              headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+                            })
                             .then(res => {
                               console.log(res.data)
                       }) 
@@ -279,7 +300,11 @@ class ViewReservations extends Component {
                       onClick={(e) =>{ e.preventDefault();
                         if (window.confirm("Are you sure you want to cancel the reservation for both departure and arrival flights?")) {
                             this.gotoCancelReservation(fl.ReservationNumber);
-                            axios.get('/ViewReservations')
+                            axios({
+                              method: "get",
+                              url: "/ViewReservations",
+                              headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+                            })
                             .then(res => {
                               console.log(res.data)
                       }) 

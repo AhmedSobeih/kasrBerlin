@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
+import configData from "./config.json";
 
 import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
@@ -12,6 +13,20 @@ import {useParams,useNavigate,useLocation} from 'react-router-dom';
 export default function FlightSeats() {
     const navigate = useNavigate();
     const location = useLocation();
+    var isUser = true;
+    try{
+        var accessToken = configData.PersonalAccessToken;
+        var refreshToken = configData.PersonalRefreshToken;
+        var type = configData.Type;
+        if(accessToken == null)
+        {
+          isUser = false;
+        }
+        }
+        catch(err)
+        {
+          isUser = false;
+        }
 
     
 function confirmSeats() {
@@ -26,7 +41,7 @@ function confirmSeats() {
     axios({
         method: "delete",
         url: "/reservation",
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ configData.PersonalAccessToken },
         data: bodyFormData,
       })
     if(location.state.Type=="Departure")
