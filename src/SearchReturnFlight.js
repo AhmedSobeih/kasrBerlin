@@ -3,7 +3,6 @@ import axios from 'axios';
 import {useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
-import configData from "./config.json";
 
 var flag= false;
 
@@ -20,9 +19,9 @@ export default function(props) {
     const location = useLocation();
     var isUser = true;
     // this uses Router based states to let us access cour state
-       var accessToken = configData.PersonalAccessToken;
-       var refreshToken = configData.PersonalRefreshToken;
-       var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
        if(accessToken == null)
        {
            isUser = false;

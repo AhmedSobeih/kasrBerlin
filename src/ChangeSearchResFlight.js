@@ -4,7 +4,6 @@ import {useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 import {useLocation} from 'react-router-dom';
-import configData from "./config.json";
 
 let authorized = true;
 
@@ -21,10 +20,9 @@ export default function(props) {
     const navigate = useNavigate();
     const location = useLocation(); // this uses Router based states to let us access cour state
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      console.log(accessToken);
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(type == 0 || accessToken == null)
       {
           authorized = false;
@@ -50,6 +48,7 @@ class SearchResults extends Component {
         const location = this.props.location; 
         this.state = { flightsCollection: [], userCriteria: location.state.s, isUser: false };
         const navigate = this.props.navigate;
+        const accessToken = this.props.accessToken;
 
 
 
@@ -69,13 +68,10 @@ class SearchResults extends Component {
                 console.log(error);
             })
             
-            console.log("NNNNNNNNNNN")
-            console.log(this.state.userCriteria);
-            console.log(configData.PersonalAccessToken);
             axios({
               method: "get",
               url: "/session",
-                  headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ configData.PersonalAccessToken },
+                  headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
                 })
                     .then((response) => { 
                       if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")

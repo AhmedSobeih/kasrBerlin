@@ -5,7 +5,6 @@ import axios from 'axios';
 import {useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest.js';
-import configData from "./config.json";
 
 
 
@@ -47,9 +46,9 @@ export default function SearchFlightGuest(){
     const [ErrorMessage, setErrorMessage] = useState("");
 
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(accessToken == null)
       {
         isUser = false;
@@ -201,7 +200,7 @@ export default function SearchFlightGuest(){
   axios({
     method: "get",
     url: "/session",
-        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ configData.PersonalAccessToken },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
             if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")

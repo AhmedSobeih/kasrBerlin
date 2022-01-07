@@ -4,7 +4,6 @@ import {useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 import {useLocation} from 'react-router-dom';
-import configData from "./config.json";
 
 
 
@@ -22,9 +21,9 @@ export default function(props) {
     var isUser = true;
      // this uses Router based states to let us access cour state
     try{
-        var accessToken = configData.PersonalAccessToken;
-        var refreshToken = configData.PersonalRefreshToken;
-        var type = configData.Type;
+        var accessToken = localStorage.getItem('acessToken');
+        var refreshToken = localStorage.getItem('refreshToken');
+        var type = localStorage.getItem('type');
         if(type == 0 || accessToken == null)
         {
             navigate('/');

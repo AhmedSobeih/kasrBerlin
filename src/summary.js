@@ -9,7 +9,6 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import session from "express-session";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import configData from "./config.json";
 
 var DepartureFlight;
     var price;
@@ -47,9 +46,9 @@ if(price == null)
     ReturnFlight = location.state.returnFlight;
     isUser=true;
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(type == 0 || accessToken == null)
       {
         isUser = false;

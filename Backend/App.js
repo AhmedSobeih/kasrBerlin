@@ -992,7 +992,7 @@ app.get('/user',authenticateToken, async (req,res)=>{
     
 });
 
-app.get('/allFlights', async(req, res)=> {
+app.get('/allFlights',authenticateToken, async(req, res)=> {
  
   const u = await Flight.find();
   res.send(u);
@@ -1008,7 +1008,7 @@ app.get('/allUsers', async(req, res)=> {
 });
 
 
-app.get('/searchResults', async(req, res)=> {
+app.get('/searchResults',authenticateToken, async(req, res)=> {
  
   res.send(searchResult);
  
@@ -1092,7 +1092,7 @@ app.post('/register',async(req,res) =>{
 
 
 
-app.post("/searchFlight",(req,res)=>{
+app.post("/searchFlight",authenticateToken, (req,res)=>{
 
     
   Object.keys(req.body).forEach(key => {
@@ -1125,7 +1125,7 @@ app.post("/searchFlight",(req,res)=>{
 
 
     //For creating a flight
-    app.post("/flight",async(req,res)=>{
+    app.post("/flight",authenticateToken,async(req,res)=>{
      
       const newFlight =new Flight({
         FlightNumber:req.body.flightNumber,
@@ -1225,7 +1225,7 @@ app.post("/searchFlight",(req,res)=>{
       return newDate;
     }
 
-    app.delete('/flight/:number', (req,res)=>{
+    app.delete('/flight/:number',authenticateToken, (req,res)=>{
       const flightNumber = req.params;
       const filter = {flightNumber: flightNumber};
       Flight.findOneAndRemove(filter)
@@ -1409,7 +1409,7 @@ app.post("/searchFlight",(req,res)=>{
     });
 
 
-    app.delete('/flight/:number', (req,res)=>{
+    app.delete('/flight/:number',authenticateToken,  (req,res)=>{
       const flightNumber = req.params;
       const filter = {flightNumber: flightNumber};
       Flight.findOneAndRemove(filter)
@@ -1552,7 +1552,7 @@ app.post("/searchFlightUser", (req,res)=>{
 }).catch((err) =>  console.log(err))
   });
 
-  app.get("/flight",async(req,res)=>{
+  app.get("/flight",authenticateToken, async(req,res)=>{
     if(session.username=="")
       res.send(false);
     else

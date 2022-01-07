@@ -3,7 +3,6 @@ import axios from 'axios';
 import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import UserHome from 'UserHome';
-import configData from "./config.json";
 
 var username;
 let authorized = true;
@@ -16,10 +15,9 @@ export default function(props) {
     const user = useParams().username;
     username = user;
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      console.log(accessToken);
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(type == 0 || accessToken == null)
       {
           authorized = false;
@@ -37,34 +35,7 @@ export default function(props) {
     return <ViewReservations navigate={navigate} location={location} accessToken= {accessToken} />;
   }
 
-  function getUserName (){
-    var accessToken = configData.PersonalAccessToken;
-    // const data = { username, password}
-    var bodyFormData = new FormData();
-    console.log(configData.PersonalAccessToken);
-    bodyFormData.append('username', username);
-   axios({
-    method: "get",
-    url: "/session",
-    data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
-      })
-          .then((response) => { 
-            if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
-              {
-                authorized = false;
-              }
-            else
-            {
-              authorized = true;
-              console.log(response.data);   
-            }
-                     
-        })
-        return username;
-      }
-
-
+  
 const Anchor =({title})=>{
         return (
             <li className="nav-item">
@@ -73,6 +44,8 @@ const Anchor =({title})=>{
         </li>
         )
        };
+
+
 function MyComponent() {
         useEffect(() => {
           // Runs ONCE after initial rendering
@@ -82,13 +55,39 @@ function MyComponent() {
 class ViewReservations extends Component {
 
     constructor(props) {
+       // console.log(th)
         super(props);
         const location = this.props.location; 
         const navigate = this.props.navigate;
-        const accessToken = this.props.accessToken
+        const accessToken = this.props.accessToken;
         this.state = { flightsCollection: [] };
-
     }
+
+    getUserName (){
+      // const data = { username, password}
+      var bodyFormData = new FormData();
+      bodyFormData.append('username', username);
+     axios({
+      method: "get",
+      url: "/session",
+      data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+        })
+            .then((response) => { 
+              if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
+                {
+                  authorized = false;
+                }
+              else
+              {
+                authorized = true;
+                console.log(response.data);   
+              }
+                       
+          })
+          return username;
+        }
+    
   
     async componentDidMount() {
       console.log("heererrrree");
@@ -160,7 +159,7 @@ class ViewReservations extends Component {
             
             <div className="wrapper-users">
  {Navbar()};
- <script>{getUserName()}</script>
+ <script>{this.getUserName()}</script>
 <table class="table">
   <thead>
     <tr>

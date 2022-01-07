@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Navbar from 'Navbar';
+var authorized = true;
 
 const Anchor =({title})=>{
         return (
@@ -13,6 +14,15 @@ const Anchor =({title})=>{
        };
 export default function(props) {
     const navigate = useNavigate();
+        var accessToken = localStorage.getItem('acessToken');
+        var refreshToken = localStorage.getItem('refreshToken');
+        var type = localStorage.getItem('type');
+        
+        if(type == 1)
+        {
+            authorized = false;
+          navigate('/');
+        }
   
     return <SearchResults navigate={navigate}  />;
   }
@@ -28,9 +38,18 @@ class SearchResults extends Component {
    
 
     componentDidMount() {
-        axios.get('/searchResults')
+        
+        axios({
+            method: "get",
+            url: '/searchResults',
+            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+          })
             .then(res => {
                 console.log('HHHHHHHHHHHHHHHHHHH' + res.data);
+                if(res.data.name == "TokenExpiredError"|| res.data.name == "JsonWebTokenError" || !authorized)
+              {
+                this.props.navigate('/');
+              }
                 this.setState({ flightsCollection: res.data });
             })
             .catch(function (error) {
@@ -46,7 +65,7 @@ class SearchResults extends Component {
         axios({
             method: "delete",
             url: "/flight/" + deletedFlightNumber,
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
           })
               .then((response) => { 
                 console.log(response.data)

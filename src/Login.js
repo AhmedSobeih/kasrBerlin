@@ -5,7 +5,6 @@ import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
 import {useNavigate} from 'react-router-dom';
-import configData from "./config.json";
 
 
 import axios from 'axios';
@@ -48,9 +47,9 @@ function tryLogin (){
   headers: { "Content-Type": "multipart/form-data" },
 })
     .then((response) => { //marwan
-      configData.PersonalAccessToken = response.data.accessToken ;
-      configData.PersonalRefreshToken = response.data.refreshToken;
-      configData.Type = response.data.type;
+      localStorage.setItem('acessToken', response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('type', response.data.type) 
       
       if(response.data.state == false)
        {

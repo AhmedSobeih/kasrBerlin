@@ -5,7 +5,6 @@ import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
-import configData from "./config.json";
 
 var DepatureDate ;
 var ArrivalDate ;
@@ -71,9 +70,9 @@ export default function UpdateFlight(){
 
 
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(accessToken == null)
       {
         isUser = false;
