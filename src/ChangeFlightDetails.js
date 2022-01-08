@@ -291,7 +291,7 @@ function DoubleLabel(props){
                       method: "post",
                       url: "/returnFlight",
                       data: bodyFormData,
-                      headers: { "Content-Type": "multipart/form-data" },
+                      headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ this.props.accessToken },
                       })
                   }
                    

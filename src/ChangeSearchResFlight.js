@@ -60,7 +60,11 @@ class SearchResults extends Component {
     componentDidMount() {
        
         const location = this.props.location; // this uses Router based states to let us access cour state
-        axios.get('/searchDepResults')
+        axios({
+          method: "get",
+          url: '/searchDepResults',
+              headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+            })
             .then(res => {
                 this.setState({ flightsCollection: res.data });
             })
@@ -88,6 +92,8 @@ class SearchResults extends Component {
     gotoFlight(fl, price ,priceDifference) {
         var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
         fl.TripDuration = duration;
+        console.log(fl);
+        console.log(this.props.location.state.Type);
         this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type}})
     }
 

@@ -179,7 +179,7 @@ export default function SearchFlightGuest(){
       method: "post",
       url: "/userCriteria",
       data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data"},
+      headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken},
     })
         .then((response) => { 
           

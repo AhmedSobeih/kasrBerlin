@@ -295,7 +295,7 @@ app.get("/returnFlightSeatsEconomy", async(req,res)=>{
 
 
 
-app.post("/reserveSeats",async(req,res)=>{
+app.post("/reserveSeats",authenticateToken,async(req,res)=>{
   const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
    let reservedSeats=req.body.values.split(',');
 
@@ -369,7 +369,7 @@ app.post("/reserveSeats",async(req,res)=>{
 
 
 
-app.post("/reserveReturnSeats",async(req,res)=>{
+app.post("/reserveReturnSeats",authenticateToken,async(req,res)=>{
   const flight = await Flight.find({FlightNumber : parseInt(returnFlight.FlightNumber)});
    let reservedReturnSeats=req.body.values.split(',');
 
@@ -716,7 +716,7 @@ app.post("/changeReturnSeats",async(req,res)=>{
 
   
 })
-app.post("/setDepSeats",async(req,res)=>{
+app.post("/setDepSeats",authenticateToken,async(req,res)=>{
 
   departureFlight.seats = req.body.values.split(',');
 
@@ -893,7 +893,7 @@ app.get("/returnFlight", async(req,res)=>{
   res.send(returnFlight);
 });
 
-app.post("/returnFlight",async(req,res)=>{
+app.post("/returnFlight",authenticateToken,async(req,res)=>{
   returnFlight=req.body;
   res.send(true);
 });
@@ -946,7 +946,7 @@ app.get('/flight', (req,res)=>{
 })
 
 
-app.get('/flight/:number', async (req,res)=>{
+app.get('/flight/:number',authenticateToken, async (req,res)=>{
   const u = await Flight.find({FlightNumber : req.params.number});
 
   res.send(u[0]);
@@ -1013,7 +1013,7 @@ app.get('/searchResults',authenticateToken, async(req, res)=> {
   res.send(searchResult);
  
 });
-app.get('/searchDepResults', async(req, res)=> {
+app.get('/searchDepResults',authenticateToken, async(req, res)=> {
  
   res.send(searchDepResult);
  
@@ -1433,11 +1433,12 @@ app.get("/userCriteria", async(req,res)=>{
   res.send(userPreferredCriteria);
 });
 
-app.post("/userCriteria", async(req,res)=>{
+app.post("/userCriteria",authenticateToken, async(req,res)=>{
   
   userPreferredCriteria=req.body;
-  console.log("set ");
+  console.log("set "); //problem : marwan arrival time and date are not sent right"
   console.log(userPreferredCriteria);
+  res.send(true);
 });
 app.post("/searchFlightUser", (req,res)=>{
 

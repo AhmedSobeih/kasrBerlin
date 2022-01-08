@@ -233,7 +233,7 @@ class ViewReservations extends Component {
                         method: "post",
                         url: "/departureFlightByNumber",
                         data: bodyFormData,
-                        headers: { "Content-Type": "multipart/form-data" },
+                        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ this.props.accessToken }
                       })
                       .then((response) => { 
                         console.log("response");
@@ -256,7 +256,11 @@ class ViewReservations extends Component {
                       className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button" 
                       onClick={(e) =>{ e.preventDefault();
-                        axios.get('/flight/'+fl.DepatureFlightFlightNumber)
+                        axios({
+                          method: "get",
+                          url: '/flight/'+fl.DepatureFlightFlightNumber,
+                          headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ this.props.accessToken }
+                        })
                         .then(res => {
                           navigate('/changeSearchFlight', {state: {reservation: fl, oldFlight:res.data, Type:"Departure"} })
 

@@ -64,7 +64,7 @@ class SearchResults extends Component {
         axios({
             method: "get",
             url: '/searchDepResults',
-            headers: { "Content-Type": "multipart/form-data"},
+            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
           })
             .then(res => {
                 console.log(res.data);

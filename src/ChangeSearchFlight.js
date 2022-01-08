@@ -128,18 +128,18 @@ export default function SearchFlightGuest(){
     UserCriteria.ReturnCabinClass=CabinClass;
     bodyFormData.append('isReturnFlight', false);
    }
-    
-
+    console.log("accessToken" + accessToken);
+   //done
     axios({
       method: "post",
       url: "/userCriteria",
       data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
     })
         .then((response) => { 
           
          console.log(response.data);
-      })
+      }).catch(err => console.log(err));
   
   axios({
     method: "post",
