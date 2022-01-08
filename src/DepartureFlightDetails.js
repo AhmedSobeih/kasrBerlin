@@ -159,10 +159,11 @@ export default function UpdateFlight(){
     const CancelToken = axios.CancelToken;
     let cancel;
 
- 
+ function updateValues(){
     flag= false;
     axios.get('/flight/'+flight)
     .then(res => {
+      console.log("res is here");
       console.log(res);
       DepatureDate = dateConversion(res.data.DepatureDate);
       console.log(DepatureDate);
@@ -192,6 +193,7 @@ export default function UpdateFlight(){
       CabinClass= res.data.DepartureCabinClass;
       
     })
+  }
     
   
 
@@ -322,6 +324,8 @@ return(
 <>
 {isUser&&Navbar()};
 {!isUser&&NavbarGuest()};
+{updateValues()};
+<script>{updateValues()}</script> 
 
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
@@ -358,6 +362,7 @@ return(
                       Depature Date & Time
                     </label>
                     <div>{DepatureDate}</div>
+                    <script>{console.log(DepatureDate)}</script>
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -463,5 +468,6 @@ return(
         </div>
       </div>
     </>
+    
 );}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));
