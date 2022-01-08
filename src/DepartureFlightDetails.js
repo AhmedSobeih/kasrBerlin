@@ -5,7 +5,6 @@ import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
-import configData from "./config.json";
 
 var DepatureDate ;
 var ArrivalDate ;
@@ -47,8 +46,8 @@ export default function UpdateFlight(){
     // mongoose: ""
     //html: "2021-11-10T16:32"
 
-    if(SearchCriteria == null)
-    {
+    // if(SearchCriteria == null)
+    // {
       console.log("heeeye");
       var d = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate);
       var s = d.hour +  " Hours, " +d.min +  " Minutes";
@@ -71,9 +70,9 @@ export default function UpdateFlight(){
 
 
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(accessToken == null)
       {
         isUser = false;
@@ -164,12 +163,9 @@ export default function UpdateFlight(){
     flag= false;
     axios.get('/flight/'+flight)
     .then(res => {
-      cancelToken: new CancelToken(function executor(c) {
-        // An executor function receives a cancel function as a parameter
-        cancel = c;
-      })
-      
+      console.log(res);
       DepatureDate = dateConversion(res.data.DepatureDate);
+      console.log(DepatureDate);
       ArrivalDate= dateConversion(res.data.ArrivalDate);
       FreeEconomySeatsNum =res.data.FreeEconomySeatsNum;
       FreeBusinessSeatsNum =res.data.FreeBusinessSeatsNum;
@@ -184,9 +180,7 @@ export default function UpdateFlight(){
     if(SearchCriteria.DepartureCabinClass=="Business Class")
       FlightPrice =parseInt(res.data.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));
     if(SearchCriteria.DepartureCabinClass=="First Class")
-     FlightPrice = parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));
-
-    cancel();
+     FlightPrice = parseInt(res.data.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));    
   
     })
     .catch(function (error) {
@@ -469,5 +463,5 @@ return(
         </div>
       </div>
     </>
-);}}
+);}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));

@@ -12,6 +12,20 @@ import {useParams,useNavigate,useLocation} from 'react-router-dom';
 export default function FlightSeats() {
     const navigate = useNavigate();
     const location = useLocation();
+    var isUser = true;
+    try{
+        var accessToken = localStorage.getItem('acessToken');
+        var refreshToken = localStorage.getItem('refreshToken');
+        var type = localStorage.getItem('type');
+        if(accessToken == null)
+        {
+          isUser = false;
+        }
+        }
+        catch(err)
+        {
+          isUser = false;
+        }
 
     
 function confirmSeats() {
@@ -23,15 +37,20 @@ function confirmSeats() {
     });
     var bodyFormData = new FormData();
     bodyFormData.append('ReservationNumber', location.state.reservation.ReservationNumber);
+     //done
     axios({
         method: "delete",
         url: "/reservation",
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
         data: bodyFormData,
       })
-    if(location.state.Type=="Departure")
-    {
-        axios.get('/flight/'+ location.state.reservation.ArrivalFlightFlightNumber)
+    if(location.state.Type=="Arival")
+    {//done
+        axios({
+            method: "get",
+            url: '/flight/'+ location.state.reservation.ArrivalFlightFlightNumber,
+            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+          })
         .then((res)=>{
         var returnPrice =0;
         if(location.state.reservation.ReturnCabinClass == "Economy Class")
@@ -60,12 +79,12 @@ function confirmSeats() {
 
 
       
-      
+      //done
       axios({
         method: "post",
         url: "/returnFlight",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
       })
 
     //   axios({
@@ -76,24 +95,24 @@ function confirmSeats() {
     //   })
       var bodyFormData3 = new FormData();
       bodyFormData3.append('values',  values);
-
+      //done
       axios({
         method: "post",
         url: "/setDepSeats",
         data: bodyFormData3,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
       
       
       var bodyFormData2 = new FormData();
       bodyFormData2.append('values', values);
       console.log(values);
-      
+      //done
       axios({
         method: "post",
         url: "/reserveSeats",
         data: bodyFormData2,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
             
@@ -106,7 +125,7 @@ function confirmSeats() {
         method: "post",
         url: "/reserveReturnSeats",
         data: bodyFormData2,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
           

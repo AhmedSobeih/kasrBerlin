@@ -5,7 +5,6 @@ import axios from 'axios';
 import {useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest.js';
-import configData from "./config.json";
 
 
 const Anchor =({title})=>{
@@ -31,9 +30,9 @@ export default function SearchFlightGuest(){
 
     const navigate = useNavigate();
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(type == 0)
       {
         navigate('/');
@@ -180,7 +179,7 @@ export default function SearchFlightGuest(){
       method: "post",
       url: "/userCriteria",
       data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data"},
+      headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken},
     })
         .then((response) => { 
           

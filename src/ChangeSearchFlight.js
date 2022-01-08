@@ -7,6 +7,7 @@ import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest.js';
 
 
+
 const Anchor =({title})=>{
         return (
             <li className="nav-item">
@@ -17,6 +18,7 @@ const Anchor =({title})=>{
        };
 
 export default function SearchFlightGuest(){
+    console.log("here");
 
     const [DepartureDateVisibility, setDepartureDateVisibility] = useState(true);
     const [ArrivalDateVisibility, setArrivalDateVisibility] = useState(true);
@@ -42,6 +44,20 @@ export default function SearchFlightGuest(){
 
    
     const [ErrorMessage, setErrorMessage] = useState("");
+
+    try{
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
+      if(accessToken == null)
+      {
+        isUser = false;
+      }
+      }
+      catch(err)
+      {
+        isUser = false;
+      }
 
 
     
@@ -112,18 +128,18 @@ export default function SearchFlightGuest(){
     UserCriteria.ReturnCabinClass=CabinClass;
     bodyFormData.append('isReturnFlight', false);
    }
-    
-
+    console.log("accessToken" + accessToken);
+   //done
     axios({
       method: "post",
       url: "/userCriteria",
       data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
     })
         .then((response) => { 
           
          console.log(response.data);
-      })
+      }).catch(err => console.log(err));
   
   axios({
     method: "post",
@@ -181,13 +197,22 @@ export default function SearchFlightGuest(){
     setCabinClass(document.getElementById("CabinClass").value);
     console.log(CabinClass);
   }
-    axios.get('/session')
-    .then(res => {
-      if(res.data==false)
-        setIsUser(false);
-      else
-        setIsUser(true);
-    })
+  axios({
+    method: "get",
+    url: "/session",
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+      })
+          .then((response) => { 
+            if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
+              {
+                setIsUser(false);
+              }
+            else
+            {
+              setIsUser(true);
+              console.log(response.data);   
+            }
+});
   
 
 

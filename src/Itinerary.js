@@ -4,8 +4,12 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
-
 var flag = true;
+var DepartureFlight= "";
+
+var ReturnFlight = "";
+var ReservationNumber;
+var isUser = true;
 
 const Anchor =({title})=>{
         return (
@@ -21,15 +25,21 @@ export default function Itinerary(){
     let {flight} = useParams(); 
     const navigate = useNavigate();
 
-   
-    //problem will occur in the conversion between mongoose and html in date conversion
-    // mongoose: ""
-    //html: "2021-11-10T16:32"
-    const [DepartureFlight, setDepartureFlight] = useState("");
-
-    const [ReturnFlight, setReturnFlight] = useState("");
-    const [isUser, setIsUser] = useState({});
-    const [ReservationNumber, setReservationNumber] = useState("");
+  ReservationNumber= "";
+    try{
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
+      if(type == 0 || accessToken == null)
+      {
+        isUser = false;
+      }
+      }
+      catch(err)
+      {
+        isUser = false;
+      }
+  
 
     
 
@@ -51,7 +61,7 @@ export default function Itinerary(){
           cancel = c;
         })
         
-        setReservationNumber(res.data);
+        ReservationNumber = res.data ;
      
 
 
@@ -71,7 +81,7 @@ export default function Itinerary(){
           cancel = c;
         })
         
-        setDepartureFlight(res.data);
+        DepartureFlight = res.data ;
      
 
 
@@ -87,7 +97,7 @@ export default function Itinerary(){
           cancel = c;
         })
         
-        setReturnFlight(res.data);
+        ReturnFlight = res.data ;
      
 
 
@@ -95,15 +105,7 @@ export default function Itinerary(){
       .catch(function (error) {
           console.log(error);
       })
-      axios.get('/session')
-      .then(res => {
-        if(res.data==false)
-          setIsUser(false);
-        else
-          setIsUser(true);
-      })
- 
-     
+   
   
 
 function dateConversion(date){

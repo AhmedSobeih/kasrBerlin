@@ -6,6 +6,9 @@ import {useParams,useNavigate} from 'react-router-dom';
 import Navbar from 'Navbar';
 
 var flag = true;
+var authorized = true;
+
+  
 
 const Anchor =({title})=>{
         return (
@@ -17,6 +20,20 @@ const Anchor =({title})=>{
        };
 
 export default function UpdateFlight(){
+  try{
+    var accessToken = localStorage.getItem('acessToken');
+    var refreshToken = localStorage.getItem('refreshToken');
+    var type = localStorage.getItem('type');
+    
+    if(type == 1)
+    {
+      authorized = false;
+    }
+    }
+    catch(err)
+    {
+      authorized = false;
+    }
 
     let {flight} = useParams(); 
     const navigate = useNavigate();
@@ -38,9 +55,15 @@ export default function UpdateFlight(){
   if(ArrivalAirport == "")
   {
     flag= false;
-    console.log(1);
-    axios.get('/flight/'+flight)
-    .then(res => {
+    axios({
+      method: "get",
+      url: '/flight/'+flight,
+      headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+accessToken },
+    }).then(res => {
+      if(res.data.name == "TokenExpiredError"|| res.data.name == "JsonWebTokenError" || !authorized)
+              {
+                navigate('/');
+              }
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter
         cancel = c;

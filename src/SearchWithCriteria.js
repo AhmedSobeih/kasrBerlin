@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Navbar from 'Navbar';
+var authorized = true;
 
 const Anchor =({title})=>{
         return (
@@ -15,6 +16,16 @@ const Anchor =({title})=>{
        };
 
 export default function SearchWithCriteria(){
+
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
+      
+      if(type == 1)
+      {
+        authorized = false;
+      }
+      
     const [flightNumberVisibility, setFlightNumberVisibility] = useState(true);
     const [DepartureDateVisibility, setDepartureDateVisibility] = useState(true);
     const [ArrivalDateVisibility, setArrivalDateVisibility] = useState(true);
@@ -114,7 +125,7 @@ export default function SearchWithCriteria(){
     method: "post",
     url: "/searchFlight",
     data: bodyFormData,
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+accessToken },
   })
       .then((response) => { 
         console.log(response.data)
@@ -165,7 +176,31 @@ export default function SearchWithCriteria(){
     setArrivalAirport(text.target.value);
     console.log(ArrivalAirport);
   }
+  var username;
+  function getUserName (){
+    console.log(authorized);
+    // const data = { username, password}
+    var bodyFormData = new FormData();
+    bodyFormData.append('username', username);
   
+   axios({
+    method: "get",
+    url: "/session",
+    data: bodyFormData,
+    headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+  })
+      .then((response) => { 
+        if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError" || !authorized)
+          {
+            navigate('/');
+          }
+        else
+        { 
+        }
+                 
+    })
+    return username;
+  }
  
 
 return(
@@ -173,6 +208,7 @@ return(
 
 <>
 {Navbar()};
+<script>{getUserName()}</script>
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">

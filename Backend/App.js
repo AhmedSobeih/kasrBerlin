@@ -90,6 +90,9 @@ const oAuth2Client = new google.auth.OAuth2(
 
 ///authServer
 
+//edits for encryption
+const bcrypt = require('bcrypt')
+
 
 let refreshTokens = []
 
@@ -109,18 +112,16 @@ app.delete('/logout', (req, res) => {
   res.sendStatus(204)
 })
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   // Authenticate User
     var result = { state: false, type : 1 };
     const username = req.body.username
-    Users.find({username:req.body.username, password:req.body.password})
-  .then((user)=>{ 
-      if(user.length == 0)
-      {
-          res.send(result);
-      }
-      else
-      {
+    Users.find({username:req.body.username})
+  .then(async (user)=>{
+    var condition = await bcrypt.compare(req.body.password, user[0].password);
+  if(condition)
+    {
+        
         const userr = {name: username}
 
         const accessToken = generateAccessToken(userr)
@@ -133,7 +134,11 @@ app.post('/login', (req, res) => {
         
         // res.send(result);
         // console.log(result);
-      }
+    }
+    else
+    {
+      res.send(result);
+    }
       //we need to create a session
   }).catch((err) => console.log(err));
 })
@@ -155,7 +160,8 @@ app.get("/totalPrice",async(req,res)=>{
 });
 
 //stripe post request
-app.post("/stripe/charge", cors(), async (req, res) => {
+app.post("/stripe/charge",cors(),authenticateToken, async (req, res) => {
+  console.log(req.user.name);
   console.log("stripe-routes.js 9 | route reached", req.body);
   let {amount,id} = req.body;
   console.log("stripe-routes.js 10 | amount and id", amount,id);
@@ -222,6 +228,7 @@ sendMail()
 
 //returns the username of the session
 app.get("/session", authenticateToken, async(req,res)=>{
+  console.log(req.user.name);
   res.send(req.user.name);
 });
 
@@ -244,16 +251,6 @@ app.get("/newAdmin",async(req,res)=>{
     res.send(admin)
 });
 
-
-
-
-//returns the username of the session
-app.get("/session",async(req,res)=>{
-  if(session.username==undefined)
-    res.send(false);
-  else
-    res.send(session.username);
-});
 
 
 
@@ -298,7 +295,7 @@ app.get("/returnFlightSeatsEconomy", async(req,res)=>{
 
 
 
-app.post("/reserveSeats",async(req,res)=>{
+app.post("/reserveSeats",authenticateToken,async(req,res)=>{
   const flight = await Flight.find({FlightNumber : parseInt(departureFlight.FlightNumber)});
    let reservedSeats=req.body.values.split(',');
 
@@ -372,7 +369,7 @@ app.post("/reserveSeats",async(req,res)=>{
 
 
 
-app.post("/reserveReturnSeats",async(req,res)=>{
+app.post("/reserveReturnSeats",authenticateToken,async(req,res)=>{
   const flight = await Flight.find({FlightNumber : parseInt(returnFlight.FlightNumber)});
    let reservedReturnSeats=req.body.values.split(',');
 
@@ -719,7 +716,7 @@ app.post("/changeReturnSeats",async(req,res)=>{
 
   
 })
-app.post("/setDepSeats",async(req,res)=>{
+app.post("/setDepSeats",authenticateToken,async(req,res)=>{
 
   departureFlight.seats = req.body.values.split(',');
 
@@ -732,6 +729,8 @@ app.post("/setReturnSeats",async(req,res)=>{
 })
 
 app.post("/departureFlight",async(req,res)=>{
+  console.log("departureFlight: ");
+  console.log(req.body);
 
   departureFlight=req.body;
   res.send(true);
@@ -894,7 +893,7 @@ app.get("/returnFlight", async(req,res)=>{
   res.send(returnFlight);
 });
 
-app.post("/returnFlight",async(req,res)=>{
+app.post("/returnFlight",authenticateToken,async(req,res)=>{
   returnFlight=req.body;
   res.send(true);
 });
@@ -947,15 +946,15 @@ app.get('/flight', (req,res)=>{
 })
 
 
-app.get('/flight/:number', async (req,res)=>{
+app.get('/flight/:number',authenticateToken, async (req,res)=>{
   const u = await Flight.find({FlightNumber : req.params.number});
 
   res.send(u[0]);
     
 });
 
-app.get('/reservation', async (req,res)=>{
-  const u = await Reservation.find({User : session.username});
+app.get('/reservation',authenticateToken, async (req,res)=>{
+  const u = await Reservation.find({User : req.user.name});
   const result = [];
   for(let i=0 ; i<u.length;i++)
   {
@@ -993,7 +992,7 @@ app.get('/user',authenticateToken, async (req,res)=>{
     
 });
 
-app.get('/allFlights', async(req, res)=> {
+app.get('/allFlights',authenticateToken, async(req, res)=> {
  
   const u = await Flight.find();
   res.send(u);
@@ -1009,12 +1008,12 @@ app.get('/allUsers', async(req, res)=> {
 });
 
 
-app.get('/searchResults', async(req, res)=> {
+app.get('/searchResults',authenticateToken, async(req, res)=> {
  
   res.send(searchResult);
  
 });
-app.get('/searchDepResults', async(req, res)=> {
+app.get('/searchDepResults',authenticateToken, async(req, res)=> {
  
   res.send(searchDepResult);
  
@@ -1064,7 +1063,6 @@ function authenticateToken(req,res,next){
     next();
   })
 }
-
 // for creating a new user (not completed yet)
 app.post('/register',async(req,res) =>{
       const newUser =new Users({
@@ -1075,7 +1073,7 @@ app.post('/register',async(req,res) =>{
         email: req.body.email ,
         passportNumber: req.body.passportNumber,
         username: req.body.username,
-        password: req.body.password,
+        password: await bcrypt.hash(req.body.password, 10),
         type : 1,
         flightsReserved : [],
         flightsReservedDetails : []
@@ -1094,7 +1092,7 @@ app.post('/register',async(req,res) =>{
 
 
 
-app.post("/searchFlight",(req,res)=>{
+app.post("/searchFlight",authenticateToken, (req,res)=>{
 
     
   Object.keys(req.body).forEach(key => {
@@ -1127,7 +1125,7 @@ app.post("/searchFlight",(req,res)=>{
 
 
     //For creating a flight
-    app.post("/flight",async(req,res)=>{
+    app.post("/flight",authenticateToken,async(req,res)=>{
      
       const newFlight =new Flight({
         FlightNumber:req.body.flightNumber,
@@ -1227,7 +1225,7 @@ app.post("/searchFlight",(req,res)=>{
       return newDate;
     }
 
-    app.delete('/flight/:number', (req,res)=>{
+    app.delete('/flight/:number',authenticateToken, (req,res)=>{
       const flightNumber = req.params;
       const filter = {flightNumber: flightNumber};
       Flight.findOneAndRemove(filter)
@@ -1237,9 +1235,9 @@ app.post("/searchFlight",(req,res)=>{
         
     });
 
-    app.delete('/reservation',async (req,res)=>{
+    app.delete('/reservation',authenticateToken, async (req,res)=>{
       reservationToBeDeleted=parseInt(req.body.ReservationNumber);
-      const flightReserved= await Reservation.find({username : session.username ,ReservationNumber:reservationToBeDeleted});
+      const flightReserved= await Reservation.find({username : req.user.name ,ReservationNumber:reservationToBeDeleted});
       refundedPrice=flightReserved[0].Price;  
       var deletedReservation = {};
       Reservation.findOneAndRemove(req.body)
@@ -1411,7 +1409,7 @@ app.post("/searchFlight",(req,res)=>{
     });
 
 
-    app.delete('/flight/:number', (req,res)=>{
+    app.delete('/flight/:number',authenticateToken,  (req,res)=>{
       const flightNumber = req.params;
       const filter = {flightNumber: flightNumber};
       Flight.findOneAndRemove(filter)
@@ -1435,11 +1433,12 @@ app.get("/userCriteria", async(req,res)=>{
   res.send(userPreferredCriteria);
 });
 
-app.post("/userCriteria", async(req,res)=>{
+app.post("/userCriteria",authenticateToken, async(req,res)=>{
   
   userPreferredCriteria=req.body;
-  console.log("set ");
+  console.log("set "); //problem : marwan arrival time and date are not sent right"
   console.log(userPreferredCriteria);
+  res.send(true);
 });
 app.post("/searchFlightUser", (req,res)=>{
 
@@ -1554,7 +1553,7 @@ app.post("/searchFlightUser", (req,res)=>{
 }).catch((err) =>  console.log(err))
   });
 
-  app.get("/flight",async(req,res)=>{
+  app.get("/flight",authenticateToken, async(req,res)=>{
     if(session.username=="")
       res.send(false);
     else

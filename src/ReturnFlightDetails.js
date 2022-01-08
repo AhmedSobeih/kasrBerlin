@@ -5,7 +5,6 @@ import axios from 'axios';
 import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
-import configData from "./config.json";
 var FlightCreated;
     var FlightNumber;
     var SearchCriteria;
@@ -51,9 +50,9 @@ if(SearchCriteria == null)
     isUser= true ;
 
     try{
-      var accessToken = configData.PersonalAccessToken;
-      var refreshToken = configData.PersonalRefreshToken;
-      var type = configData.Type;
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
       if(accessToken == null)
       {
         isUser = false;
@@ -170,7 +169,7 @@ function showDepartureFlight(e)  {
         method: "post",
         url: "/returnFlight",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
             console.log(response.data);

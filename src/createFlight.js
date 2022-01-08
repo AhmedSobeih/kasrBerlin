@@ -4,6 +4,24 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Navbar from 'Navbar';
+var authorized = true;
+
+    try{
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
+      
+      if(type == 1)
+      {
+        authorized = false;
+      }
+      }
+      catch(err)
+      {
+        console.log(1);
+        authorized = false;
+      }
+
 
 const Anchor =({title})=>{
         return (
@@ -36,6 +54,21 @@ export default function CreateFlight(){
 
 
     const navigate = useNavigate();
+
+    try{
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
+      
+      if(type == 1)
+      {
+        navigate('/');
+      }
+      }
+      catch(err)
+      {
+        navigate('/');
+      }
 
 
 function Label(props){
@@ -77,8 +110,7 @@ function DoubleLabel(props){
     );
 }
 function createFlight (){
-    console.log(1);
-
+    
     var bodyFormData = new FormData();
     bodyFormData.append('flightNumber', flightNumber);
     bodyFormData.append('depatureTime', depatureTime);
@@ -102,10 +134,14 @@ function createFlight (){
     method: "post",
     url: "/flight",
     data: bodyFormData,
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { "Content-Type": "multipart/form-data","Authorization":"Bearer "+ accessToken},
   })
       .then((response) => { 
         console.log(response.data)
+        if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError" || !authorized)
+              {
+                navigate('/');
+              }
         if(response.data==false)
           setFlightCreated('Invalid username or password!');
         else
@@ -168,6 +204,31 @@ function createFlight (){
     setBaggageAllowance(number.target.value);
     console.log(baggageAllowance);
   }
+  var username;
+  function getUserName (){
+    console.log(authorized);
+    // const data = { username, password}
+    var bodyFormData = new FormData();
+    bodyFormData.append('username', username);
+  
+   axios({
+    method: "get",
+    url: "/session",
+    data: bodyFormData,
+    headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+  })
+      .then((response) => { 
+        if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError" || !authorized)
+          {
+            navigate('/');
+          }
+        else
+        { 
+        }
+                 
+    })
+    return username;
+  }
   
 
   
@@ -176,6 +237,7 @@ return(
 
 <>
 {Navbar()};
+<script>{getUserName()}</script>
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-8/12 px-4">

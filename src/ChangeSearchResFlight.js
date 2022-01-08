@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 import {useLocation} from 'react-router-dom';
 
+let authorized = true;
 
 
 const Anchor =({title})=>{
@@ -18,8 +19,26 @@ const Anchor =({title})=>{
 export default function(props) {
     const navigate = useNavigate();
     const location = useLocation(); // this uses Router based states to let us access cour state
+    try{
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
+      if(type == 0 || accessToken == null)
+      {
+          authorized = false;
+      }
+      }
+      catch(err)
+      {
+          authorized = false;
+      }
 
-    return <SearchResults navigate={navigate} location={location}  />;
+      useEffect(() => {
+        if(authorized == false)
+          navigate("/");
+      }, [authorized]);
+
+    return <SearchResults navigate={navigate} location={location} accessToken= {accessToken}  />;
   }
 
 class SearchResults extends Component {
@@ -29,6 +48,7 @@ class SearchResults extends Component {
         const location = this.props.location; 
         this.state = { flightsCollection: [], userCriteria: location.state.s, isUser: false };
         const navigate = this.props.navigate;
+        const accessToken = this.props.accessToken;
 
 
 
@@ -40,7 +60,11 @@ class SearchResults extends Component {
     componentDidMount() {
        
         const location = this.props.location; // this uses Router based states to let us access cour state
-        axios.get('/searchDepResults')
+        axios({
+          method: "get",
+          url: '/searchDepResults',
+              headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+            })
             .then(res => {
                 this.setState({ flightsCollection: res.data });
             })
@@ -48,23 +72,28 @@ class SearchResults extends Component {
                 console.log(error);
             })
             
-            console.log("NNNNNNNNNNN")
-            console.log(this.state.userCriteria);
-           axios.get('/session')
-            .then(res => {
-              if(res.data==false)
-                this.setState({isUser:false});
-              else
-              this.setState({isUser:true});
-            })
-    .catch(function (error) {
-        console.log(error);
-    })
-    }
+            axios({
+              method: "get",
+              url: "/session",
+                  headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+                })
+                    .then((response) => { 
+                      if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
+                        {
+                          authorized = false;
+                        }
+                      else
+                      {
+                        authorized = true;
+                        console.log(response.data);   
+                      }
+    });}
     
     gotoFlight(fl, price ,priceDifference) {
         var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
         fl.TripDuration = duration;
+        console.log(fl);
+        console.log(this.props.location.state.Type);
         this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type}})
     }
 
