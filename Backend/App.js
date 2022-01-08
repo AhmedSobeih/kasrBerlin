@@ -946,7 +946,7 @@ app.get('/flight', (req,res)=>{
 })
 
 
-app.get('/flight/:number',authenticateToken, async (req,res)=>{
+app.get('/flight/:number', async (req,res)=>{
   const u = await Flight.find({FlightNumber : req.params.number});
 
   res.send(u[0]);
