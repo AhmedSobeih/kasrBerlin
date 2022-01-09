@@ -132,7 +132,11 @@ function confirmSeats() {
             console.log(response.data)
     
         })
-        axios.get('/reserveFlight')      
+        axios({
+            method: "get",
+            url: '/reserveFlight',
+            headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
+          })    
         
     })
    
@@ -201,7 +205,7 @@ function confirmSeats() {
         method: "post",
         url: "/reserveSeats",
         data: bodyFormData2,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
             
@@ -214,18 +218,24 @@ function confirmSeats() {
         method: "post",
         url: "/reserveReturnSeats",
         data: bodyFormData2,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
           
             console.log(response.data)
     
         })
-        axios.get('/reserveFlight')      
+        axios({
+            method: "get",
+            url: '/reserveFlight',
+            headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
+          }).then(()=>{
+            navigate('/Itinerary');
+          })         
         
     })  
     }
-        navigate('/Itinerary');
+       
 
 
 

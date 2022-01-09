@@ -21,6 +21,7 @@ const Anchor =({title})=>{
        };
 
 export default function Itinerary(){
+  console.log("hereee");
 
     let {flight} = useParams(); 
     const navigate = useNavigate();
@@ -53,7 +54,7 @@ export default function Itinerary(){
    
 
 
-
+    console.log("hereee2");
      axios.get('/reservationNumber')
      .then(res => {
         cancelToken: new CancelToken(function executor(c) {
@@ -72,6 +73,7 @@ export default function Itinerary(){
 
 
 
+      console.log("hereee3");
 
 
       axios.get('/departureFlight')
