@@ -153,7 +153,7 @@ function dateConversion(date){
   }
   
   
-return(DepartureFlight&&ReturnFlight &&
+return(
 
 
 <>
