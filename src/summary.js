@@ -102,15 +102,20 @@ if(price == null)
             console.log(response.data)
     
         })
+        axios.get('/reservationNumber')
+        .then((res) => {
+                    
+           var ReservationNumber = res.data ;
+           navigate('/Itinerary', {state: {reservationNumber: ReservationNumber}});
+   
+   
+         })
+         .catch(function (error) {
+             console.log(error);
+         })
        
 
 
-
-
-
-
-        
-        navigate('/Itinerary');
 
       }
     }
