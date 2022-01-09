@@ -90,11 +90,41 @@ class SearchResults extends Component {
     });}
     
     gotoFlight(fl, price ,priceDifference) {
-        var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
+        if(this.props.location.state.Type=="Departure")
+        {
+          var bodyFormData = new FormData();
+          bodyFormData.append('flightNumber', fl.FlightNumber);
+          axios({
+            method: "post",
+            url: "/departureFlightByNumber",
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+          .then(()=>{
+            var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
         fl.TripDuration = duration;
-        console.log(fl);
-        console.log(this.props.location.state.Type);
         this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type}})
+
+          })
+        }
+        else
+        {
+          let bodyFormData = new FormData();
+          bodyFormData.append('flightNumber', fl.FlightNumber);
+          axios({
+            method: "post",
+            url: "/returnFlightByNumber",
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data"},
+          }).then(()=>{
+            var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
+        fl.TripDuration = duration;
+        this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type}})
+
+          })
+
+        }
+        
     }
 
     getPrice(fl){

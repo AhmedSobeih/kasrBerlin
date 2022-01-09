@@ -5,14 +5,12 @@ import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { CardElement, useStripe, useElements,Elements } from "@stripe/react-stripe-js";
 import session from "express-session";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
 import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
-
 
 const stripeTestPromise = loadStripe(process.env.REACT_APP_PUBLIC_KEY);
 
@@ -51,7 +49,7 @@ function confirmSeats() {
         headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
         data: bodyFormData,
       })
-    if(location.state.Type=="Arival")
+    if(location.state.Type=="Departure")
     {//done
         axios({
             method: "get",
@@ -492,7 +490,6 @@ const Subscriptions=({plan})=>{
     const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
 
 
-
     if(location.state.Type=="Departure")
     {
          axios.get('/flightSeatsFirst')
@@ -516,15 +513,17 @@ const Subscriptions=({plan})=>{
         axios.get('/returnFlightSeatsFirst')
         .then(res => {
           setSeatsFirst(res.data);
-        });
-        axios.get('/returnFlightSeatsBusiness')
-        .then(res => {
-          setSeatsBusiness(res.data);
-        });
+          axios.get('/returnFlightSeatsBusiness')
+          .then(res => {
+            setSeatsBusiness(res.data);
+            
          axios.get('/returnFlightSeatsEconomy')
-        .then(res => {
-          setSeatsEconomy(res.data);
+         .then(res => {
+           setSeatsEconomy(res.data);
+         });
+          });
         });
+       
     }
 
 
@@ -533,7 +532,7 @@ const Subscriptions=({plan})=>{
 
 
 
-    <div>
+    <>
        
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container px-5">
@@ -655,7 +654,7 @@ const Subscriptions=({plan})=>{
                  </Elements>}
                  {!isUser&&<h1>Sorry you must login first To reserve and pay</h1>}
         
-   </div>
+   </>
    
   );
 }
