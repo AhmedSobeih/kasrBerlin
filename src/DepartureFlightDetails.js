@@ -6,25 +6,25 @@ import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 
-var DepatureDate ;
-var ArrivalDate ;
-var FreeEconomySeatsNum ;
-var FreeBusinessSeatsNum ;
-var FreeFirstSeatsNum ;
+var DepatureDate ="";
+var ArrivalDate ="";
+var FreeEconomySeatsNum="" ;
+var FreeBusinessSeatsNum ="";
+var FreeFirstSeatsNum ="";
 
-var DepatureAirport;
-var ArrivalAirport ;
-var TripDuration;
-var CabinClass;
-var BaggageAllowance;
-var FlightPrice;
-var DepartureFlight;
-var SearchCriteria;
-var isUser;
-var ErrorMessage ;
+var DepatureAirport="";
+var ArrivalAirport="" ;
+var TripDuration="";
+var CabinClass="";
+var BaggageAllowance="";
+var FlightPrice=0;
+var DepartureFlight={};
+var SearchCriteria={};
+var isUser=true;
+var ErrorMessage="" ;
 
 
-var flag = true;
+var flag = false;
 
 const Anchor =({title})=>{
         return (
@@ -35,7 +35,7 @@ const Anchor =({title})=>{
         )
        };
 
-export default function UpdateFlight(){
+ export default function DepatureFlightFetails(){
     console.log("hereeee");
     let {flight} = useParams(); 
     const navigate = useNavigate();
@@ -52,22 +52,7 @@ export default function UpdateFlight(){
       var d = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate);
       var s = d.hour +  " Hours, " +d.min +  " Minutes";
       TripDuration= s;
-      DepatureDate = "";
-        ArrivalDate = "";
-        FreeEconomySeatsNum = "";
-    FreeBusinessSeatsNum = "";
-    FreeFirstSeatsNum = "";
-
-     DepatureAirport= "";
-     ArrivalAirport = "";
-     CabinClass="";
-     BaggageAllowance = "";
-     FlightPrice= 0;
-     DepartureFlight ={};
-     SearchCriteria ={};
-     isUser= true;
-     ErrorMessage = "";
-
+     updateFlight();
 
     try{
       var accessToken = localStorage.getItem('acessToken');
@@ -159,11 +144,12 @@ export default function UpdateFlight(){
     const CancelToken = axios.CancelToken;
     let cancel;
 
- function updateValues(){
-    flag= false;
-    axios.get('/flight/'+flight)
+async function updateFlight()
+{
+
+    flag= true;
+    await axios.get('/flight/'+flight)
     .then(res => {
-      console.log("res is here");
       console.log(res);
       DepatureDate = dateConversion(res.data.DepatureDate);
       console.log(DepatureDate);
@@ -187,14 +173,13 @@ export default function UpdateFlight(){
     .catch(function (error) {
         console.log(error);
     })
-    axios.get('/userCriteria')
+    await axios.get('/userCriteria')
     .then(res => {
       SearchCriteria = res.data;
       CabinClass= res.data.DepartureCabinClass;
       
     })
   }
-    
   
 
 function dateConversion(date){
@@ -317,15 +302,14 @@ function DoubleLabel(props){
           }
         )
       }
-  
+
+      
 return(
 
 
 <>
 {isUser&&Navbar()};
 {!isUser&&NavbarGuest()};
-{updateValues()};
-<script>{updateValues()}</script> 
 
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
@@ -362,7 +346,7 @@ return(
                       Depature Date & Time
                     </label>
                     <div>{DepatureDate}</div>
-                    <script>{console.log(DepatureDate)}</script>
+                    <script>{console.log(DepatureDate)};</script>
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -468,6 +452,5 @@ return(
         </div>
       </div>
     </>
-    
 );}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));
