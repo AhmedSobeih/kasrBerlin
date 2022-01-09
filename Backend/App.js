@@ -276,6 +276,8 @@ app.get("/flightSeatsEconomy", async(req,res)=>{
 
 
 app.get("/returnFlightSeatsFirst", async(req,res)=>{
+ 
+
   const returnFl = await Flight.find({FlightNumber : parseInt(returnFlight.FlightNumber)});
   let seats=returnFl[0].IsFirstSeatBusy;
    res.status(200).json(seats);
@@ -747,12 +749,17 @@ app.post("/departureFlightByNumber",async(req,res)=>{
   });
 
 app.post("/returnFlightByNumber",async(req,res)=>{
-
+ 
     var returnFlightNumber=parseInt(req.body.flightNumber);
+    console.log(returnFlightNumber);
+
     var flights = await Flight.find({FlightNumber : returnFlightNumber});
+    console.log("Success");
     returnFlight = flights[0];
     userPreferredCriteria={ReturnCabinClass: req.body.CabinClass};
     res.send(returnFlight);
+    console.log("Problem Here2")
+  console.log(returnFlight);
 });
 
   
