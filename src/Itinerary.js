@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {useParams,useNavigate} from 'react-router-dom';
+import {useParams,useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 var flag = true;
 var DepartureFlight= "";
@@ -25,8 +25,15 @@ export default function Itinerary(){
 
     let {flight} = useParams(); 
     const navigate = useNavigate();
+    const location = useLocation();
+    try
+    {
+      ReservationNumber= location.state.reservationNumber;
+    }
+    catch(err)
+    {
 
-  ReservationNumber= "";
+    }
     try{
       var accessToken = localStorage.getItem('acessToken');
       var refreshToken = localStorage.getItem('refreshToken');
@@ -55,21 +62,21 @@ export default function Itinerary(){
 
 
     console.log("hereee2");
-     axios.get('/reservationNumber')
-     .then(res => {
-        cancelToken: new CancelToken(function executor(c) {
-          // An executor function receives a cancel function as a parameter
-          cancel = c;
-        })
+    //  axios.get('/reservationNumber')
+    //  .then(res => {
+    //     cancelToken: new CancelToken(function executor(c) {
+    //       // An executor function receives a cancel function as a parameter
+    //       cancel = c;
+    //     })
         
-        ReservationNumber = res.data ;
+    //     ReservationNumber = res.data ;
      
 
 
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
+    //   })
+    //   .catch(function (error) {
+    //       console.log(error);
+    //   })
 
 
 
