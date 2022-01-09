@@ -716,7 +716,7 @@ app.post("/changeReturnSeats",async(req,res)=>{
 
   
 })
-app.post("/setDepSeats",authenticateToken,async(req,res)=>{
+app.post("/setDepSeats",async(req,res)=>{
 
   departureFlight.seats = req.body.values.split(',');
 
