@@ -82,7 +82,7 @@ if(price == null)
         method: "post",
         url: "/reserveSeats",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken }
       })
           .then((response) => { 
             
@@ -95,7 +95,7 @@ if(price == null)
         method: "post",
         url: "/reserveReturnSeats",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken }
       })
           .then((response) => { 
           
