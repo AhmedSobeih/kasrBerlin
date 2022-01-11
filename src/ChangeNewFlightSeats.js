@@ -533,7 +533,7 @@ const Subscriptions=({plan})=>{
 
 
 
-    <div>
+    <>
        
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container px-5">
@@ -655,9 +655,12 @@ const Subscriptions=({plan})=>{
                  </Elements>}
                  {!isUser&&<h1>Sorry you must login first To reserve and pay</h1>}
         
-   </div>
+   </>
    
   );
+
+
+
 }
 
 
