@@ -1,23 +1,78 @@
-import React, {useState,useEffect} from "react";
+import React, {useState} from "react";
 
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
-import { CardElement, useStripe, useElements,Elements } from "@stripe/react-stripe-js";
-import session from "express-session";
-import { loadStripe } from "@stripe/stripe-js";
 import './css/styles.css';
 import './assets/styles/index.css';
 import './assets/styles/tailwind.css';
-
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import session from "express-session";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+var flag=false;
 const stripeTestPromise = loadStripe(process.env.REACT_APP_PUBLIC_KEY);
 
 export default function FlightSeats() {
+
+  //location.state.priceDifference
+
+     console.log("hoho")
+     
     const navigate = useNavigate();
     const location = useLocation();
+
     var isUser = true;
+
+        const [SeatsFirst, setSeatsFirst] = useState([]);
+    const [SeatsBusiness, setSeatsBusiness] = useState([]);
+    const [SeatsEconomy, setSeatsEconomy] = useState([]);
+    const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
+
+
+    console.log((parseInt(location.state.priceDifference)))
+
+
+  if(flag==false){
+    if(location.state.Type=="Departure")
+    {
+         axios.get('/flightSeatsFirst')
+    .then(res => {
+      setSeatsFirst(res.data);
+      
+    });
+    axios.get('/flightSeatsBusiness')
+    .then(res => {
+      setSeatsBusiness(res.data);
+      
+    });
+     axios.get('/flightSeatsEconomy')
+    .then(res => {
+      setSeatsEconomy(res.data);
+     
+    });
+    }
+    else
+    {
+        axios.get('/returnFlightSeatsFirst')
+        .then(res => {
+          setSeatsFirst(res.data);
+          axios.get('/returnFlightSeatsBusiness')
+          .then(res => {
+            setSeatsBusiness(res.data);
+            
+         axios.get('/returnFlightSeatsEconomy')
+         .then(res => {
+           setSeatsEconomy(res.data);
+         });
+          });
+        });
+       
+    }
+flag=true;
+  }
     try{
         var accessToken = localStorage.getItem('acessToken');
         var refreshToken = localStorage.getItem('refreshToken');
@@ -259,6 +314,7 @@ function confirmSeats() {
     //       })
     //     navigate('/newDepFlightSeats',{state: {departureFlight:DepartureFlight, departureSeats: values}});
      }
+
     const CheckoutForm = () => {
   const navigate = useNavigate();
 
@@ -280,7 +336,7 @@ function confirmSeats() {
       try {
         const { id } = paymentMethod;
         var bodyFormData = new FormData();
-        bodyFormData.append('amount', (1000));
+        bodyFormData.append('amount', ((parseInt(location.state.priceDifference))*100)+100);
         bodyFormData.append('id', id);
         const response = await axios( {
           method: "post",
@@ -327,7 +383,8 @@ function confirmSeats() {
                 <form onSubmit={handleSubmit}>
                   <div >
                    <h1>Card</h1>
-                          <CardElement />
+                          {console.log("hii")}
+                          <CardElement/>
 
                   </div>
 
@@ -484,47 +541,7 @@ const Subscriptions=({plan})=>{
 
 
 
-    const [SeatsFirst, setSeatsFirst] = useState([]);
-    const [SeatsBusiness, setSeatsBusiness] = useState([]);
-    const [SeatsEconomy, setSeatsEconomy] = useState([]);
-    const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
 
-
-    if(location.state.Type=="Departure")
-    {
-         axios.get('/flightSeatsFirst')
-    .then(res => {
-      setSeatsFirst(res.data);
-      
-    });
-    axios.get('/flightSeatsBusiness')
-    .then(res => {
-      setSeatsBusiness(res.data);
-      
-    });
-     axios.get('/flightSeatsEconomy')
-    .then(res => {
-      setSeatsEconomy(res.data);
-     
-    });
-    }
-    else
-    {
-        axios.get('/returnFlightSeatsFirst')
-        .then(res => {
-          setSeatsFirst(res.data);
-          axios.get('/returnFlightSeatsBusiness')
-          .then(res => {
-            setSeatsBusiness(res.data);
-            
-         axios.get('/returnFlightSeatsEconomy')
-         .then(res => {
-           setSeatsEconomy(res.data);
-         });
-          });
-        });
-       
-    }
 
 
   return (

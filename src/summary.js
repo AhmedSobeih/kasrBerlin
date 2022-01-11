@@ -33,7 +33,7 @@ const Anchor =({title})=>{
        
 
 export default function Summary(){
-
+   console.log("hoho")
     let {flight} = useParams(); 
     const location = useLocation();
     const navigate = useNavigate();
@@ -192,6 +192,7 @@ if(price == null)
                 <form onSubmit={handleSubmit}>
                   <div >
                    <h1>Card</h1>
+                   
                           <CardElement />
 
                   </div>
