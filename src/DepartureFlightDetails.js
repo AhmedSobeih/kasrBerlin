@@ -6,20 +6,10 @@ import {useParams,useNavigate,useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 
-var DepatureDate ="";
-var ArrivalDate ="";
-var FreeEconomySeatsNum="" ;
-var FreeBusinessSeatsNum ="";
-var FreeFirstSeatsNum ="";
 
-var DepatureAirport="";
-var ArrivalAirport="" ;
 var TripDuration="";
-var CabinClass="";
-var BaggageAllowance="";
 var FlightPrice=0;
 var DepartureFlight={};
-var SearchCriteria={};
 var isUser=true;
 var ErrorMessage="" ;
 
@@ -40,7 +30,25 @@ const Anchor =({title})=>{
     let {flight} = useParams(); 
     const navigate = useNavigate();
     const location = useLocation();
-
+    console.log(location.state);
+    var DepatureDate =location.state.departureFlight.DepatureDate;
+    var ArrivalDate =location.state.departureFlight.ArrivalDate;
+    var FreeEconomySeatsNum=location.state.departureFlight.FreeEconomySeatsNum ;
+    var FreeBusinessSeatsNum =location.state.departureFlight.FreeBusinessSeatsNum;
+    var FreeFirstSeatsNum =location.state.departureFlight.FreeFirstSeatsNum;
+    var SearchCriteria=location.state.searchCriteria;
+    var DepatureAirport=location.state.departureFlight.DepatureAirport;
+    var ArrivalAirport=location.state.departureFlight.ArrivalAirport;
+    var BaggageAllowance=location.state.departureFlight.BaggageAllowance; 
+    var CabinClass=location.state.searchCriteria.DepartureCabinClass;
+    
+    if(CabinClass=="Economy Class")
+        FlightPrice = parseInt(location.state.departureFlight.EconomySeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));
+    if(CabinClass=="Business Class")
+      FlightPrice =parseInt(location.state.departureFlight.BusinessSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));
+    if(CabinClass=="First Class")
+     FlightPrice = parseInt(location.state.departureFlight.FirstSeatPrice)*(parseInt(SearchCriteria.NumberOfAdults)+parseInt(SearchCriteria.NumberOfChildren));    
+  
     var FlightNumber = flight;
     //problem will occur in the conversion between mongoose and html in date conversion
     // mongoose: ""
@@ -52,7 +60,6 @@ const Anchor =({title})=>{
       var d = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate);
       var s = d.hour +  " Hours, " +d.min +  " Minutes";
       TripDuration= s;
-     updateFlight();
 
     try{
       var accessToken = localStorage.getItem('acessToken');
@@ -144,11 +151,9 @@ const Anchor =({title})=>{
     const CancelToken = axios.CancelToken;
     let cancel;
 
-async function updateFlight()
+function updateFlight()
 {
-
-    flag= true;
-    await axios.get('/flight/'+flight)
+    axios.get('/flight/'+flight)
     .then(res => {
       console.log(res);
       DepatureDate = dateConversion(res.data.DepatureDate);
@@ -173,7 +178,7 @@ async function updateFlight()
     .catch(function (error) {
         console.log(error);
     })
-    await axios.get('/userCriteria')
+    axios.get('/userCriteria')
     .then(res => {
       SearchCriteria = res.data;
       CabinClass= res.data.DepartureCabinClass;
@@ -303,7 +308,6 @@ function DoubleLabel(props){
         )
       }
 
-      
 return(
 
 
@@ -452,5 +456,6 @@ return(
         </div>
       </div>
     </>
-);}
+);
+}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));

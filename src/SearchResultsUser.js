@@ -93,8 +93,16 @@ class SearchResults extends Component {
     })
     }
     
-    gotoFlight(fl) {
-        this.props.navigate('/departureFlight/'+fl.FlightNumber, {state:{departureFlight:fl}})
+gotoFlight(fl) {
+    axios.get('/userCriteria')
+    .then(res => {
+      var SearchCriteria = res.data;
+      var CabinClass= res.data.DepartureCabinClass;
+      this.props.navigate('/departureFlight/'+fl.FlightNumber, {state:{departureFlight:fl,searchCriteria:SearchCriteria}})
+    })
+        
+    // })
+
     }
 
     getPrice(fl){
