@@ -144,7 +144,7 @@ app.post('/login', async (req, res) => {
 })
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1555555s' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
 }
 
 ////authServer
@@ -463,7 +463,7 @@ app.get("/departureFlight", async(req,res)=>{
   res.send(departureFlight);
 });
 
-app.post("/changeSeats",async(req,res)=>{
+app.post("/changeSeats",authenticateToken, async(req,res)=>{
 
   
   var ReservationNumber = req.body.ReservationNumber;
@@ -592,7 +592,7 @@ app.post("/changeSeats",async(req,res)=>{
 })
 
 
-app.post("/changeReturnSeats",async(req,res)=>{
+app.post("/changeReturnSeats",authenticateToken, async(req,res)=>{
 
   console.log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
   var ReservationNumber = req.body.ReservationNumber;

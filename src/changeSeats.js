@@ -8,6 +8,7 @@ import './assets/styles/tailwind.css';
 
 import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
+var authorized = true;
 
 export default function FlightSeats() {
     const navigate = useNavigate();
@@ -15,6 +16,31 @@ export default function FlightSeats() {
 
     
 function confirmSeats() {
+    var accessToken = localStorage.getItem('acessToken');
+    var refreshToken = localStorage.getItem('refreshToken');
+    var type = localStorage.getItem('type');
+    
+    if(type == 0)
+    {
+      navigate('/');
+    }
+    
+
+    axios({
+        method: "get",
+        url: "/session",
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+      })
+          .then((response) => { 
+            if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
+              {
+                navigate('/');
+              }
+            else
+            { 
+            }
+                     
+        })
 
     const checkboxes = document.querySelectorAll(`input:checked`);
     let values = [];
@@ -34,7 +60,7 @@ if(location.state.Type=="Departure")
         method: "post",
         url: "/changeSeats",//remove old seats
         data: bodyFormData2,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
       })
     .then(()=>{
         var bodyFormData3 = new FormData();
@@ -56,10 +82,12 @@ if(location.state.Type=="Departure")
                 method: "post",
                 url: "/reserveSeats",
                 data: bodyFormData,
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
               })
 
-        })
+        }).then(()=>{
+            navigate('/viewReservations');
+          })
        
         
     
@@ -72,7 +100,7 @@ else{
         method: "post",
         url: "/changeReturnSeats",//remove old seats
         data: bodyFormData2,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
       })
     .then(()=>{
         var bodyFormData3 = new FormData();
@@ -93,7 +121,9 @@ else{
             method: "post",
             url: "/reserveReturnSeats",
             data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
+          }).then(()=>{
+            navigate('/viewReservations');
           })
 
         })
@@ -104,8 +134,10 @@ else{
 
     })
 }
+
+
    
-        navigate('/viewReservations');
+        
     
         
 
@@ -174,7 +206,13 @@ const Subscriptions=({plan})=>{
     const [SeatsFirst, setSeatsFirst] = useState([]);
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
-    const [ReservationNumber, setReservationNumber] = useState(location.state.ReservationNumber);
+    try{
+        const [ReservationNumber, setReservationNumber] = useState(location.state.ReservationNumber);
+    }
+    catch(Err)
+    {
+        authorized = false;
+    }
     const [Type, setType] = useState(location.state.Type);
 
 
