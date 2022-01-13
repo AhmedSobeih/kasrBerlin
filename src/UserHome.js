@@ -50,9 +50,10 @@ export default function UserHome() {
         method: "get",
         url: "/session",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken ,"grant_type" :refreshToken },
       })
           .then((response) => { 
+            console.log(response);
             if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
               {
                 navigate('/');
