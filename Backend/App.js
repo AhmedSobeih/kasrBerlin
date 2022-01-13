@@ -31,8 +31,12 @@ const e = require("express");
 const CLIENT_ID = '1095244162204-4k8f4ivhloocnl5vn9r3giirtv942roi.apps.googleusercontent.com';
 const CLEINT_SECRET = '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';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = '1//04kcDdwX9kY-aCgYIARAAGAQSNwF-L9Ir5OIazB8L9CmVFH9uJykOD4iMWsA99dRMKMr1eDBFO8SZRBdwkhe8hx6_OFLh6u5B1Cw';
+const REFRESH_TOKEN = '1//04wCeQ4nWTNkFCgYIARAAGAQSNwF-L9IrPaWNrcbnxrjamfGcRuAn2_zCgOZmCrIGuRchcu0EouERH7_Ks_p9G8AWcEGyfX_Rw6o';
+//1//04kcDdwX9kY-aCgYIARAAGAQSNwF-L9Ir5OIazB8L9CmVFH9uJykOD4iMWsA99dRMKMr1eDBFO8SZRBdwkhe8hx6_OFLh6u5B1Cw'
 
+//
+//old
+//
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.array()); 
@@ -144,7 +148,7 @@ app.post('/login', async (req, res) => {
 })
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1555555s' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15555555555s' })
 }
 
 ////authServer
@@ -190,7 +194,7 @@ app.post("/stripe/charge",cors(),authenticateToken, async (req, res) => {
 app.get("/ViewReservations", authenticateToken, async (req,res)=>{
    
 const user=await Users.find({username : req.user.name});
-
+console.log(user[0].email);
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
 async function sendMail() {
@@ -225,6 +229,47 @@ sendMail()
   .then((result) => console.log('Email sent...', result))
   .catch((error) => console.log(error.message));
 })
+//here.........
+app.get("/summary", authenticateToken, async (req,res)=>{
+   
+  const user=await Users.find({username : req.user.name});
+  console.log("yess done number 1");
+  oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+  
+  async function sendMail() {
+    try {
+      const accessToken = await oAuth2Client.getAccessToken();
+  
+      const transport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          type: 'OAuth2',
+          user: 'airoairlines@gmail.com',
+          clientId: CLIENT_ID,
+          clientSecret: CLEINT_SECRET,
+          refreshToken: REFRESH_TOKEN,
+          accessToken: accessToken,
+        },
+      });
+      const mailOptions = {
+        from: 'AIROAIRLINES <airoairlines@gmail.com>',
+        to: user[0].email,
+        subject: 'Reserved round trip itenerary',
+        text: 'Hello '+user[0].lastName + " you have reserved this round trip with a departure flight number of "+parseInt(departureFlight.FlightNumber)+" \nand a departure time of "+departureFlight.ArrivalDate+ " \nAn arrival time of "+departureFlight.ArrivalDate+" \nThe departure airport is "+departureFlight.DepatureAirport+" \nThe arrival airport is "+departureFlight.ArrivalAirport+" \nThe departure flight price is "+departureFlight.FlightPrice+" \nThe chosen cabin is "+departureFlight.CabinClass+" \nThe trip duration of "+departureFlight.TripDuration+" \nThe package allowance is "+departureFlight.BaggageAllowance+" \nA seat number of "+departureFlight.seats+" \nYou have also reserved a return flight with a flight number of "+parseInt(returnFlight.FlightNumber)+" \nA departure time of "+returnFlight.ArrivalDate+ " \nAn arrival time of "+returnFlight.ArrivalDate+" \nThe departure airport is "+returnFlight.DepatureAirport+" \nThe arrival airport is "+returnFlight.ArrivalAirport+" \nThe return flight price is "+returnFlight.FlightPrice+" \nThe chosen cabin is "+returnFlight.CabinClass+" \nA trip duration of "+returnFlight.TripDuration+" \nThe package allowance is "+returnFlight.BaggageAllowance+" \nA seat number of "+returnFlight.seats
+      };
+      const result = await transport.sendMail(mailOptions);
+      return result;
+    } catch (error) {
+      return error;
+    }
+  }
+  
+  sendMail()
+    .then((result) => console.log('Email sent...2', result))
+    .catch((error) => console.log(error.message));
+  })
+//till here....
+
 
 //returns the username of the session
 app.get("/session", authenticateToken, async(req,res)=>{

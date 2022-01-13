@@ -33,7 +33,6 @@ const Anchor =({title})=>{
        
 
 export default function Summary(){
-   console.log("hoho")
     let {flight} = useParams(); 
     const location = useLocation();
     const navigate = useNavigate();
@@ -157,6 +156,13 @@ if(price == null)
 
         console.log("Stripe 35 | data", response.data.success);
         if (response.data.success) {
+          axios({
+            method: "get",
+            url: "/summary",
+            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
+          }) .then(res => {
+            console.log(res.data)
+          }) 
           console.log("CheckoutForm.js 25 | payment successful!");
           navigate('/Itinerary');
         }
@@ -166,6 +172,7 @@ if(price == null)
     } else {
       console.log(error.message);
     }
+  
   };
 
 
@@ -200,9 +207,15 @@ if(price == null)
                   
 
                   <div className="text-center mt-6">
-                    <button onClick={ handleSubmit}
+                    <button 
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button" 
+                      onClick=
+                        {
+                           
+                            handleSubmit
+                                  
+  }
                     >
                       Confirm and Pay
                     </button>
