@@ -76,6 +76,7 @@ class ViewReservations extends Component {
             .then((response) => { 
               if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
                 {
+                  this.props.navigate('/login');
                   authorized = false;
                 }
               else

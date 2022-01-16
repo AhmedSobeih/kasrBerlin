@@ -192,7 +192,7 @@ export default function SearchWithCriteria(){
       .then((response) => { 
         if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError" || !authorized)
           {
-            navigate('/');
+            navigate('/login');
           }
         else
         { 

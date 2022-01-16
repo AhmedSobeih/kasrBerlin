@@ -56,7 +56,7 @@ export default function UserHome() {
             console.log(response);
             if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
               {
-                navigate('/');
+                navigate('/login');
               }
             else
             { 

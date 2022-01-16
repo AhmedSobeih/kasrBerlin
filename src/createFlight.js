@@ -140,7 +140,7 @@ function createFlight (){
         console.log(response.data)
         if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError" || !authorized)
               {
-                navigate('/');
+                navigate('/login');
               }
         if(response.data==false)
           setFlightCreated('Invalid username or password!');
@@ -220,7 +220,7 @@ function createFlight (){
       .then((response) => { 
         if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError" || !authorized)
           {
-            navigate('/');
+            navigate('/login');
           }
         else
         { 

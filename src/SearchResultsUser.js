@@ -77,6 +77,7 @@ class SearchResults extends Component {
                     if(res.data.name == "TokenExpiredError")
                     {
                         //session expired comment
+                        this.props.navigate('/login');
                     }
                     else{
                         this.setState({ flightsCollection: res.data });
