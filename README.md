@@ -26,38 +26,38 @@ Framework Used:
 --------------
 This project was implemented using the MERN stack (MongoDB,
 Express JS, React JS and Node JS). The project made use of:
--Nodemailer to notify a registered user of his activity and reservations by sending him emails. 
--Jsonwebtoken that helped in authorization of the user.
--Stripe.js was used to handle the payment of the user whenever reserving or changing a flight.
--Bootstrap@4.0.0 was used to style the html pages.
+- Nodemailer to notify a registered user of his activity and reservations by sending him emails. 
+- Jsonwebtoken that helped in authorization of the user.
+- Stripe.js was used to handle the payment of the user whenever reserving or changing a flight.
+- Bootstrap@4.0.0 was used to style the html pages.
 The project was done in the agile methodology and was divied into 3 sprints.
 ```
 ```
 Features:
 --------------
 This system allows the admin to:
-1-Create a new flight in the system with specified features and add it to the database. 
-2-List any of the available flights with or without a search criteria. 
-3-Update or delete any of the available flights.  
+1. Create a new flight in the system with specified features and add it to the database. 
+2. List any of the available flights with or without a search criteria. 
+3. Update or delete any of the available flights.  
 
 This system allows a registered user to:
-1-View the available round trips (departure and return flights) based on his preferences.
-2-Specify the class and the places of the seats he/she wants to reserve.
-3-Reserve a specific round trip including the payment and confirmation processes.  
-4-Change any flight he/she reserved.
-5-Change the seats reserved in any of the flights reserved.  
+1. View the available round trips (departure and return flights) based on his preferences.
+2. Specify the class and the places of the seats he/she wants to reserve.
+3. Reserve a specific round trip including the payment and confirmation processes.  
+4. Change any flight he/she reserved.
+5. Change the seats reserved in any of the flights reserved.  
 
 This system allows a guest user to:
-1-Register to become a user with an account that allows him to reserve flights.
-2-View the available round trips (departure and return flights) based on his preferences.
+1. Register to become a user with an account that allows him to reserve flights.
+2. View the available round trips (departure and return flights) based on his preferences.
 ```
 ```
 Installations:
 --------------
 In order to run the project you need to type install the project dependencies by typing "npm install" in two directories:<--  
-1- kasrBerlin/
+1. kasrBerlin/
 to install dependencies of the frontend
-2- kasrBerlin/Backend/
+2. kasrBerlin/Backend/
 to install dependencies of the backend
 ```
 ```
@@ -77,13 +77,11 @@ node app
 Tests:
 ---------------
 In order to test the features of the system, the following journey isrecommended:
-1-Login using username: 'Adminstrator' and password: 'Adminstrator'. This will login as an admin.
-2-Press on create flight button and start entering the properties of the created flight. It is recommended to 
-create two flights in order to reserve a round trip later in the journey.
-3-Register a new user with a new username and password.
-4-Login using the username and passwords you registered with.
-5-Press on reserve a trip and follow the whole path to reserve this trip. 
-6-When it comes to payment, type in the card number as 4242 4242 4242 4242, expiry date: 02/22 and 222.
-7-Once reserving the trip you can go to view reservations and change either the whole flights reserved or the just the
-seats reserved.
+1. Login using username: 'Adminstrator' and password: 'Adminstrator'. This will login as an admin.
+2. Press on create flight button and start entering the properties of the created flight. It is recommended to create two flights in order to reserve a round trip later in the journey.
+3. Register a new user with a new username and password.
+4. Login using the username and passwords you registered with.
+5. Press on reserve a trip and follow the whole path to reserve this trip. 
+6. When it comes to payment, type in the card number as 4242 4242 4242 4242, expiry date: 02/22 and 222.
+7. Once reserving the trip you can go to view reservations and change either the whole flights reserved or the just the seats reserved.
 ```
