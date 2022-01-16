@@ -43,6 +43,30 @@ export default function UserChangePassword() {
     setNewPasswordConfirmation(number.target.value);
  //   console.log(economySeats);
   }
+  function getUserName (){
+    // const data = { username, password}
+    var bodyFormData = new FormData();
+    bodyFormData.append('username', username);
+  
+   axios({
+    method: "get",
+    url: "/session",
+    data: bodyFormData,
+    headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken ,"grant_type" :refreshToken },
+  })
+      .then((response) => { 
+        console.log(response);
+        if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
+          {
+            navigate('/login');
+          }
+        else
+        { 
+        }
+                 
+    })
+    return username;
+  }
 
 
     function updatePassword (){
@@ -64,20 +88,16 @@ export default function UserChangePassword() {
         headers: { "Content-Type": "multipart/form-data","Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
-            console.log(response.data);
           
-            if(response.data.status==false)
-              console.log(response.data.response);
-            else
-            {
+            if(response.data.status==true)
               setLoginSuccess("Password Updated");
-            }
         })
     }
 
 return (
 
 <>
+<script>{getUserName()}</script>
 {Navbar()};
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">

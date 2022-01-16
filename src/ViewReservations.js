@@ -18,7 +18,7 @@ export default function(props) {
       var accessToken = localStorage.getItem('acessToken');
       var refreshToken = localStorage.getItem('refreshToken');
       var type = localStorage.getItem('type');
-      if(type == 0 || accessToken == null)
+      if(type != 1 || accessToken == null)
       {
           authorized = false;
       }

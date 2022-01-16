@@ -103,7 +103,19 @@ const Subscriptions=({plan})=>{
     const [ReturnFlight, setReturnFlight] = useState(location.state.returnFlight);
 
 
-
+    var isUser = true;
+    // this uses Router based states to let us access cour state
+      var accessToken = localStorage.getItem('acessToken');
+      var refreshToken = localStorage.getItem('refreshToken');
+      var type = localStorage.getItem('type');
+       if(accessToken == null)
+       {
+           isUser = false;
+       }
+       if(type == 2)
+        {
+            isUser = false;
+        }
 
      axios.get('/flightSeatsFirst')
     .then(res => {

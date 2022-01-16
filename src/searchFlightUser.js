@@ -55,9 +55,19 @@ export default function SearchFlightGuest(){
     const [ReturnCabinClass, setReturnCabinClass] = useState("Economy Class");
     const [UserCriteria, setUserCriteria] = useState({});
 
-    const [isUser, setIsUser] = useState(false);
+    var isUser= true;
+    try{
+      if(type==2)
+    {
+      isUser = false;
+    }
+    }catch(err)
+    {
+      console.log(err);
+    }
+    
 
-
+    
    
     const [ErrorMessage, setErrorMessage] = useState("");
 
@@ -179,7 +189,7 @@ export default function SearchFlightGuest(){
       method: "post",
       url: "/userCriteria",
       data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken},
+      headers: { "Content-Type": "multipart/form-data" },
     })
         .then((response) => { 
           

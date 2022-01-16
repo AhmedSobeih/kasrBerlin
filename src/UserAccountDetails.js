@@ -9,7 +9,6 @@ var flag = true;
 var firstFlag = true;
 
 export default function UserAccountDetails() {
-    console.log(useParams());
     const user = useParams().username; 
     const navigate = useNavigate();
     try{
@@ -25,7 +24,6 @@ export default function UserAccountDetails() {
       {
         navigate('/');
       }
-      console.log("accessToken: " + accessToken);
     
 
     const [firstName, setFirstName] = useState("");
@@ -40,7 +38,6 @@ export default function UserAccountDetails() {
     let cancel;
 
 
-    console.log(user);
     axios({
       method: "get",
       url: "/user",
@@ -51,7 +48,6 @@ export default function UserAccountDetails() {
         // An executor function receives a cancel function as a parameter
         cancel = c;
       })
-      console.log(res.data);
       setFirstName(res.data.firstName);
       setLastName(res.data.lastName);
       setEmail(res.data.email);
@@ -96,7 +92,6 @@ export default function UserAccountDetails() {
   function componentDidMount() {
     if(flag)
   {
-    console.log(user);
     flag= false;
     axios({
       method: "get",
@@ -108,7 +103,6 @@ export default function UserAccountDetails() {
         // An executor function receives a cancel function as a parameter
         cancel = c;
       })
-      console.log(res.data);
       setFirstName(res.data.firstName);
       setLastName(res.data.lastName);
       setEmail(res.data.email);
@@ -122,9 +116,34 @@ export default function UserAccountDetails() {
         
       
 }
+function getUserName (){
+  // const data = { username, password}
+  var bodyFormData = new FormData();
+  bodyFormData.append('username', username);
+
+ axios({
+  method: "get",
+  url: "/session",
+  data: bodyFormData,
+  headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken ,"grant_type" :refreshToken },
+})
+    .then((response) => { 
+      if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
+        {
+          navigate('/login');
+        }
+      else
+      { 
+      }
+               
+  })
+  return username;
+}
+
 
 return (
 <>
+<script>{getUserName()}</script>
 {Navbar()};
 {componentDidMount()};
       <div className="container mx-auto px-4 h-full">

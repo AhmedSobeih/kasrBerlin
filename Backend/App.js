@@ -148,11 +148,7 @@ app.post('/login', async (req, res) => {
 })
 
 function generateAccessToken(user) {
-<<<<<<< HEAD
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15555555555s' })
-=======
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15555555s' })
->>>>>>> b49618e480bfcb56b72b4c322a5349c11c060bbc
 }
 
 ////authServer
@@ -949,7 +945,7 @@ app.get("/returnFlight", async(req,res)=>{
   res.send(returnFlight);
 });
 
-app.post("/returnFlight",authenticateToken,async(req,res)=>{
+app.post("/returnFlight",async(req,res)=>{
   returnFlight=req.body;
   res.send(true);
 });
@@ -1069,7 +1065,7 @@ app.get('/searchResults',authenticateToken, async(req, res)=> {
   res.send(searchResult);
  
 });
-app.get('/searchDepResults',authenticateToken, async(req, res)=> {
+app.get('/searchDepResults', async(req, res)=> {
  
   res.send(searchDepResult);
  
@@ -1489,7 +1485,7 @@ app.get("/userCriteria", async(req,res)=>{
   res.send(userPreferredCriteria);
 });
 
-app.post("/userCriteria",authenticateToken, async(req,res)=>{
+app.post("/userCriteria", async(req,res)=>{
   
   userPreferredCriteria=req.body;
   console.log("set "); //problem : marwan arrival time and date are not sent right"
