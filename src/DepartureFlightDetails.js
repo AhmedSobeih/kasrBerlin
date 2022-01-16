@@ -10,7 +10,6 @@ import NavbarGuest from 'NavbarGuest';
 var TripDuration="";
 var FlightPrice=0;
 var DepartureFlight={};
-var isUser=true;
 var ErrorMessage="" ;
 
 
@@ -61,19 +60,46 @@ const Anchor =({title})=>{
       var s = d.hour +  " Hours, " +d.min +  " Minutes";
       TripDuration= s;
 
-    try{
-      var accessToken = localStorage.getItem('acessToken');
-      var refreshToken = localStorage.getItem('refreshToken');
-      var type = localStorage.getItem('type');
-      if(accessToken == null)
-      {
-        isUser = false;
-      }
-      }
-      catch(err)
-      {
-        isUser = false;
-      }
+      const [isUser, setIsUser] = useState(null);
+
+      try{
+        var accessToken = localStorage.getItem('acessToken');
+        var refreshToken = localStorage.getItem('refreshToken');
+        var type = localStorage.getItem('type');
+        if(accessToken == null)
+        {
+          setIsUser(false);
+        }
+        }
+        catch(err)
+        {
+          setIsUser(false);
+        }
+        if(!flag)
+          getSession();
+  
+     
+    function getSession()
+  {
+      axios({
+          method: "get",
+          url: "/session",
+          data: '',
+          headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken ,"grant_type" :refreshToken },
+        })
+            .then((response) => { 
+              console.log(response);
+              if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
+                {
+                  navigate('/');
+                }
+              else
+              { 
+              }
+                       
+          }).catch((err) => setIsUser(false));
+          flag = true;
+  }
 
 
     
@@ -293,10 +319,12 @@ function DoubleLabel(props){
             headers: {},
           })
               .then((response) => { 
-                if(response.data==false)
+                console.log("HHE")
+                console.log(response.data.length==0)
+                if(response.data.length==0)
                {
-               ErrorMessage = 'This departure flight has no available return flights';
-                // document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
+               ErrorMessage = '';
+                document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
         
                } 
                 else{
@@ -432,7 +460,7 @@ return(
                     >
                       Confirm as departure flight
                     </button>
-                    <div id='searchFail' className="alert-warning">{ErrorMessage}</div>
+                    <div id='searchFail' className="d-none alert-warning" >This departure flight has no available return flights</div>
 
                   </div>
                 </form>
