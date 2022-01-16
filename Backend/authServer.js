@@ -39,6 +39,13 @@ mongoose.connect(MongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 .catch(err => console.log(err));
 
 
+
+///authServer
+
+//edits for encryption
+const bcrypt = require('bcrypt')
+
+
 let refreshTokens = []
 
 app.post('/token', (req, res) => {
@@ -57,43 +64,43 @@ app.delete('/logout', (req, res) => {
   res.sendStatus(204)
 })
 
-app.post('/login', (req, res) => {
+app.post('/login2', async (req, res) => {
   // Authenticate User
-    console.log("I am here");
     var result = { state: false, type : 1 };
     const username = req.body.username
-    console.log(req.body.username);
-    Users.find({username:req.body.username, password:req.body.password})
-  .then((user)=>{ 
-    console.log("I am here2");
-      // console.log(user);
-      if(user.length == 0)
-      {
-          res.send(result);
-      }
-      else
-      {
-        const user = {name: username}
+    Users.find({username:req.body.username})
+  .then(async (user)=>{
+    var condition = await bcrypt.compare(req.body.password, user[0].password);
+  if(condition)
+    {
+        
+        const userr = {name: username}
 
-        const accessToken = generateAccessToken(user)
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+        const accessToken = generateAccessToken(userr)
+        const refreshToken = jwt.sign(userr, process.env.REFRESH_TOKEN_SECRET)
         refreshTokens.push(refreshToken)
-        res.json({ accessToken: accessToken, refreshToken: refreshToken })
-        // var loggedIn = user[0].type;
-        // result.state = true;
-        // result.type = loggedIn;
+        res.json({ accessToken: accessToken, refreshToken: refreshToken, type: user[0].type})
+        var loggedIn = user[0].type;
+        result.state = true;
+        result.type = loggedIn;
         
         // res.send(result);
         // console.log(result);
-      }
+    }
+    else
+    {
+      res.send(result);
+    }
       //we need to create a session
-      console.log("I am here2");
-
   }).catch((err) => console.log(err));
 })
-
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15555555555s' })
 }
+
+////authServer
+// problem : email 
+
+
 
 app.listen(8080)

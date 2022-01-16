@@ -42,7 +42,7 @@ function tryLogin (){
 
  axios({
   method: "post",
-  url: "/login",
+  url: "/login2",
   data: bodyFormData,
   headers: { "Content-Type": "multipart/form-data" },
 })
