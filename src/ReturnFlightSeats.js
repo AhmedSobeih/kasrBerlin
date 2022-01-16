@@ -8,6 +8,8 @@ import './assets/styles/tailwind.css';
 
 import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
+import Navbar from 'NavbarUser';
+import NavbarGuest from 'NavbarGuest';
 
 
 export default function ReturnFlightSeats() {
@@ -15,7 +17,9 @@ export default function ReturnFlightSeats() {
     const location = useLocation();
     const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
     const [ReturnFlight, setReturnFlight] = useState(location.state.returnFlight);
+    var isUser= true ;
 
+   
 
 function confirmReturnSeats() {
     const checkboxes = document.querySelectorAll(`input:checked`);
@@ -24,6 +28,7 @@ function confirmReturnSeats() {
         values.push(checkbox.id);
     });
 
+    
 
     var bodyFormData = new FormData();
     bodyFormData.append('values', values);
@@ -121,24 +126,13 @@ const Subscriptions=({plan})=>{
   return (
 
 
-
+<>
+{isUser&&Navbar()};
+{!isUser&&NavbarGuest()};
 
     <div>
        
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div className="container px-5">
-                <a className="navbar-brand" href="#!">Start Bootstrap</a>
-                
-                <div className="collapse navbar-collapse" id="navلآbbarSupportedContent">
-                    <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li className="nav-item"><a className="nav-link active" aria-current="page" href="#!">Home</a></li>
-                        <li className="nav-item"><a className="nav-link" href="#!">About</a></li>
-                        <li className="nav-item"><a className="nav-link" href="#!">Contact</a></li>
-                        <li className="nav-item"><a className="nav-link" href="#!">Services</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+ 
 
     <section className="bg-light py-5 border-bottom">
             <div className="container px-5 my-5">
@@ -262,6 +256,8 @@ const Subscriptions=({plan})=>{
                   </div>        
         
    </div>
+   </>
+
   );
 }
 

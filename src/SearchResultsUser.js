@@ -5,7 +5,7 @@ import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest';
 import {useLocation} from 'react-router-dom';
 
-
+var flag = false;
 
 const Anchor =({title})=>{
         return (
@@ -64,7 +64,7 @@ class SearchResults extends Component {
         axios({
             method: "get",
             url: '/searchDepResults',
-            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+            headers: { "Content-Type": "multipart/form-data"},
           })
             .then(res => {
                 console.log(res.data);
