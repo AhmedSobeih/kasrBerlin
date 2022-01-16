@@ -8,30 +8,10 @@ import './assets/styles/tailwind.css';
 
 import axios from 'axios';
 import {useParams,useNavigate,useLocation} from 'react-router-dom';
-import Navbar from 'NavbarUser';
-import NavbarGuest from 'NavbarGuest';
-var flag = false;
+
 export default function FlightSeats() {
     const navigate = useNavigate();
     const location = useLocation();
-
-    const [isUser, setIsUser] = useState(null);
-
-    try{
-      var accessToken = localStorage.getItem('acessToken');
-      var refreshToken = localStorage.getItem('refreshToken');
-      var type = localStorage.getItem('type');
-      if(accessToken == null)
-      {
-        setIsUser(false);
-      }
-      }
-      catch(err)
-      {
-        setIsUser(false);
-      }
-      if(!flag)
-        getSession();
 
     
 function confirmSeats() {
@@ -55,28 +35,6 @@ function confirmSeats() {
         navigate('/ReturnFlightSeats',{state: {departureFlight:DepartureFlight, returnFlight: ReturnFlight, departureSeats: values}});
 
   
-}
-
-function getSession()
-{
-    axios({
-        method: "get",
-        url: "/session",
-        data: '',
-        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken ,"grant_type" :refreshToken },
-      })
-          .then((response) => { 
-            console.log(response);
-            if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
-              {
-                navigate('/');
-              }
-            else
-            { 
-            }
-                     
-        }).catch((err) => setIsUser(false));
-        flag = true;
 }
 
 
@@ -147,7 +105,6 @@ const Subscriptions=({plan})=>{
 
 
 
-
      axios.get('/flightSeatsFirst')
     .then(res => {
       setSeatsFirst(res.data);
@@ -160,20 +117,30 @@ const Subscriptions=({plan})=>{
     .then(res => {
       setSeatsEconomy(res.data);
     });
-    
 
 
 
   return (
 
-<>
-{isUser&&Navbar()};
-{!isUser&&NavbarGuest()};
+
 
 
     <div>
        
-    
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div className="container px-5">
+                <a className="navbar-brand" href="#!">Start Bootstrap</a>
+                
+                <div className="collapse navbar-collapse" id="navلآbbarSupportedContent">
+                    <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li className="nav-item"><a className="nav-link active" aria-current="page" href="#!">Home</a></li>
+                        <li className="nav-item"><a className="nav-link" href="#!">About</a></li>
+                        <li className="nav-item"><a className="nav-link" href="#!">Contact</a></li>
+                        <li className="nav-item"><a className="nav-link" href="#!">Services</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
     <section className="bg-light py-5 border-bottom">
             <div className="container px-5 my-5">
@@ -296,8 +263,6 @@ const Subscriptions=({plan})=>{
                   </div>        
         
    </div>
-   </>
-
   );
 }
 

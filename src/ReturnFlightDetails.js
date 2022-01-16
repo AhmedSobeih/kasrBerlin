@@ -32,7 +32,6 @@ export default function UpdateFlight(){
     let {flight} = useParams(); 
     const navigate = useNavigate();
     const location = useLocation();
-    
 
 if(SearchCriteria == null)
 {
@@ -170,7 +169,7 @@ function showDepartureFlight(e)  {
         method: "post",
         url: "/returnFlight",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data"},
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
             console.log(response.data);

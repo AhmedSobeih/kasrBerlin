@@ -5,7 +5,6 @@ import axios from 'axios';
 import {useNavigate, useLocation} from 'react-router-dom';
 import Navbar from 'NavbarUser';
 import NavbarGuest from 'NavbarGuest.js';
-var flag = false;
 
 
 const Anchor =({title})=>{
@@ -180,7 +179,7 @@ export default function SearchFlightGuest(){
       method: "post",
       url: "/userCriteria",
       data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data"},
+      headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken},
     })
         .then((response) => { 
           
@@ -252,46 +251,7 @@ export default function SearchFlightGuest(){
     setReturnCabinClass(document.getElementById("ReturnCabinClass").value);
     console.log(ReturnCabinClass);
   }
-
-
-    try{
-      var accessToken = localStorage.getItem('acessToken');
-      var refreshToken = localStorage.getItem('refreshToken');
-      var type = localStorage.getItem('type');
-      if(accessToken == null)
-      {
-        setIsUser(false);
-      }
-      }
-      catch(err)
-      {
-        setIsUser(false);
-      }
-      if(!flag)
-        getSession();
-
    
-  function getSession()
-{
-    axios({
-        method: "get",
-        url: "/session",
-        data: '',
-        headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken ,"grant_type" :refreshToken },
-      })
-          .then((response) => { 
-            console.log(response);
-            if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
-              {
-                navigate('/');
-              }
-            else
-            { 
-            }
-                     
-        }).catch((err) => setIsUser(false));
-        flag = true;
-}
   
 
 
