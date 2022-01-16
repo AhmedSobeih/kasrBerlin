@@ -319,12 +319,10 @@ function DoubleLabel(props){
             headers: {},
           })
               .then((response) => { 
-                console.log("HHE")
-                console.log(response.data.length==0)
-                if(response.data.length==0)
+                if(response.data==false)
                {
-               ErrorMessage = '';
-                document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
+               ErrorMessage = 'This departure flight has no available return flights';
+                // document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
         
                } 
                 else{
@@ -460,7 +458,7 @@ return(
                     >
                       Confirm as departure flight
                     </button>
-                    <div id='searchFail' className="d-none alert-warning" >This departure flight has no available return flights</div>
+                    <div id='searchFail' className="alert-warning">{ErrorMessage}</div>
 
                   </div>
                 </form>

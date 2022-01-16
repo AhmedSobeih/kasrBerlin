@@ -126,7 +126,7 @@ export default function SearchFlightGuest(){
 
     bodyFormData.append('ReturnCabinClass', CabinClass);
     UserCriteria.ReturnCabinClass=CabinClass;
-    bodyFormData.append('isReturnFlight', true);
+    bodyFormData.append('isReturnFlight', false);
    }
     console.log("accessToken" + accessToken);
    //done
@@ -148,15 +148,15 @@ export default function SearchFlightGuest(){
     headers: { "Content-Type": "multipart/form-data" },
   })
       .then((response) => { 
-
-        if(response.data.length==0)
+        
+        if(response.data==false)
        {
         setErrorMessage('The information you entered does not match with any flights');
         document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
 
        } 
         else{
-          navigate("/changeSearchResFlight", {state: {reservation:location.state.reservation,s:UserCriteria, oldFlight: location.state.oldFlight, Type:location.state.Type, searchResult:response.data}});
+          navigate("/changeSearchResFlight", {state: {reservation:location.state.reservation,s:UserCriteria, oldFlight: location.state.oldFlight, Type:location.state.Type}});
         }
     })
   }
