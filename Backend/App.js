@@ -92,67 +92,9 @@ const oAuth2Client = new google.auth.OAuth2(
   REDIRECT_URI
 );
 
-///authServer
-
-//edits for encryption
-const bcrypt = require('bcrypt')
 
 
-let refreshTokens = []
 
-app.post('/token', (req, res) => {
-  const refreshToken = req.body.token
-  if (refreshToken == null) return res.sendStatus(401)
-  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403)
-    const accessToken = generateAccessToken({ name: user.name })
-    res.json({ accessToken: accessToken })
-  })
-})
-
-app.delete('/logout', (req, res) => {
-  refreshTokens = refreshTokens.filter(token => token !== req.body.token)
-  res.sendStatus(204)
-})
-
-app.post('/login', async (req, res) => {
-  // Authenticate User
-    var result = { state: false, type : 1 };
-    const username = req.body.username
-    Users.find({username:req.body.username})
-  .then(async (user)=>{
-    var condition = await bcrypt.compare(req.body.password, user[0].password);
-  if(condition)
-    {
-        
-        const userr = {name: username}
-
-        const accessToken = generateAccessToken(userr)
-        const refreshToken = jwt.sign(userr, process.env.REFRESH_TOKEN_SECRET)
-        refreshTokens.push(refreshToken)
-        res.json({ accessToken: accessToken, refreshToken: refreshToken, type: user[0].type})
-        var loggedIn = user[0].type;
-        result.state = true;
-        result.type = loggedIn;
-        
-        // res.send(result);
-        // console.log(result);
-    }
-    else
-    {
-      res.send(result);
-    }
-      //we need to create a session
-  }).catch((err) => console.log(err));
-})
-
-function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15555555555s' })
-}
-
-////authServer
-// problem : email 
 
 
 app.get("/totalPrice",async(req,res)=>{
@@ -945,7 +887,7 @@ app.get("/returnFlight", async(req,res)=>{
   res.send(returnFlight);
 });
 
-app.post("/returnFlight",authenticateToken,async(req,res)=>{
+app.post("/returnFlight",async(req,res)=>{
   returnFlight=req.body;
   res.send(true);
 });
@@ -1065,7 +1007,7 @@ app.get('/searchResults',authenticateToken, async(req, res)=> {
   res.send(searchResult);
  
 });
-app.get('/searchDepResults',authenticateToken, async(req, res)=> {
+app.get('/searchDepResults', async(req, res)=> {
  
   res.send(searchDepResult);
  
@@ -1485,7 +1427,7 @@ app.get("/userCriteria", async(req,res)=>{
   res.send(userPreferredCriteria);
 });
 
-app.post("/userCriteria",authenticateToken, async(req,res)=>{
+app.post("/userCriteria", async(req,res)=>{
   
   userPreferredCriteria=req.body;
   console.log("set "); //problem : marwan arrival time and date are not sent right"

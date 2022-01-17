@@ -62,7 +62,7 @@ export default function UpdateFlight(){
     }).then(res => {
       if(res.data.name == "TokenExpiredError"|| res.data.name == "JsonWebTokenError" || !authorized)
               {
-                navigate('/');
+                navigate('/login');
               }
       cancelToken: new CancelToken(function executor(c) {
         // An executor function receives a cancel function as a parameter

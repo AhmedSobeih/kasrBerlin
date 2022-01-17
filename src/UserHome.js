@@ -7,13 +7,14 @@ import {useNavigate, useLocation} from 'react-router-dom';
 import axios from 'axios';
 
 export default function UserHome() {
+    localStorage.setItem('type', 1) 
     const navigate = useNavigate();
     try{
     var accessToken = localStorage.getItem('acessToken');
     var refreshToken = localStorage.getItem('refreshToken');
     var type = localStorage.getItem('type');
     
-    if(type == 0)
+    if(type != 1)
     {
       navigate('/');
     }
@@ -56,7 +57,7 @@ export default function UserHome() {
             console.log(response);
             if(response.data.name == "TokenExpiredError"|| response.data.name == "JsonWebTokenError")
               {
-                navigate('/');
+                navigate('/login');
               }
             else
             { 

@@ -18,7 +18,7 @@ export default function(props) {
       var accessToken = localStorage.getItem('acessToken');
       var refreshToken = localStorage.getItem('refreshToken');
       var type = localStorage.getItem('type');
-      if(type == 0 || accessToken == null)
+      if(type != 1 || accessToken == null)
       {
           authorized = false;
       }
@@ -76,6 +76,7 @@ class ViewReservations extends Component {
             .then((response) => { 
               if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
                 {
+                  this.props.navigate('/login');
                   authorized = false;
                 }
               else

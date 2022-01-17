@@ -48,7 +48,7 @@ class SearchResults extends Component {
                 console.log('HHHHHHHHHHHHHHHHHHH' + res.data);
                 if(res.data.name == "TokenExpiredError"|| res.data.name == "JsonWebTokenError" || !authorized)
               {
-                this.props.navigate('/');
+                this.props.navigate('/login');
               }
                 this.setState({ flightsCollection: res.data });
             })

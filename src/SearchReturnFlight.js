@@ -26,6 +26,10 @@ export default function(props) {
        {
            isUser = false;
        }
+       if(type == 2)
+        {
+            isUser = false;
+        }
 
   
     return <SearchResults navigate={navigate} location={location} accessToken = {accessToken}  isUser = {isUser} />;

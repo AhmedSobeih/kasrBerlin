@@ -205,6 +205,7 @@ export default function SearchFlightGuest(){
           .then((response) => { 
             if(response.data.name == "TokenExpiredError" || response.data.name == "JsonWebTokenError")
               {
+                navigate('/login');
                 setIsUser(false);
               }
             else

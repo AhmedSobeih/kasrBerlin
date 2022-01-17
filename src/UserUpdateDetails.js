@@ -18,7 +18,7 @@ export default function UserUpdateDetails() {
       var accessToken = localStorage.getItem('acessToken');
       var refreshToken = localStorage.getItem('refreshToken');
       var type = localStorage.getItem('type');
-      if(type == 0)
+      if(type != 1)
       {
         navigate('/');
       }
@@ -38,11 +38,9 @@ export default function UserUpdateDetails() {
     const [username, setUserName] = useState(user);
     const CancelToken = axios.CancelToken;
     let cancel;
-    console.log(user == null)
 
   if(user == null)
   {
-    console.log(user);
     flag= false;
     axios({
       method: "get",
@@ -54,7 +52,6 @@ export default function UserUpdateDetails() {
         // An executor function receives a cancel function as a parameter
         cancel = c;
       })
-      console.log(res.data);
       setFirstName(res.data.firstName);
       setLastName(res.data.lastName);
       setEmail(res.data.email);

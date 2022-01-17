@@ -57,6 +57,10 @@ if(price == null)
       {
         isUser = false;
       }
+      if(type==2)
+      {
+        isUser = false;
+      }
   
 
    function reserveFlight(){

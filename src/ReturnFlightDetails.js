@@ -62,6 +62,10 @@ if(SearchCriteria == null)
       {
         isUser = false;
       }
+      if(type ==2)
+      {
+        isUser = false;
+      }
 
 
 
@@ -169,7 +173,7 @@ function showDepartureFlight(e)  {
         method: "post",
         url: "/returnFlight",
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
+        headers: { "Content-Type": "multipart/form-data" },
       })
           .then((response) => { 
             console.log(response.data);

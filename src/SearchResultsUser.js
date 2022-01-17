@@ -37,6 +37,10 @@ export default function(props) {
         {
             isUser = false;
         }
+        if(type == 2)
+        {
+            isUser = false;
+        }
 
     return <SearchResults navigate={navigate} location={location} accessToken = {accessToken}  isUser = {isUser} />;
   }
@@ -64,7 +68,7 @@ class SearchResults extends Component {
         axios({
             method: "get",
             url: '/searchDepResults',
-            headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
+            headers: { "Content-Type": "multipart/form-data"},
           })
             .then(res => {
                 console.log(res.data);
@@ -77,6 +81,7 @@ class SearchResults extends Component {
                     if(res.data.name == "TokenExpiredError")
                     {
                         //session expired comment
+                        this.props.navigate('/login');
                     }
                     else{
                         this.setState({ flightsCollection: res.data });

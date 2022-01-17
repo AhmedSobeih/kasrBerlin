@@ -74,6 +74,10 @@ const Anchor =({title})=>{
       {
         isUser = false;
       }
+      if(type == 2)
+        {
+            isUser = false;
+        }
 
 
     
