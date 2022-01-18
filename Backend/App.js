@@ -71,7 +71,7 @@ var refundedPrice=0;
 var departureFlight = null;
 var returnFlight = null;
 var userPreferredCriteria=null;
-var reservationNumber=200;
+var reservationNumber=300;
 // #Importing the userController
 
 var seats=[];

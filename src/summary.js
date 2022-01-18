@@ -63,7 +63,7 @@ if(price == null)
       }
   
 
-   function reserveFlight(){
+  async function reserveFlight(){
 
       if(isUser===false)
       {
@@ -134,7 +134,6 @@ if(price == null)
   const elements = useElements();
 
   const handleSubmit = async (event) => {
-    reserveFlight();
     event.preventDefault();
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
@@ -160,6 +159,8 @@ if(price == null)
 
         console.log("Stripe 35 | data", response.data.success);
         if (response.data.success) {
+            await reserveFlight();
+
           axios({
             method: "get",
             url: "/summary",
@@ -168,7 +169,11 @@ if(price == null)
             console.log(res.data)
           }) 
           console.log("CheckoutForm.js 25 | payment successful!");
-          navigate('/Itinerary');
+             setTimeout(()=>{
+            navigate('/Itinerary');
+        } , 5000
+        );
+          
         }
       } catch (error) {
         console.log("CheckoutForm.js 28 | ", error);
