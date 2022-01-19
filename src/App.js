@@ -22,6 +22,8 @@ import SearchReturnFlight from './SearchReturnFlight';
 import ReturnFlightDetails from './ReturnFlightDetails';
 import Summary from './summary';
 import Itinerary from './Itinerary';
+import Itinerary2 from './Itinerary2';
+
 import FlightSeats from './FlightSeats';
 import ReturnFlightSeats from 'ReturnFlightSeats';
 import ChangeSeats from 'changeSeats';
@@ -68,6 +70,8 @@ function App(){
                <Route path="/returnFlight/:flight" element={<ReturnFlightDetails/>} />
                <Route path="/summary" element={<Summary/>} />
                <Route path="/Itinerary" element={<Itinerary/>} />
+               <Route path="/Itinerary2" element={<Itinerary2/>} />
+
                <Route path="/FlightSeats" element={<FlightSeats/>} />
                <Route path="/ReturnFlightSeats" element={<ReturnFlightSeats/>} />
                <Route path="/changeSeats" element={<ChangeSeats/>} />

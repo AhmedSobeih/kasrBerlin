@@ -733,7 +733,7 @@ app.post("/departureFlightByNumber",async(req,res)=>{
     var departureFlightNumber=parseInt(req.body.flightNumber);
     var flights = await Flight.find({FlightNumber : departureFlightNumber});
     departureFlight= flights[0];
-    userPreferredCriteria={DepartureCabinClass: req.body.CabinClass};
+    // userPreferredCriteria={DepartureCabinClass: req.body.CabinClass};
     res.send(departureFlight);
   });
 
@@ -745,7 +745,7 @@ app.post("/returnFlightByNumber",async(req,res)=>{
     var flights = await Flight.find({FlightNumber : returnFlightNumber});
     console.log("Success");
     returnFlight = flights[0];
-    userPreferredCriteria={ReturnCabinClass: req.body.CabinClass};
+    // userPreferredCriteria={ReturnCabinClass: req.body.CabinClass};
     res.send(returnFlight);
     console.log("Problem Here2")
   console.log(returnFlight);
@@ -768,8 +768,14 @@ app.post("/returnFlightByNumber",async(req,res)=>{
 
 app.get("/reserveFlight", authenticateToken, async(req,res)=>{
 
+  console.log("Entered reserve FLight")
+  console.log(departureFlight.FlightPrice);
+  console.log(returnFlight.FlightPrice);
+  console.log(userPreferredCriteria);
+
       if(req.user.name==undefined)
       {
+        console.log("HHHHHHHHH");
         res.send(false);
         return;
       }
@@ -788,7 +794,7 @@ app.get("/reserveFlight", authenticateToken, async(req,res)=>{
       try{
         await newReservation.save(newReservation);
         console.log("44444444444444");
-        res.send(true);
+        res.send(newReservation);
       }
       catch(err)
       {
