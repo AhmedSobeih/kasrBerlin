@@ -93,8 +93,13 @@ class SearchResults extends Component {
           .then(()=>{
             var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
         fl.TripDuration = duration;
+        fl.FlightPrice = price;
+        console.log("WWWWWWWW");
+        console.log(this.state.userCriteria.DepartureCabinClass);
+        fl.CabinClass= this.state.userCriteria.DepartureCabinClass;
+
         console.log("nav")
-        this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type}})
+        this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type, flag:true}})
 
           })
         }
@@ -109,7 +114,11 @@ class SearchResults extends Component {
             headers: { "Content-Type": "multipart/form-data"},
           }).then(()=>{
             var duration = this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).hour + " hours, "  + this.durationCalculation(fl.DepatureDate,fl.ArrivalDate).min + " minutes";
-        fl.TripDuration = duration;
+            fl.FlightPrice = price;
+            fl.TripDuration = duration;
+           
+
+            fl.CabinClass= this.state.userCriteria.ReturnCabinClass;
           console.log("nav")
 
         this.props.navigate('/changeNewFlightSeats', {state:{reservation:this.props.location.state.reservation, departureFlight:fl, userCriteria:this.state.userCriteria, FlightPrice: price ,priceDifference: priceDifference, Type:this.props.location.state.Type}})

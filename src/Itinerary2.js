@@ -49,9 +49,22 @@ export default function Itinerary(){
       }
   
 
+    console.log(location.state);
     
-
-
+    DepartureFlight = location.state.departureFlight;
+    ReturnFlight = location.state.returnFlight;
+    var departureSeats;
+    var returnSeats;
+    if(location.state.flag)
+    {
+      departureSeats = location.state.departureSeats;
+      returnSeats = location.state.returnSeats;
+    }
+    else
+    {
+      departureSeats = DepartureFlight.seats;
+      returnSeats = ReturnFlight.seats;
+    }
 
 
 
@@ -89,7 +102,8 @@ export default function Itinerary(){
           // An executor function receives a cancel function as a parameter
           cancel = c;
         })
-        
+        console.log("THis is dep flight")
+        console.log(res.data);
         DepartureFlight = res.data ;
      
 
@@ -105,7 +119,8 @@ export default function Itinerary(){
           // An executor function receives a cancel function as a parameter
           cancel = c;
         })
-        
+        console.log("THis is dep flight")
+        console.log(res.data);
         ReturnFlight = res.data ;
      
 
@@ -136,6 +151,7 @@ function dateConversion(date){
       {
         if (window.confirm("You must be logged in to confirm the trip")) {
             navigate('/login');
+
           } else {
             
             }
@@ -242,8 +258,8 @@ return(
     </tr>
     <tr>
       <th scope="row">Seats Reserved</th>
-      <td>{DepartureFlight.seats} </td>
-      <td>{ReturnFlight.seats}</td>
+      <td>{location.state.departureSeats} </td>
+      <td>{location.state.returnSeats}</td>
     </tr>
   </tbody>
 </table>
@@ -263,3 +279,4 @@ return(
     </>
 );}
 //ReactDOM.render(<createFlight/>,document.getElementById('root'));
+

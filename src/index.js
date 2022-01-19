@@ -77,7 +77,6 @@ const Division2 =({title,paragraph,action})=>{
 
    
 export default function Home(){
-      localStorage.setItem('type', 2) 
   return (
       <div>
            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">

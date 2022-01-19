@@ -13,6 +13,8 @@ import session from "express-session";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 var flag=false;
+let values = [];
+
 const stripeTestPromise = loadStripe(process.env.REACT_APP_PUBLIC_KEY);
 
 export default function FlightSeats() {
@@ -30,7 +32,13 @@ export default function FlightSeats() {
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
     const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
-    const [departureCriteria, setDepartureCriteria] = useState(location.state.Type=="Departure"? location.state.userCriteria.DepartureCabinClass:location.state.userCriteria.ReturnCabinClass);
+    const [departureCriteria, setDepartureCriteria] = useState(location.state.Type==="Departure"? location.state.userCriteria.DepartureCabinClass:location.state.userCriteria.ReturnCabinClass);
+    const [DepFlight, setDepFlight] = useState({});
+    const [ReturnFlight, setReturnFlight] = useState({});
+    const [reservationNumber, setReservationNumber] = useState({});
+    const [reservationSeats, setreservationSeats] = useState({});
+
+
 
 
     console.log((parseInt(location.state.priceDifference)))
@@ -92,7 +100,6 @@ flag=true;
 function confirmSeats() {
 
     const checkboxes = document.querySelectorAll(`input:checked`);
-    let values = [];
     checkboxes.forEach((checkbox) => {
         values.push(checkbox.id);
     });
@@ -107,6 +114,44 @@ function confirmSeats() {
       })
     if(location.state.Type=="Departure")
     {//done
+      var bodyFormData2 = new FormData();
+      bodyFormData2.append('FlightNumber',  location.state.departureFlight.FlightNumber);
+      // ReturnFlight.FlightNumber = location.state.departureFlight.FlightNumber;
+      bodyFormData2.append('DepatureDate', location.state.departureFlight.DepatureDate);
+      // ReturnFlight.DepatureDate = location.state.departureFlight.DepatureDate;
+      bodyFormData2.append('ArrivalDate',  location.state.departureFlight.ArrivalDate);
+      // ReturnFlight.ArrivalDate = location.state.departureFlight.ArrivalDate;
+      bodyFormData2.append('FreeEconomySeatsNum',  location.state.departureFlight.FreeEconomySeatsNum);
+      // ReturnFlight.FreeEconomySeatsNum = location.state.departureFlight.FreeEconomySeatsNum;
+      bodyFormData2.append('FreeBusinessSeatsNum',  location.state.departureFlight.FreeBusinessSeatsNum);
+      // ReturnFlight.FreeBusinessSeatsNum = location.state.departureFlight.FreeBusinessSeatsNum;
+      bodyFormData2.append('FreeFirstSeatsNum',  location.state.departureFlight.FreeFirstSeatsNum);
+      // ReturnFlight.FreeFirstSeatsNum = location.state.departureFlight.FreeFirstSeatsNum;
+      bodyFormData2.append('DepatureAirport',  location.state.departureFlight.DepatureAirport);
+      // ReturnFlight.DepatureAirport = location.state.departureFlight.DepatureAirport;
+      bodyFormData2.append('ArrivalAirport',  location.state.departureFlight.ArrivalAirport);
+      // ReturnFlight.ArrivalAirport = location.state.departureFlight.ArrivalAirport;
+      bodyFormData2.append('CabinClass',  location.state.userCriteria.DepartureCabinClass);
+      // ReturnFlight.CabinClass = location.state.userCriteria.DepartureCabinClass;
+      bodyFormData2.append('FlightPrice',  location.state.FlightPrice);
+      // ReturnFlight.FlightNumber = location.state.FlightPrice;
+      bodyFormData2.append('BaggageAllowance',  location.state.BaggageAllowance);
+      // ReturnFlight.BaggageAllowance = location.state.BaggageAllowance;
+      bodyFormData2.append('seats', location.state.reservation.DepatureFlightSeats );
+      // ReturnFlight.seats = location.state.reservation.DepatureFlightSeats;
+      var duration = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate).hour + " hours, "  + durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate).min + " minutes";
+      bodyFormData.append('TripDuration', duration ); 
+      // ReturnFlight.TripDuration = duration;
+
+        axios({
+        method: "post",
+        url: "/departureFlight",
+        data: bodyFormData2,
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
+      }).then(()=>{
+        console.log("00000000000000000");
+      })   
+
         axios({
             method: "get",
             url: '/flight/'+ location.state.reservation.ArrivalFlightFlightNumber,
@@ -123,19 +168,33 @@ function confirmSeats() {
         res.data.FlightPrice= returnPrice;
         var bodyFormData = new FormData();
       bodyFormData.append('FlightNumber',  res.data.FlightNumber);
+      ReturnFlight.FlightNumber=res.data.FlightNumber;
       bodyFormData.append('DepatureDate',  res.data.DepatureDate);
+      ReturnFlight.DepatureDate=res.data.DepatureDate;
       bodyFormData.append('ArrivalDate',  res.data.ArrivalDate);
+      ReturnFlight.ArrivalDate=res.data.ArrivalDate;
       bodyFormData.append('FreeEconomySeatsNum',  res.data.FreeEconomySeatsNum);
+      ReturnFlight.FreeEconomySeatsNum=res.data.FreeEconomySeatsNum;
       bodyFormData.append('FreeBusinessSeatsNum',  res.data.FreeBusinessSeatsNum);
+      ReturnFlight.FreeBusinessSeatsNum=res.data.FreeBusinessSeatsNum;
       bodyFormData.append('FreeFirstSeatsNum',  res.data.FreeFirstSeatsNum);
+      ReturnFlight.FreeFirstSeatsNum=res.data.FreeFirstSeatsNum;
       bodyFormData.append('DepatureAirport',  res.data.DepatureAirport);
+      ReturnFlight.DepatureAirport=res.data.DepatureAirport;
       bodyFormData.append('ArrivalAirport',  res.data.ArrivalAirport);
+      ReturnFlight.ArrivalAirport=res.data.ArrivalAirport;
       bodyFormData.append('CabinClass',  location.state.reservation.ReturnCabinClass);
-      bodyFormData.append('FlightPrice',  res.data.FlightPrice);
+      ReturnFlight.CabinClass= location.state.reservation.ReturnCabinClass;
+      bodyFormData.append('FlightPrice', location.state.FlightPrice);
+      ReturnFlight.FlightPrice=res.data.FlightPrice;
       bodyFormData.append('BaggageAllowance',  res.data.BaggageAllowance);
+      ReturnFlight.BaggageAllowance=res.data.BaggageAllowance;
       bodyFormData.append('seats', location.state.reservation.ArrivalFlightSeats );
+      ReturnFlight.seats=location.state.reservation.ArrivalFlightSeats;
       var duration = durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).hour + " hours, "  + durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).min + " minutes";
       bodyFormData.append('TripDuration', duration );
+      ReturnFlight.TripDuration=duration;
+
 
 
  
@@ -146,7 +205,9 @@ function confirmSeats() {
         url: "/returnFlight",
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
-      })
+      }).then(()=>{
+        console.log("111111111111111");
+      })   
 
     //   axios({
     //     method: "post",
@@ -162,7 +223,9 @@ function confirmSeats() {
         url: "/setDepSeats",
         data: bodyFormData3,
         headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
-      })
+      }).then(()=>{
+        console.log("2222222222222");
+      })   
       
       
       var bodyFormData2 = new FormData();
@@ -176,7 +239,7 @@ function confirmSeats() {
         headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
-            
+            console.log("3333333333");
             console.log(response.data)
         })
         bodyFormData2 = new FormData();
@@ -189,7 +252,7 @@ function confirmSeats() {
         headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
-          
+          console.log("4444444444444");
             console.log(response.data)
     
         })
@@ -197,13 +260,63 @@ function confirmSeats() {
             method: "get",
             url: '/reserveFlight',
             headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
-          })    
+          }).then((res)=>{
+            console.log("SUCCESSSSSSSSSSSSS");
+            console.log(res.data);
+            reservationNumber.number=res.data.ReservationNumber;
+            console.log("reservationNumber");
+            console.log(reservationNumber);
+            reservationSeats.seats=res.data.Seats;
+            console.log("reservationSeats");
+            console.log(reservationSeats.seats);
+          }).catch(function(err) {
+            console.log("ERRORRRR");
+            console.log(err);
+         });
         
     })
    
     }
     else
     {
+      console.log(location.state.departureFlig)
+      var bodyFormData2 = new FormData();
+      bodyFormData2.append('FlightNumber',  location.state.departureFlight.FlightNumber);
+      // ReturnFlight.FlightNumber = location.state.departureFlight.FlightNumber;
+      bodyFormData2.append('DepatureDate', location.state.departureFlight.DepatureDate);
+      // ReturnFlight.DepatureDate = location.state.departureFlight.DepatureDate;
+      bodyFormData2.append('ArrivalDate',  location.state.departureFlight.ArrivalDate);
+      // ReturnFlight.ArrivalDate = location.state.departureFlight.ArrivalDate;
+      bodyFormData2.append('FreeEconomySeatsNum',  location.state.departureFlight.FreeEconomySeatsNum);
+      // ReturnFlight.FreeEconomySeatsNum = location.state.departureFlight.FreeEconomySeatsNum;
+      bodyFormData2.append('FreeBusinessSeatsNum',  location.state.departureFlight.FreeBusinessSeatsNum);
+      // ReturnFlight.FreeBusinessSeatsNum = location.state.departureFlight.FreeBusinessSeatsNum;
+      bodyFormData2.append('FreeFirstSeatsNum',  location.state.departureFlight.FreeFirstSeatsNum);
+      // ReturnFlight.FreeFirstSeatsNum = location.state.departureFlight.FreeFirstSeatsNum;
+      bodyFormData2.append('DepatureAirport',  location.state.departureFlight.DepatureAirport);
+      // ReturnFlight.DepatureAirport = location.state.departureFlight.DepatureAirport;
+      bodyFormData2.append('ArrivalAirport',  location.state.departureFlight.ArrivalAirport);
+      // ReturnFlight.ArrivalAirport = location.state.departureFlight.ArrivalAirport;
+      bodyFormData2.append('CabinClass',  location.state.userCriteria.DepartureCabinClass);
+      // ReturnFlight.CabinClass = location.state.userCriteria.DepartureCabinClass;
+      bodyFormData2.append('FlightPrice',  location.state.FlightPrice);
+      // ReturnFlight.FlightNumber = location.state.FlightPrice;
+      bodyFormData2.append('BaggageAllowance',  location.state.BaggageAllowance);
+      // ReturnFlight.BaggageAllowance = location.state.BaggageAllowance;
+      bodyFormData2.append('seats', location.state.reservation.ArrivalFlightSeats );
+      // ReturnFlight.seats = location.state.reservation.DepatureFlightSeats;
+      var duration = durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate).hour + " hours, "  + durationCalculation(location.state.departureFlight.DepatureDate,location.state.departureFlight.ArrivalDate).min + " minutes";
+      bodyFormData.append('TripDuration', duration ); 
+      // ReturnFlight.TripDuration = duration;
+
+        axios({
+        method: "post",
+        url: "/returnFlight",
+        data: bodyFormData2,
+        headers: { "Content-Type": "multipart/form-data" , "Authorization":"Bearer "+ accessToken },
+      }).then(()=>{
+        console.log("00000000000000000");
+      })   
         axios.get('/flight/'+ location.state.reservation.DepatureFlightFlightNumber)
         .then((res)=>{
         var departurePrice =0;
@@ -216,20 +329,33 @@ function confirmSeats() {
         res.data.FlightPrice= departurePrice;
         var bodyFormData = new FormData();
       bodyFormData.append('FlightNumber',  res.data.FlightNumber);
+      DepFlight.FlightNumber=res.data.FlightNumber;
       bodyFormData.append('DepatureDate',  res.data.DepatureDate);
+      DepFlight.DepatureDate=res.data.DepatureDate;
       bodyFormData.append('ArrivalDate',  res.data.ArrivalDate);
+      DepFlight.ArrivalDate=res.data.ArrivalDate;
       bodyFormData.append('FreeEconomySeatsNum',  res.data.FreeEconomySeatsNum);
+      DepFlight.FreeEconomySeatsNum= res.data.FreeEconomySeatsNum;
       bodyFormData.append('FreeBusinessSeatsNum',  res.data.FreeBusinessSeatsNum);
+      DepFlight.FreeBusinessSeatsNum=res.data.FreeBusinessSeatsNum;
       bodyFormData.append('FreeFirstSeatsNum',  res.data.FreeFirstSeatsNum);
+      DepFlight.FreeFirstSeatsNum=res.data.FreeFirstSeatsNum;
       bodyFormData.append('DepatureAirport',  res.data.DepatureAirport);
+      DepFlight.DepatureAirport=res.data.DepatureAirport;
       bodyFormData.append('ArrivalAirport',  res.data.ArrivalAirport);
+      DepFlight.ArrivalAirport=res.data.ArrivalAirport;
       bodyFormData.append('CabinClass',  location.state.reservation.DepartureCabinClass);
+      DepFlight.CabinClass=location.state.reservation.DepartureCabinClass;
       bodyFormData.append('FlightPrice',  res.data.FlightPrice);
+      DepFlight.FlightPrice=res.data.FlightPrice;
       bodyFormData.append('BaggageAllowance',  res.data.BaggageAllowance);
-      bodyFormData.append('seats', location.state.reservation.ArrivalFlightSeats );
+      DepFlight.BaggageAllowance= res.data.BaggageAllowance;
+      bodyFormData.append('seats', location.state.reservation.DepatureFlightSeats );
+      DepFlight.seats=location.state.reservation.DepatureFlightSeats;
       var duration = durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).hour + " hours, "  + durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).min + " minutes";
       bodyFormData.append('TripDuration', duration );
-      
+      DepFlight.TripDuration=duration;
+
     
       
       
@@ -286,10 +412,22 @@ function confirmSeats() {
     
         })
         axios({
-            method: "get",
-            url: '/reserveFlight',
-            headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
-          })
+          method: "get",
+          url: '/reserveFlight',
+          headers: { "Content-Type": "multipart/form-data" ,"Authorization":"Bearer "+ accessToken },
+        }).then((res)=>{
+          console.log("SUCCESSSSSSSSSSSSS");
+          console.log(res.data);
+          reservationNumber.number=res.data.ReservationNumber;
+          console.log("reservationNumber");
+          console.log(reservationNumber);
+          reservationSeats.seats=res.data.ReturnSeats;
+          console.log("reservationSeats");
+          console.log(reservationSeats.seats);
+        }).catch(function(err) {
+          console.log("ERRORRRR");
+          console.log(err);
+       });
           
           /*.then(()=>{
             navigate('/Itinerary');
@@ -349,7 +487,14 @@ function confirmSeats() {
         console.log("Stripe 35 | data", response.data.success);
         if (response.data.success) {
           console.log("CheckoutForm.js 25 | payment successful!");
-          navigate('/Itinerary');
+          if(location.state.Type==="Departure")
+            navigate('/Itinerary2', {state: {departureFlight:location.state.departureFlight, returnFlight:ReturnFlight, reservationNumber:reservationNumber.number, departureSeats: reservationSeats.seats , returnSeats: ReturnFlight.seats}});
+          else
+          {
+            console.log("Henaaaaa");
+            navigate('/Itinerary2', {state: {departureFlight:DepFlight, returnFlight:location.state.departureFlight, reservationNumber:reservationNumber.number, departureSeats: DepFlight.seats  , returnSeats:reservationSeats.seats}});
+          }  
+
         }
       } catch (error) {
         console.log("CheckoutForm.js 28 | ", error);
