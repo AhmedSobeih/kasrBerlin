@@ -731,8 +731,8 @@ const Subscriptions=({plan})=>{
             <div class="container">
                 <div class="row">
                     <h3 > First class seats</h3>
-            {SeatsFirst.map((fl,index) => 
-                                    ((departureCriteria==="First Class")&& (!fl) && (<div class="col-lg-3">
+             {SeatsFirst.map((fl,index) => 
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+1} />
                                                         <label for={index+1}>{index+1}</label>
@@ -742,7 +742,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Business Class")||(departureCriteria==="Economy Class")) && (<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+1} />
                                                             <label for={index+1}>{index+1}</label>
@@ -756,7 +756,7 @@ const Subscriptions=({plan})=>{
                     } 
                     <h3>  Business seats</h3>
              {SeatsBusiness.map((fl,index) => 
-                                    ( (departureCriteria==="Business Class")&&(!fl) && (<div class="col-lg-3">
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+SeatsFirst.length+1} />
                                                         <label for={index+SeatsFirst.length+1}>{index+SeatsFirst.length+1}</label>
@@ -766,7 +766,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Economy Class")||(departureCriteria==="First Class"))&&(<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+SeatsFirst.length+1} />
                                                             <label for={index+SeatsFirst.length+1}>{index+SeatsFirst.length+1}</label>
@@ -780,7 +780,7 @@ const Subscriptions=({plan})=>{
                     } 
                     <h3> Economy seats</h3>
              {SeatsEconomy.map((fl,index) => 
-                                    ( (departureCriteria==="Economy Class")&& (!fl) && (<div class="col-lg-3">
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+SeatsFirst.length+SeatsBusiness.length+1} />
                                                         <label for={index+SeatsFirst.length+SeatsBusiness.length+1}>{index+SeatsFirst.length+SeatsBusiness.length+1}</label>
@@ -790,7 +790,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Business Class")||(departureCriteria==="First Class"))  && (<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+SeatsFirst.length+SeatsBusiness.length+1} />
                                                             <label for={index+SeatsFirst.length+SeatsBusiness.length+1}>{index+SeatsFirst.length+SeatsBusiness.length+1}</label>
@@ -802,7 +802,6 @@ const Subscriptions=({plan})=>{
                       
                      )
                     } 
-                   
                    
                    
 

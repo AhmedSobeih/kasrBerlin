@@ -206,8 +206,6 @@ const Subscriptions=({plan})=>{
     const [SeatsFirst, setSeatsFirst] = useState([]);
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
-    const [departureCriteria, setDepartureCriteria] = useState("");
-
     try{
         const [ReservationNumber, setReservationNumber] = useState(location.state.ReservationNumber);
     }
@@ -310,7 +308,7 @@ const Subscriptions=({plan})=>{
                                         (((fl)||(location.state.CabinClass==="Business Class")||(location.state.CabinClass==="Economy Class")) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+1} />
-                                                            <label for={index}>{index+1}</label>
+                                                            <label for={index+1}>{index+1}</label>
                                                         </li>
 
                                                     </div>
@@ -319,7 +317,6 @@ const Subscriptions=({plan})=>{
                       
                      )
                     } 
-      
                     <h3>  Business seats</h3>
              {SeatsBusiness.map((fl,index) => 
                                     ( (location.state.CabinClass==="Business Class")&&(!fl) && (<div class="col-lg-3">
@@ -367,7 +364,8 @@ const Subscriptions=({plan})=>{
                                     )
                       
                      )
-                    }                  
+                    } 
+                   
                    
 
                 </div>
