@@ -111,7 +111,7 @@ app.post(("/reservationEmail"),authenticateToken,async(req,res)=>{
   console.log(req.body);
   console.log(req.body.reservationNumber);
   const reserv=await Reservation.find({ReservationNumber : req.body.reservationNumber});
-  console.log
+  var depCabin = reserv[0].DepartureCabinClass;
   var depNum = reserv[0].DepartureFlightNumber;
   var retNum = reserv[0].ArrivalFlightNumber;
   const deppFlight=await Flight.find({FlightNumber :depNum });
@@ -143,7 +143,7 @@ async function sendMail() {
       from: 'AIROAIRLINES <airoairlines@gmail.com>',
       to: user[0].email,
       subject: 'Your flight itinerary',
-        text: 'Hello '+user[0].lastName + " you have reserved this round trip with a departure flight number of "+parseInt(depFlight.FlightNumber)+" \nand a departure time of "+depFlight.ArrivalDate+ " \nAn arrival time of "+depFlight.ArrivalDate+" \nThe departure airport is "+depFlight.DepatureAirport+" \nThe arrival airport is "+depFlight.ArrivalAirport+" \nThe chosen cabin is "+reserv[0].DepartureCabinClass+" \nThe package allowance is "+depFlight.BaggageAllowance+" \nA seat number of "+DepartureCabinClass.Seats+" \nYou have also reserved a return flight with a flight number of "+parseInt(retFlight.FlightNumber)+" \nA departure time of "+retFlight.ArrivalDate+ " \nAn arrival time of "+retFlight.ArrivalDate+" \nThe departure airport is "+retFlight.DepatureAirport+" \nThe arrival airport is "+retFlight.ArrivalAirport+" \nThe chosen cabin is "+reserv[0].ReturnCabinClass+" \nA trip duration of "+retFlight.TripDuration+" \nThe package allowance is "+retFlight.BaggageAllowance+" \nA seat number of "+reserv[0].ReturnSeats+" \nThe Total  price is "+reserv[0].Price
+        text: 'Hello '+user[0].lastName + " you have reserved this round trip with a departure flight number of "+parseInt(depFlight.FlightNumber)+" \nand a departure time of "+depFlight.ArrivalDate+ " \nAn arrival time of "+depFlight.ArrivalDate+" \nThe departure airport is "+depFlight.DepatureAirport+" \nThe arrival airport is "+depFlight.ArrivalAirport+" \nThe chosen cabin is "+depCabin+" \nThe package allowance is "+depFlight.BaggageAllowance+" \nA seat number of "+reserv[0].Seats+" \nYou have also reserved a return flight with a flight number of "+parseInt(retFlight.FlightNumber)+" \nA departure time of "+retFlight.ArrivalDate+ " \nAn arrival time of "+retFlight.ArrivalDate+" \nThe departure airport is "+retFlight.DepatureAirport+" \nThe arrival airport is "+retFlight.ArrivalAirport+" \nThe chosen cabin is "+reserv[0].ReturnCabinClass+" \nA trip duration of "+retFlight.TripDuration+" \nThe package allowance is "+retFlight.BaggageAllowance+" \nA seat number of "+reserv[0].ReturnSeats+" \nThe Total  price is "+reserv[0].Price
     };
 
     const result = await transport.sendMail(mailOptions);

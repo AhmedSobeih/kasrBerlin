@@ -384,7 +384,7 @@ class ViewReservations extends Component {
                         bodyFormData.append('reservationNumber', fl.ReservationNumber);
                       
                        axios({
-                        method: "get",
+                        method: "post",
                         url: "/reservationEmail",
                         data: bodyFormData,
                         headers: { "Content-Type": "multipart/form-data","Authorization":"Bearer "+ this.props.accessToken },
