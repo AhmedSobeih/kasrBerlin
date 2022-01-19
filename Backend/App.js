@@ -12,6 +12,8 @@ const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
+const bcrypt = require('bcrypt')
+
 
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
@@ -1181,24 +1183,25 @@ app.post("/searchFlight",authenticateToken, (req,res)=>{
       const username = req.user.name;
       const filter = req.params;
       var result = {status : false, response: ""};
-      const u = await Users.find({username : req.user.name, password: req.body.oldPassword});
-      if(u[0] != null)
-      {
-        Users.findOneAndUpdate({username : req.user.name}, {password: req.body.newPassword}, {
-          new: true,
-        })
-        .then((user)=>{
-          result.status = true;
-          res.send(result);
-      }).catch((err) =>  res.send(result))
-      }
-      else
-      {
+      Users.find({username:req.user.name})
+  .then(async (user)=>{
+    var condition = await bcrypt.compare(req.body.oldPassword, user[0].password);
+    if(condition)
+    {
+      Users.findOneAndUpdate({username : req.user.name}, {password: await bcrypt.hash(req.body.newPassword, 10)}, {
+        new: true,
+      })
+      .then((user)=>{
+        result.status = true;
+        res.send(result);
+    }).catch((err) =>  res.send(result));
+    }
+    else
+    {
         result.response = "Old Password is wrong";
         res.send(result);
-      }
-        
-    });
+    }
+    });});
 
     app.put('/user',authenticateToken, (req,res)=>{
       

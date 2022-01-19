@@ -88,9 +88,13 @@ export default function UserChangePassword() {
         headers: { "Content-Type": "multipart/form-data","Authorization":"Bearer "+ accessToken },
       })
           .then((response) => { 
-          
+            console.log(response);
             if(response.data.status==true)
               setLoginSuccess("Password Updated");
+            else
+            {
+              setLoginSuccess("Old Password is wrong");
+            }
         })
     }
 
