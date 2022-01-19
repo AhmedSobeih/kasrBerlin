@@ -14,7 +14,10 @@ export default function Register() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [userCreated, setUserCreated] = useState("");
+    const [ErrorMessage1, setErrorMessage1] = useState("Please fill in all of the fields");
+
     const navigate = useNavigate();
+
     var disabled
 
     function handleFirstName(number){
@@ -47,7 +50,15 @@ function handlePassword(number){
 
     function createUser (){
       console.log(1);
-  
+      if(firstName.length===0 || lastName.length===0 || homeAddress.length===0 
+        || telephoneNumbers.length===0 || email.length===0 || passportNumber.length===0 
+        || username.length===0 || password.length===0 )
+     {
+      document.getElementById('Fail1').setAttribute("class","alert alert-danger text-center") ;
+      return;
+     }  
+     
+
       var bodyFormData = new FormData();
       bodyFormData.append('firstName', firstName);
       bodyFormData.append('lastName', lastName);
@@ -166,7 +177,7 @@ function handlePassword(number){
                       Telephone Number
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="telephone number" onChangeCapture={handleTelephoneNumbers}
                     />
@@ -256,6 +267,8 @@ function handlePassword(number){
                     >
                       Create Account
                     </button>
+                    <div id='Fail' className="d-none alert-warning">{ErrorMessage1}</div>
+
                   </div>
                 </form>
               </div>

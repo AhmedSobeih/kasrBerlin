@@ -218,22 +218,22 @@ const Subscriptions=({plan})=>{
     const [Type, setType] = useState(location.state.Type);
 
 
-      axios.get('/userCriteria')
-    .then(res => {
-        if(Type=="Departure"){
-        setDepartureCriteria(res.data.DepartureCabinClass);
-        console.log(res.data.DepartureCabinClass)
-        }
-        else{
-        setDepartureCriteria(res.data.ReturnCabinClass);
-        console.log(res.data.ReturnCabinClass)
+    //   axios.get('/userCriteria')
+    // .then(res => {
+    //     if(Type=="Departure"){
+    //     setDepartureCriteria(res.data.DepartureCabinClass);
+    //     console.log(res.data.DepartureCabinClass)
+    //     }
+    //     else{
+    //     setDepartureCriteria(res.data.ReturnCabinClass);
+    //     console.log(res.data.ReturnCabinClass)
 
-        }
+    //     }
 
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+    // })
+    // .catch(function (error) {
+    //     console.log(error);
+    // })
 
     if(Type=="Departure")
     {
