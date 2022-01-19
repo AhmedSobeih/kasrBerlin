@@ -30,7 +30,6 @@ export default function FlightSeats() {
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
     const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
-    const [departureCriteria, setDepartureCriteria] = useState("");
 
 
     console.log((parseInt(location.state.priceDifference)))
@@ -138,14 +137,7 @@ function confirmSeats() {
       bodyFormData.append('TripDuration', duration );
 
 
-     axios.get('/userCriteria')
-    .then(res => {
-        setDepartureCriteria(res.data.DepartureCabinClass);
-       console.log(res.data.DepartureCabinClass)
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+
       
       //done
       axios({
@@ -237,14 +229,7 @@ function confirmSeats() {
       var duration = durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).hour + " hours, "  + durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).min + " minutes";
       bodyFormData.append('TripDuration', duration );
       
-     axios.get('/userCriteria')
-    .then(res => {
-        setDepartureCriteria(res.data.ReturnCabinClass);
-       console.log(res.data.ReturnCabinClass)
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+
 
       
       
@@ -601,8 +586,8 @@ const Subscriptions=({plan})=>{
             <div class="container">
                 <div class="row">
                     <h3 > First class seats</h3>
-            {SeatsFirst.map((fl,index) => 
-                                    ((departureCriteria==="First Class")&& (!fl) && (<div class="col-lg-3">
+             {SeatsFirst.map((fl,index) => 
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+1} />
                                                         <label for={index+1}>{index+1}</label>
@@ -612,7 +597,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Business Class")||(departureCriteria==="Economy Class")) && (<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+1} />
                                                             <label for={index+1}>{index+1}</label>
@@ -626,7 +611,7 @@ const Subscriptions=({plan})=>{
                     } 
                     <h3>  Business seats</h3>
              {SeatsBusiness.map((fl,index) => 
-                                    ( (departureCriteria==="Business Class")&&(!fl) && (<div class="col-lg-3">
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+SeatsFirst.length+1} />
                                                         <label for={index+SeatsFirst.length+1}>{index+SeatsFirst.length+1}</label>
@@ -636,7 +621,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Economy Class")||(departureCriteria==="First Class"))&&(<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+SeatsFirst.length+1} />
                                                             <label for={index+SeatsFirst.length+1}>{index+SeatsFirst.length+1}</label>
@@ -650,7 +635,7 @@ const Subscriptions=({plan})=>{
                     } 
                     <h3> Economy seats</h3>
              {SeatsEconomy.map((fl,index) => 
-                                    ( (departureCriteria==="Economy Class")&& (!fl) && (<div class="col-lg-3">
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+SeatsFirst.length+SeatsBusiness.length+1} />
                                                         <label for={index+SeatsFirst.length+SeatsBusiness.length+1}>{index+SeatsFirst.length+SeatsBusiness.length+1}</label>
@@ -660,7 +645,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Business Class")||(departureCriteria==="First Class"))  && (<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+SeatsFirst.length+SeatsBusiness.length+1} />
                                                             <label for={index+SeatsFirst.length+SeatsBusiness.length+1}>{index+SeatsFirst.length+SeatsBusiness.length+1}</label>
@@ -672,7 +657,6 @@ const Subscriptions=({plan})=>{
                       
                      )
                     } 
-                   
                    
                    
 

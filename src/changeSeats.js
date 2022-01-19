@@ -206,8 +206,6 @@ const Subscriptions=({plan})=>{
     const [SeatsFirst, setSeatsFirst] = useState([]);
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
-    const [departureCriteria, setDepartureCriteria] = useState("");
-
     try{
         const [ReservationNumber, setReservationNumber] = useState(location.state.ReservationNumber);
     }
@@ -218,22 +216,7 @@ const Subscriptions=({plan})=>{
     const [Type, setType] = useState(location.state.Type);
 
 
-      axios.get('/userCriteria')
-    .then(res => {
-        if(Type=="Departure"){
-        setDepartureCriteria(res.data.DepartureCabinClass);
-        console.log(res.data.DepartureCabinClass)
-        }
-        else{
-        setDepartureCriteria(res.data.ReturnCabinClass);
-        console.log(res.data.ReturnCabinClass)
 
-        }
-
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
 
     if(Type=="Departure")
     {
@@ -310,7 +293,7 @@ const Subscriptions=({plan})=>{
                                         ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+1} />
-                                                            <label for={index}>{index+1}</label>
+                                                            <label for={index+1}>{index+1}</label>
                                                         </li>
 
                                                     </div>
@@ -319,10 +302,9 @@ const Subscriptions=({plan})=>{
                       
                      )
                     } 
-      
                     <h3>  Business seats</h3>
              {SeatsBusiness.map((fl,index) => 
-                                    ( (departureCriteria==="Business Class")&&(!fl) && (<div class="col-lg-3">
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+SeatsFirst.length+1} />
                                                         <label for={index+SeatsFirst.length+1}>{index+SeatsFirst.length+1}</label>
@@ -332,7 +314,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Economy Class")||(departureCriteria==="First Class"))&&(<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+SeatsFirst.length+1} />
                                                             <label for={index+SeatsFirst.length+1}>{index+SeatsFirst.length+1}</label>
@@ -346,7 +328,7 @@ const Subscriptions=({plan})=>{
                     } 
                     <h3> Economy seats</h3>
              {SeatsEconomy.map((fl,index) => 
-                                    ( (departureCriteria==="Economy Class")&& (!fl) && (<div class="col-lg-3">
+                                    ( (!fl) && (<div class="col-lg-3">
                                                     <li class="seat">
                                                         <input type="checkbox" id={index+SeatsFirst.length+SeatsBusiness.length+1} />
                                                         <label for={index+SeatsFirst.length+SeatsBusiness.length+1}>{index+SeatsFirst.length+SeatsBusiness.length+1}</label>
@@ -356,7 +338,7 @@ const Subscriptions=({plan})=>{
                                     )
                                     ||
                                     
-                                        ( ((fl)||(departureCriteria==="Business Class")||(departureCriteria==="First Class"))  && (<div class="col-lg-3">
+                                        ( (fl) && (<div class="col-lg-3">
                                                         <li class="seat">
                                                             <input type="checkbox" disabled id={index+SeatsFirst.length+SeatsBusiness.length+1} />
                                                             <label for={index+SeatsFirst.length+SeatsBusiness.length+1}>{index+SeatsFirst.length+SeatsBusiness.length+1}</label>
@@ -367,7 +349,8 @@ const Subscriptions=({plan})=>{
                                     )
                       
                      )
-                    }                  
+                    } 
+                   
                    
 
                 </div>

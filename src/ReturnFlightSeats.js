@@ -101,6 +101,7 @@ const Subscriptions=({plan})=>{
     const [SeatsFirst, setSeatsFirst] = useState([]);
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
+
     const [returnCriteria, setReturnCriteria] = useState("");
     axios.get('/userCriteria')
     .then(res => {
