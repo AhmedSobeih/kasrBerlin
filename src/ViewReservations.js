@@ -6,7 +6,7 @@ import UserHome from 'UserHome';
 
 var username;
 let authorized = true;
-
+var reservation;
 export default function(props) {
   
   
@@ -253,6 +253,32 @@ class ViewReservations extends Component {
                     >
                       Change seats
      </button> </td>
+      <td><button 
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" 
+                      onClick={(e) =>{ e.preventDefault();
+
+                        var bodyFormData = new FormData();
+                        console.log(fl);
+                        console.log(fl.ReservationNumber)
+                        bodyFormData.append('reservationNumber', fl.ReservationNumber);
+                      
+                       axios({
+                        method: "post",
+                        url: "/reservationEmail",
+                        data: bodyFormData,
+                        headers: { "Content-Type": "multipart/form-data","Authorization":"Bearer "+ this.props.accessToken },
+                      })
+                      .then((response) => { 
+
+                      })
+                        
+                        
+                    }}
+                      
+                    >
+                      Send Itinerary Mail
+     </button> </td>
      <td><button 
                       className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button" 
@@ -347,6 +373,31 @@ class ViewReservations extends Component {
                       
                     >
                       Change seats
+     </button> </td>
+     <td><button 
+                      className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      type="button" 
+                      onClick={(e) =>{ e.preventDefault();
+
+                        var bodyFormData = new FormData();
+
+                        bodyFormData.append('reservationNumber', fl.ReservationNumber);
+                      
+                       axios({
+                        method: "get",
+                        url: "/reservationEmail",
+                        data: bodyFormData,
+                        headers: { "Content-Type": "multipart/form-data","Authorization":"Bearer "+ this.props.accessToken },
+                      })
+                      .then((response) => { 
+
+                      })
+                        
+                        
+                    }}
+                      
+                    >
+                      Send Itinerary Mail
      </button> </td>
      <td><button 
                       className="bg-blueGray-800 text-white active:bg-red-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"

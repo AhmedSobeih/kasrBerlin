@@ -106,7 +106,61 @@ app.get("/totalPrice",async(req,res)=>{
 
  
 });
+//////
+app.post(("/reservationEmail"),authenticateToken,async(req,res)=>{
+  console.log(req.body);
+  console.log(req.body.reservationNumber);
+  const reserv=await Reservation.find({ReservationNumber : req.body.reservationNumber});
+  console.log
+  var depNum = reserv[0].DepartureFlightNumber;
+  var retNum = reserv[0].ArrivalFlightNumber;
+  const deppFlight=await Flight.find({FlightNumber :depNum });
+  const rettFlight=await Flight.find({FlightNumber :retNum });
+  const depFlight = deppFlight[0];
+  const retFlight = rettFlight[0];
+  console.log(depFlight);
+  console.log(retFlight);
+const user=await Users.find({username : req.user.name});
+console.log(user[0].email);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
+async function sendMail() {
+  try {
+    const accessToken = await oAuth2Client.getAccessToken();
+
+    const transport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: 'airoairlines@gmail.com',
+        clientId: CLIENT_ID,
+        clientSecret: CLEINT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken,
+      },
+    });
+    const mailOptions = {
+      from: 'AIROAIRLINES <airoairlines@gmail.com>',
+      to: user[0].email,
+      subject: 'Your flight itinerary',
+        text: 'Hello '+user[0].lastName + " you have reserved this round trip with a departure flight number of "+parseInt(depFlight.FlightNumber)+" \nand a departure time of "+depFlight.ArrivalDate+ " \nAn arrival time of "+depFlight.ArrivalDate+" \nThe departure airport is "+depFlight.DepatureAirport+" \nThe arrival airport is "+depFlight.ArrivalAirport+" \nThe chosen cabin is "+reserv[0].DepartureCabinClass+" \nThe package allowance is "+depFlight.BaggageAllowance+" \nA seat number of "+DepartureCabinClass.Seats+" \nYou have also reserved a return flight with a flight number of "+parseInt(retFlight.FlightNumber)+" \nA departure time of "+retFlight.ArrivalDate+ " \nAn arrival time of "+retFlight.ArrivalDate+" \nThe departure airport is "+retFlight.DepatureAirport+" \nThe arrival airport is "+retFlight.ArrivalAirport+" \nThe chosen cabin is "+reserv[0].ReturnCabinClass+" \nA trip duration of "+retFlight.TripDuration+" \nThe package allowance is "+retFlight.BaggageAllowance+" \nA seat number of "+reserv[0].ReturnSeats+" \nThe Total  price is "+reserv[0].Price
+    };
+
+    const result = await transport.sendMail(mailOptions);
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+sendMail()
+  .then((result) => console.log('Email sent...', result))
+  .catch((error) => console.log(error.message));
+  
+
+  res.status(200).json(reserv);
+});
+///////
 //stripe post request
 app.post("/stripe/charge",cors(),authenticateToken, async (req, res) => {
   console.log(req.user.name);
