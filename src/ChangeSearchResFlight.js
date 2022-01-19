@@ -46,7 +46,7 @@ class SearchResults extends Component {
     constructor(props) {
         super(props);
         const location = this.props.location; 
-        this.state = { flightsCollection: [], userCriteria: location.state.s, isUser: false };
+        this.state = { flightsCollection: location.state.searchResult, userCriteria: location.state.s, isUser: false };
         const navigate = this.props.navigate;
         const accessToken = this.props.accessToken;
 
@@ -60,17 +60,6 @@ class SearchResults extends Component {
     componentDidMount() {
        
         const location = this.props.location; // this uses Router based states to let us access cour state
-        axios({
-          method: "get",
-          url: '/searchDepResults',
-              headers: { "Content-Type": "multipart/form-data", "Authorization":"Bearer "+ this.props.accessToken },
-            })
-            .then(res => {
-                this.setState({ flightsCollection: res.data });
-            })
-            .catch(function (error) {
-                console.log(error);
-            })
             
             axios({
               method: "get",

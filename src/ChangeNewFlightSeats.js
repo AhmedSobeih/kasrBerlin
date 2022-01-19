@@ -30,7 +30,7 @@ export default function FlightSeats() {
     const [SeatsBusiness, setSeatsBusiness] = useState([]);
     const [SeatsEconomy, setSeatsEconomy] = useState([]);
     const [DepartureFlight, setDepartureFlight] = useState(location.state.departureFlight);
-    const [departureCriteria, setDepartureCriteria] = useState("");
+    const [departureCriteria, setDepartureCriteria] = useState(location.state.Type=="Departure"? location.state.userCriteria.DepartureCabinClass:location.state.userCriteria.ReturnCabinClass);
 
 
     console.log((parseInt(location.state.priceDifference)))
@@ -138,14 +138,7 @@ function confirmSeats() {
       bodyFormData.append('TripDuration', duration );
 
 
-     axios.get('/userCriteria')
-    .then(res => {
-        setDepartureCriteria(res.data.DepartureCabinClass);
-       console.log(res.data.DepartureCabinClass)
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+ 
       
       //done
       axios({
@@ -237,15 +230,7 @@ function confirmSeats() {
       var duration = durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).hour + " hours, "  + durationCalculation(res.data.DepatureDate,res.data.ArrivalDate).min + " minutes";
       bodyFormData.append('TripDuration', duration );
       
-     axios.get('/userCriteria')
-    .then(res => {
-        setDepartureCriteria(res.data.ReturnCabinClass);
-       console.log(res.data.ReturnCabinClass)
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
-
+    
       
       
       axios({

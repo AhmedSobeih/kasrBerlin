@@ -14,6 +14,7 @@ import UserAccountDetails from './UserAccountDetails';
 import UserUpdateDetails from './UserUpdateDetails';
 import UserChangePassword from './UserChangePassword';
 import Index from './index';
+    
 import SearchFlightUser from './searchFlightUser';
 import SearchResultsUser from './SearchResultsUser';
 import DepartureFlight from './DepartureFlightDetails';
@@ -31,9 +32,8 @@ import ChangeNewFlightSeats from 'ChangeNewFlightSeats';
 import StripContainer from './StripContainer';
 
 
-
-
-
+var accessToken = localStorage.getItem('acessToken');
+var type = localStorage.getItem('type');
 
 
 

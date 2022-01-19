@@ -119,14 +119,14 @@ export default function SearchFlightGuest(){
   }
     else
    {
-     console.log("Departure " + location.state.reservation.DepartureCabinClass);
+    console.log("Departure " + location.state.reservation.DepartureCabinClass);
     bodyFormData.append('DepartureCabinClass', location.state.reservation.DepartureCabinClass);
     UserCriteria.DepartureCabinClass=location.state.reservation.DepartureCabinClass;
     console.log("Return  " + CabinClass);
 
     bodyFormData.append('ReturnCabinClass', CabinClass);
     UserCriteria.ReturnCabinClass=CabinClass;
-    bodyFormData.append('isReturnFlight', false);
+    bodyFormData.append('isReturnFlight', true);
    }
     console.log("accessToken" + accessToken);
    //done
@@ -149,6 +149,8 @@ export default function SearchFlightGuest(){
   })
       .then((response) => { 
         
+        console.log("Response:");
+        console.log(response.data);
         if(response.data==false)
        {
         setErrorMessage('The information you entered does not match with any flights');
@@ -156,7 +158,7 @@ export default function SearchFlightGuest(){
 
        } 
         else{
-          navigate("/changeSearchResFlight", {state: {reservation:location.state.reservation,s:UserCriteria, oldFlight: location.state.oldFlight, Type:location.state.Type}});
+          navigate("/changeSearchResFlight", {state: {reservation:location.state.reservation,s:UserCriteria, oldFlight: location.state.oldFlight, Type:location.state.Type, searchResult:response.data}});
         }
     })
   }
