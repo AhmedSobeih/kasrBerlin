@@ -12,6 +12,8 @@ const MongoURI = 'mongodb://Ziad:z@cluster0-shard-00-00.izp8e.mongodb.net:27017,
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
+const bcrypt = require('bcrypt')
+
 
 const Flight = require('./Models/Flight');
 const Users = require('./Models/Users');
@@ -765,6 +767,7 @@ app.post("/returnFlightByNumber",async(req,res)=>{
       //we need to create a session
 
 app.get("/reserveFlight", authenticateToken, async(req,res)=>{
+
       if(req.user.name==undefined)
       {
         res.send(false);
@@ -784,6 +787,7 @@ app.get("/reserveFlight", authenticateToken, async(req,res)=>{
       })
       try{
         await newReservation.save(newReservation);
+        console.log("44444444444444");
         res.send(true);
       }
       catch(err)
@@ -1179,24 +1183,25 @@ app.post("/searchFlight",authenticateToken, (req,res)=>{
       const username = req.user.name;
       const filter = req.params;
       var result = {status : false, response: ""};
-      const u = await Users.find({username : req.user.name, password: req.body.oldPassword});
-      if(u[0] != null)
-      {
-        Users.findOneAndUpdate({username : req.user.name}, {password: req.body.newPassword}, {
-          new: true,
-        })
-        .then((user)=>{
-          result.status = true;
-          res.send(result);
-      }).catch((err) =>  res.send(result))
-      }
-      else
-      {
+      Users.find({username:req.user.name})
+  .then(async (user)=>{
+    var condition = await bcrypt.compare(req.body.oldPassword, user[0].password);
+    if(condition)
+    {
+      Users.findOneAndUpdate({username : req.user.name}, {password: await bcrypt.hash(req.body.newPassword, 10)}, {
+        new: true,
+      })
+      .then((user)=>{
+        result.status = true;
+        res.send(result);
+    }).catch((err) =>  res.send(result));
+    }
+    else
+    {
         result.response = "Old Password is wrong";
         res.send(result);
-      }
-        
-    });
+    }
+    });});
 
     app.put('/user',authenticateToken, (req,res)=>{
       
@@ -1413,7 +1418,7 @@ app.post("/searchFlight",authenticateToken, (req,res)=>{
         
     });
 
-
+ 
 
 
 /*
@@ -1436,56 +1441,90 @@ app.post("/userCriteria", async(req,res)=>{
 });
 app.post("/searchFlightUser", (req,res)=>{
 
-    var isReturnFlight = req.body.isReturnFlight;
-    var numberOfAdults=0;
-    var numberOfChildren=0;
-    var DepartureCabinClass = 'Economy Class';  
-    var ReturnCabinClass = 'Economy Class';  
+  var isReturnFlight = req.body.isReturnFlight;
+  var numberOfAdults=0;
+  var numberOfChildren=0;
+  var DepartureCabinClass = 'Economy Class';  
+  var ReturnCabinClass = 'Economy Class';  
 
-  Object.keys(req.body).forEach(key => {
-    
-    if(key == "NumberOfAdults" && (req.body[key]!==''))
-    {
-      numberOfAdults = parseInt(req.body[key]);
-      delete req.body[key];
-    }     
-    if(key == "NumberOfChildren")
-     {
-       numberOfChildren = parseInt(req.body[key]);
-       delete req.body[key];
-     }    
-     if(key == "DepartureCabinClass")
-     {
-       DepartureCabinClass = req.body[key];
-       delete req.body[key];
-     }    
-     if(key == "ReturnCabinClass")
-     {
-       ReturnCabinClass = req.body[key];
-       delete req.body[key];
-     }    
-     if(key == "isReturnFlight")
-     {
-       delete req.body[key];
-     }    
-    if (req.body[key]== '' && key != "NumberOfAdults" && key != "NumberOfChildren") {
+Object.keys(req.body).forEach(key => {
+  
+  if(key == "NumberOfAdults" && (req.body[key]!==''))
+  {
+    numberOfAdults = parseInt(req.body[key]);
+    delete req.body[key];
+  }     
+  if(key == "NumberOfChildren")
+   {
+     numberOfChildren = parseInt(req.body[key]);
+     delete req.body[key];
+   }    
+   if(key == "DepartureCabinClass")
+   {
+     DepartureCabinClass = req.body[key];
+     delete req.body[key];
+   }    
+   if(key == "ReturnCabinClass")
+   {
+     ReturnCabinClass = req.body[key];
+     delete req.body[key];
+   }    
+   if(key == "isReturnFlight")
+   {
+     delete req.body[key];
+   }    
+  if (req.body[key]== '' && key != "NumberOfAdults" && key != "NumberOfChildren") {
 
-      delete req.body[key];
+    delete req.body[key];
+  }
+  else{
+      if(key == 'DepatureDate' || key == 'ArrivalDate' )
+        req.body[key] = dateConversionToMongose(req.body[key]);
     }
-    else{
-        if(key == 'DepatureDate' || key == 'ArrivalDate' )
-          req.body[key] = dateConversionToMongose(req.body[key]);
-      }
-    })
-    
+  })
+
+  console.log("Criter")
+console.log(req.body);
 
 
-  Flight.find(req.body).then((result)=>{
-    for(var i=0; i<result.length; i++)
+Flight.find(req.body).then((result)=>{
+  for(var i=0; i<result.length; i++)
+  {
+
+    console.log(isReturnFlight);
+    if(isReturnFlight!==true && isReturnFlight!=='true')
     {
-      if(isReturnFlight==false)
-     {
-        if(DepartureCabinClass=="Economy Class")
+
+      if(DepartureCabinClass=="Economy Class")
+    {
+      console.log(result[i].FreeEconomySeatsNum);
+      console.log(numberOfAdults+numberOfChildren);
+      if(result[i].FreeEconomySeatsNum<(numberOfAdults+numberOfChildren))
+       {
+        result.splice(i,1);
+        i--;
+       }
+       console.log(result); 
+    }
+    else if(DepartureCabinClass=="Business Class"){
+      if(result[i].FreeBusinessSeatsNum<(numberOfAdults+numberOfChildren))
+      {
+        result.splice(i,1);
+        i--;
+      }
+    }
+    else if(DepartureCabinClass=="First Class"){
+      if(result[i].FreeFirstSeatsNum<(numberOfAdults+numberOfChildren))
+      {
+        result.splice(i,1);
+        i--;
+      }
+    }
+  }
+
+    if(isReturnFlight===true || isReturnFlight==='true')
+    {
+      if(ReturnCabinClass=="Economy Class")
       {
         if(result[i].FreeEconomySeatsNum<(numberOfAdults+numberOfChildren))
          {
@@ -1493,60 +1532,44 @@ app.post("/searchFlightUser", (req,res)=>{
           i--;
          } 
       }
-      else if(DepartureCabinClass=="Business Class"){
+      else if(ReturnCabinClass=="Business Class"){
+        console.log(result[i].FreeBusinessSeatsNum);
+        console.log(numberOfAdults+numberOfChildren);
+    
         if(result[i].FreeBusinessSeatsNum<(numberOfAdults+numberOfChildren))
         {
           result.splice(i,1);
           i--;
         }
       }
-      else if(DepartureCabinClass=="First Class"){
+      else if(ReturnCabinClass=="First Class"){
         if(result[i].FreeFirstSeatsNum<(numberOfAdults+numberOfChildren))
         {
           result.splice(i,1);
           i--;
         }
       }
-      else
-      {
-        if(ReturnCabinClass=="Economy Class")
-        {
-          if(result[i].FreeEconomySeatsNum<(numberOfAdults+numberOfChildren))
-           {
-            result.splice(i,1);
-            i--;
-           } 
-        }
-        else if(ReturnCabinClass=="Business Class"){
-          if(result[i].FreeBusinessSeatsNum<(numberOfAdults+numberOfChildren))
-          {
-            result.splice(i,1);
-            i--;
-          }
-        }
-        else if(ReturnCabinClass=="First Class"){
-          if(result[i].FreeFirstSeatsNum<(numberOfAdults+numberOfChildren))
-          {
-            result.splice(i,1);
-            i--;
-          }
-        } 
-      }
-    }
-      
      
     }
+  
+    
+   
+  }
+  if(result.length==0)
+  {
+    res.send(false);
+    return;
+  }
 
-    if(isReturnFlight=="false")
-      searchDepResult=result;
-    else
-    {
-      searchRetResult=result;
-    }  
-    res.send(result);
+  if(isReturnFlight!==true && isReturnFlight!=='true')
+    searchDepResult=result;
+  if(isReturnFlight===true || isReturnFlight==='true')
+  {
+    searchRetResult=result;
+  }  
+  res.send(result);
 }).catch((err) =>  console.log(err))
-  });
-
+});
   app.get("/flight",authenticateToken, async(req,res)=>{
     if(session.username=="")
       res.send(false);

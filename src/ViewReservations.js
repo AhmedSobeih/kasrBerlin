@@ -240,7 +240,7 @@ class ViewReservations extends Component {
                         console.log("response");
 
                         console.log(response);
-                        navigate('/changeSeats', {state: {ReservationNumber: fl.ReservationNumber, Type:"Departure", values: fl.DepatureFlightSeats}});
+                        navigate('/changeSeats', {state: {ReservationNumber: fl.ReservationNumber, Type:"Departure", values: fl.DepatureFlightSeats, CabinClass:fl.DepartureCabinClass}});
 
                       })
 
@@ -338,7 +338,7 @@ class ViewReservations extends Component {
                       })
                       .then((response) => { 
 
-                        navigate('/changeSeats', {state: {ReservationNumber: fl.ReservationNumber, Type:"Return", values:fl.DepatureFlightSeats}});
+                        navigate('/changeSeats', {state: {ReservationNumber: fl.ReservationNumber, Type:"Return", values:fl.DepatureFlightSeats,CabinClass:fl.ReturnCabinClass}});
 
                       })
                         

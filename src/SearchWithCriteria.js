@@ -17,11 +17,12 @@ const Anchor =({title})=>{
 
 export default function SearchWithCriteria(){
 
+
       var accessToken = localStorage.getItem('acessToken');
       var refreshToken = localStorage.getItem('refreshToken');
       var type = localStorage.getItem('type');
       
-      if(type == 1)
+      if(type == 1 || type == 2 || accessToken==null)
       {
         authorized = false;
       }

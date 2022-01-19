@@ -11,7 +11,7 @@ var TripDuration="";
 var FlightPrice=0;
 var DepartureFlight={};
 var isUser=true;
-var ErrorMessage="" ;
+var ErrorMessage='This departure flight has no available return flights for this number of passengers!' ;
 
 
 var flag = false;
@@ -296,11 +296,12 @@ function DoubleLabel(props){
             data: userCriteria,
             headers: {},
           })
-              .then((response) => { 
+              .then((response) => {
+                console.log("Response:") ;
+                console.log(response);
                 if(response.data==false)
                {
-               ErrorMessage = 'This departure flight has no available return flights';
-                // document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
+              document.getElementById('searchFail').setAttribute("class","alert alert-danger text-center") ;
         
                } 
                 else{
@@ -436,7 +437,7 @@ return(
                     >
                       Confirm as departure flight
                     </button>
-                    <div id='searchFail' className="alert-warning">{ErrorMessage}</div>
+                    <div id='searchFail' className="d-none alert-warning">{ErrorMessage}</div>
 
                   </div>
                 </form>
